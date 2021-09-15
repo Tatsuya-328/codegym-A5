@@ -7,7 +7,7 @@ def index():
   return render_template('index.html')
 
 # spotify branch test
-@app.route('/', methods = ['GET'])
+@app.route('/', methods = ['POST'])
 def spotify():
   return render_template('index.html')
 
