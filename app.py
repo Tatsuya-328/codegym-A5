@@ -128,5 +128,4 @@ def spotify():
   return render_template('index.html')
 
 if __name__ == '__main__':
-  app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=8200)
-  # app()
+  app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
