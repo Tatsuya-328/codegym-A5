@@ -14,3 +14,22 @@ def login_required(f):
             return redirect("/login")
         return f(*args, **kwargs)
     return decorated_function
+
+def register_check(email, password, confirmation, username, used_email):
+    if not email or not password or not confirmation or not username:
+        return False
+    elif used_email != []:
+        return False
+    elif password != confirmation:
+        return False
+    else:
+        return True 
+
+def login_check(email, password, users):
+    if not email or not password:
+        return False
+    elif len(users) != 1:
+        return False
+    else:
+        return True 
+    
