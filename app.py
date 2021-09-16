@@ -3,7 +3,7 @@ import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import login_required
+from helpers import login_required, register_check, login_check
 
 app = Flask(__name__)
 
@@ -23,6 +23,7 @@ db = con.cursor()
 def index():
   return render_template('index.html')
 
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
@@ -35,40 +36,21 @@ def register():
         confirmation = request.form.get("confirmation")
         username = request.form.get("username")
         
-        # print(username)
-        users = db.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchall()
+        used_email = db.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchall()
 
-        # Ensure email was submitted
-        if not email:
-            return render_template("register.html")
-
-        elif users != []:
-            # print(len(username))
-            # print(users)
-            return render_template("register.html")
-
-        # Ensure password was submitted
-        elif not password:
-            return render_template("register.html")
-
-        # Ensure confirmation password was submitted
-        elif not confirmation:
-            return render_template("register.html")
-
-        if password == confirmation:
+        # Ensure email, password, confirmation password, username was submitted
+        if register_check(email, password, confirmation, username, used_email):
+            # Insert user data
             db.execute("INSERT INTO users (email, hash, username) VALUES(?, ?, ?)", (email, generate_password_hash(password), username))
             con.commit()
 
-            rows = db.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchall()
+            users = db.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchall()
 
             # Ensure username exists and password is correct
-            # print(rows)
-            
-            if  not check_password_hash(rows[0][2], password):
-                flash("invalid username and/or password")
+            if not check_password_hash(users[0][2], password):
                 return render_template("register.html")
 
-            session["user_id"] = rows[0][1]
+            session["user_id"] = users[0][1]
             # Redirect user to home page
             return redirect("/")
         else:
@@ -83,32 +65,25 @@ def login():
     """Log user in"""
     # Forget any user_id
     session.clear()
-
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
-        # Ensure username was submitted
-        if not email:
-            return render_template("login.html")
-
-        # Ensure password was submitted
-        elif not password:
-            return render_template("login.html")
-
+        users = db.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchall()
+        # Ensure email, password was submitted
         # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchall()
+        if login_check(email, password, users):
+            # Ensure username exists and password is correct
+            if not check_password_hash(users[0][2], password):
+                return render_template("login.html")
 
-        # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(rows[0][2], password):
+            # Remember which user has logged in
+            session["user_id"] = users[0][1]
+
+            # Redirect user to home page
+            return redirect("/")
+        else:
             return render_template("login.html")
-
-        # Remember which user has logged in
-        session["user_id"] = rows[0][1]
-
-        # Redirect user to home page
-        return redirect("/")
-
     # User reached route via GET (as by clicking a link or via redirect)
     else :
         return render_template("login.html")
