@@ -9,6 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required, register_check, login_check
 from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
+from tkinter import messagebox
 
 app = Flask(__name__)
 
@@ -127,7 +128,7 @@ def spotify_authorize():
     token_info = sp_oauth.get_access_token(code)
     session["token_info"] = token_info
     # 仮のページにリダイレクト（これが地図画面になる？）
-    return redirect("/getTrack")
+    return redirect("/spotify-loading")
 
 # Spotifyからログアウト（現在使っていない。もしspotifyだけログアウトしたいならtokeninfoだけsession消す必要あり。）
 @app.route('/spotify-logout')
@@ -135,6 +136,11 @@ def spotify_authorize():
 def spotify_logout():
     session.clear() 
     return redirect('/')
+
+@app.route('/spotify-loading')
+@login_required
+def spotify_loading():
+    return render_template("loading.html")
 
 # Spotfy認証後のリダイレクトページ
 @app.route('/getTrack')
@@ -147,19 +153,24 @@ def getTrack():
     # していなかったらリダイレクト。
     if not authorized:
         return redirect('/')    
-
-    time.sleep(3) 
-    current_track_info = get_current_track()
-
-    # get_current_track()で取得したIDを1秒前に取得したものと比較して異なっていたら新しい曲とみなし書き込む。
-    if current_track_info['id'] != session.get('current_id'):
-        pprint(
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+    
+    try:
+        item = sp.current_playback()['item']['id']
+        time.sleep(3) 
+        current_track_info = get_current_track()
+        # get_current_track()で取得したIDを1秒前に取得したものと比較して異なっていたら新しい曲とみなし書き込む。
+        if current_track_info['id'] != session.get('current_id'):
+            pprint(
             current_track_info,
             indent=4,
-        )
+            )
         session['current_id'] = current_track_info['id']
         
-    return redirect('/getTrack')
+        return redirect('/getTrack')
+    except TypeError:
+        messagebox.showerror('Spotifyで曲を再生してください。')
+        return redirect("/spotify-loading")
 
 # 現在再生されている曲情報を取得
 def get_current_track():
