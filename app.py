@@ -11,5 +11,9 @@ def index():
 def spotify():
   return render_template('index.html')
 
+@app.route('/map', methods = ['GET'])
+def display_map():
+  return render_template('map.html')
+
 if __name__ == '__main__':
   app()
