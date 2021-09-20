@@ -166,7 +166,9 @@ def getTrack():
         # get_current_track()で取得したIDを1秒前に取得したものと比較して異なっていたら新しい曲とみなし書き込む。
         if current_track_info['id'] != session.get('current_id'):
             pprint(
-            current_track_info,
+            #ここで今はターミナルに表示させて曲情報をDBに書き込む予定。
+            # Ajaxの位置情報もここでうけとって、曲情報とセットにしてDBに書き込みたい。 
+            current_track_info,#これが曲情報
             indent=4,
             )
         session['current_id'] = current_track_info['id']
