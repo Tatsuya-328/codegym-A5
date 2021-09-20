@@ -10,6 +10,9 @@ from helpers import login_required, register_check, login_check
 from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
 from tkinter import messagebox
+import config
+
+GOOGLE_MAP_API_KEY = config.GOOGLE_MAP_API_KEY
 
 app = Flask(__name__)
 
@@ -224,6 +227,12 @@ def create_spotify_oauth():
             client_secret="aa4798edc71a451593422d5aeea18361",
             redirect_uri=url_for('spotify_authorize', _external=True),
             scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
+
+@app.route('/map', methods = ['GET'])
+def display_map():
+  googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+  print(googlemapURL)
+  return render_template('map.html', GOOGLEMAPURL=googlemapURL)
 
 if __name__ == '__main__':
   app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)

@@ -1,9 +1,35 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    MAP
+  Map
 {% endblock %}
 
 {% block main %}
-    Mapだよ
+  <h1>map</h1>
+  <style>
+    #map{
+      height: 900px;
+      width: 800px;
+      margin: 0 auto;
+    }
+  </style>
+    
+  <div id="map"></div>
+    
+  <script src="{{GOOGLEMAPURL}}"></script>
+  <script>
+  
+    // id属性の指定
+    var mapDiv = document.getElementById( "map" ) ;
+  
+    // 地図のオプション
+    var mapOptions = {
+      center: new google.maps.LatLng( 38.0047, 137.5936 ) ,
+      zoom: 6 ,
+    } ;
+  
+    // Mapクラスの設定
+    new google.maps.Map( mapDiv, mapOptions ) ;
+  
+  </script>
 {% endblock %}
