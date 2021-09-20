@@ -147,6 +147,8 @@ def spotify_loading():
 @login_required
 def getTrack():
     
+    request.form['data']
+
     # 認証しているかの確認
     session['token_info'], authorized = get_token()
     session.modified = True
