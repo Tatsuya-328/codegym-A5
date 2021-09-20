@@ -111,16 +111,6 @@ def logout():
     # Redirect user to login form
     return redirect("/")
 
-@app.route('/postText', methods=['POST'])
-def lower_conversion():
-   text = request.json['text']
-   if "ping" in text:
-       return_data = {"result":"pong"}
-       return jsonify(ResultSet=json.dumps(return_data))
-   lower_text = text.lower()
-   return_data = {"result":lower_text}
-   return jsonify(ResultSet=json.dumps(return_data))
-
 # Spotifyの認証ページへリダイレクト
 @app.route('/spotify-login')
 @login_required
@@ -160,8 +150,6 @@ def spotify_loading():
 @app.route('/getTrack')
 @login_required
 def getTrack():
-    
-    # request.form['data']
 
     # 認証しているかの確認
     session['token_info'], authorized = get_token()
