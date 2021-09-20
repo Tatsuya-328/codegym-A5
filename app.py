@@ -3,16 +3,18 @@ import sqlite3
 import spotipy
 import time
 import requests
-from flask import Flask, flash, redirect, render_template, url_for, request, session
+import json
+from flask import Flask, flash, redirect, render_template, url_for, request, session, jsonify
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required, register_check, login_check
 from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
-from tkinter import messagebox
 import config
 
 GOOGLE_MAP_API_KEY = config.GOOGLE_MAP_API_KEY
+SPOTIFY_CLIENT_SECRET =config.SPOTIFY_CLIENT_SECRET
+SPOTIFY_CLIENT_ID = config.SPOTIFY_CLIENT_ID
 
 app = Flask(__name__)
 
@@ -109,6 +111,15 @@ def logout():
     # Redirect user to login form
     return redirect("/")
 
+@app.route('/postText', methods=['POST'])
+def lower_conversion():
+   text = request.json['text']
+   if "ping" in text:
+       return_data = {"result":"pong"}
+       return jsonify(ResultSet=json.dumps(return_data))
+   lower_text = text.lower()
+   return_data = {"result":lower_text}
+   return jsonify(ResultSet=json.dumps(return_data))
 
 # Spotifyの認証ページへリダイレクト
 @app.route('/spotify-login')
@@ -150,7 +161,7 @@ def spotify_loading():
 @login_required
 def getTrack():
     
-    request.form['data']
+    # request.form['data']
 
     # 認証しているかの確認
     session['token_info'], authorized = get_token()
@@ -172,9 +183,8 @@ def getTrack():
             )
         session['current_id'] = current_track_info['id']
         
-        return redirect('/getTrack')
+        return redirect('/spotify-loading')
     except TypeError:
-        messagebox.showerror('Spotifyで曲を再生してください。')
         return redirect("/spotify-loading")
 
 # 現在再生されている曲情報を取得
@@ -223,8 +233,8 @@ def get_token():
 # SpotifyAPIを使うための情報
 def create_spotify_oauth():
     return SpotifyOAuth(
-            client_id="825c877985154e6984d86194893b110e",
-            client_secret="aa4798edc71a451593422d5aeea18361",
+            client_id=SPOTIFY_CLIENT_ID,
+            client_secret=SPOTIFY_CLIENT_SECRET,
             redirect_uri=url_for('spotify_authorize', _external=True),
             scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
 
