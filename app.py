@@ -213,4 +213,5 @@ def create_spotify_oauth():
             scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
 
 if __name__ == '__main__':
-  app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
+    # app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
+    app()
