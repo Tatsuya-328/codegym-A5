@@ -2,6 +2,7 @@ import os
 import sqlite3
 import spotipy
 import time
+import datetime
 import requests
 import json
 from flask import Flask, flash, redirect, render_template, url_for, request, session, jsonify
@@ -147,49 +148,10 @@ def spotify_loading():
     return render_template("loading.html")
 
 # Spotfy認証後のリダイレクトページ
-@app.route('/getTrack', methods = ['GET','POST'])
+@app.route('/getTrack', methods = ['POST'])
 @login_required
 def getTrack():
-    if request.method == "POST":
-        #認証しているか確認
-        session['token_info'], authorized = get_token()
-        session.modified = True
-        # していなかったらリダイレクト。
-        if not authorized:
-            return redirect('/')    
-        sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
-        
-        try:
-            item = sp.current_playback()['item']['id']
-            time.sleep(3) 
-            current_track_info = get_current_track()
-            lat = request.form.get('lat')
-            lng = request.form.get('lng')
-
-            # get_current_track()で取得したIDを1秒前に取得したものと比較して異なっていたら新しい曲とみなし書き込む。
-            if current_track_info['id'] != session.get('current_id'):
-                pprint(
-                #ここで今はターミナルに表示させて曲情報をDBに書き込む予定。
-                # Ajaxの位置情報もここでうけとって、曲情報とセットにしてDBに書き込みたい。 
-                current_track_info,#これが曲情報
-                lat,
-                lng,
-                indent=4,
-                )
-            session['current_id'] = current_track_info['id']
-            
-            return redirect('/spotify-loading')
-        except TypeError:
-            lat = request.form.get('lat')
-            lng = request.form.get('lng')
-            print(
-                lat,
-                lng
-            )
-
-            return redirect("/spotify-loading")
-    else :
-            #認証しているか確認
+    #認証しているか確認
         session['token_info'], authorized = get_token()
         session.modified = True
         # していなかったらリダイレクト。
@@ -197,30 +159,34 @@ def getTrack():
             return redirect('/')    
         sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
         try:
-            item = sp.current_playback()['item']['id']
-            time.sleep(3) 
+            # 連続で取得すると、エラーするため少し時間を置く（今は問題なさそうだからコメントアウト）
+            # time.sleep(3) 
             current_track_info = get_current_track()
+            dt = datetime.datetime.now()
+            lat = request.form.get('lat')
+            lng = request.form.get('lng')
 
-
-            # get_current_track()で取得したIDを1秒前に取得したものと比較して異なっていたら新しい曲とみなし書き込む。
+            # get_current_track()で取得したIDを以前取得したものと比較して異なっていたら新しい曲とみなし書き込む。
             if current_track_info['id'] != session.get('current_id'):
-                pprint(
-                #ここで今はターミナルに表示させて曲情報をDBに書き込む予定。
-                # Ajaxの位置情報もここでうけとって、曲情報とセットにしてDBに書き込みたい。 
-                current_track_info,#これが曲情報
-           
-                indent=4,
-                )
+                print(
+                    current_track_info,
+                    "緯度",
+                    lat,
+                    "経度",
+                    lng,
+                    "年月日",
+                    dt.year,
+                    dt.month,
+                    dt.day
+                    )
             session['current_id'] = current_track_info['id']
-            return redirect('/spotify-loading')
-        except TypeError:
-
+            return redirect('/')
+        except TypeError as e:
             print(
-                'exept'
+                # エラーの場合原因返す
+                e
             )
-
-            return redirect("/spotify-loading")
-        return redirect("/spotify-loading")
+            return redirect("/")
 
 # 現在再生されている曲情報を取得
 def get_current_track():
@@ -230,7 +196,7 @@ def get_current_track():
     artists = [artist for artist in sp.current_playback()['item']['artists']]
     link = sp.current_playback()['item']['href']
     image = sp.current_playback()['item']['album']['images'][2]['url']
-    
+    # artistが複数ある場合に結合して一つの文字列にする
     artist_names = ', '.join([artist['name'] for artist in artists])
     
     current_track_info = {

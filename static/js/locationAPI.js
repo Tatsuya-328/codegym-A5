@@ -1,4 +1,4 @@
-function get_location() {
+$(document).ready(function () {
   $("#location").click(function() {
     if( navigator.geolocation )
       {
@@ -13,8 +13,8 @@ function get_location() {
             var lat = data.latitude ;
             var lng = data.longitude ;
             $.ajax({
-              type:'GET',
-              url:'/',
+              type:'POST',
+              url:'/getTrack',
               data: {
                 "lat":lat,
                 "lng":lng
@@ -22,25 +22,9 @@ function get_location() {
               dataType: 'text',
             }).done(function(){
               console.log("success");
-                
-                $.ajax({
-                  type:'POST',
-                  url:'/getTrack',
-                  data: {
-                    "lat":lat,
-                    "lng":lng
-                  },
-                  dataType: 'text',
-                }).done(function(){
-                  console.log("success");              
-                }).fail(function(){
-                  console.log('failed');
-                });
-
             }).fail(function(){
               console.log('failed');
             });
-            // alert( "あなたの現在位置は、\n[" + lat + "," + lng + "]\nです。" ) ;
           },
           // [第2引数] 取得に失敗した場合の関数
           function( error )
@@ -70,4 +54,4 @@ function get_location() {
         ) ;
       }
   });
-}
+});
