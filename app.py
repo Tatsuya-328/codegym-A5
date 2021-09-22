@@ -36,7 +36,7 @@ db = con.cursor()
 @app.route('/', methods = ['GET'])
 @login_required
 def index():
-  return render_template('index.html')
+    return render_template('index.html')
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -147,34 +147,79 @@ def spotify_loading():
     return render_template("loading.html")
 
 # Spotfy認証後のリダイレクトページ
-@app.route('/getTrack')
+@app.route('/getTrack', methods = ['GET','POST'])
 @login_required
 def getTrack():
-
-    # 認証しているかの確認
-    session['token_info'], authorized = get_token()
-    session.modified = True
-    # していなかったらリダイレクト。
-    if not authorized:
-        return redirect('/')    
-    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
-    
-    try:
-        item = sp.current_playback()['item']['id']
-        time.sleep(3) 
-        current_track_info = get_current_track()
-        # get_current_track()で取得したIDを1秒前に取得したものと比較して異なっていたら新しい曲とみなし書き込む。
-        if current_track_info['id'] != session.get('current_id'):
-            pprint(
-            #ここで今はターミナルに表示させて曲情報をDBに書き込む予定。
-            # Ajaxの位置情報もここでうけとって、曲情報とセットにしてDBに書き込みたい。 
-            current_track_info,#これが曲情報
-            indent=4,
-            )
-        session['current_id'] = current_track_info['id']
+    if request.method == "POST":
+        #認証しているか確認
+        session['token_info'], authorized = get_token()
+        session.modified = True
+        # していなかったらリダイレクト。
+        if not authorized:
+            return redirect('/')    
+        sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
         
-        return redirect('/spotify-loading')
-    except TypeError:
+        try:
+            item = sp.current_playback()['item']['id']
+            time.sleep(3) 
+            current_track_info = get_current_track()
+            lat = request.form.get('lat')
+            lng = request.form.get('lng')
+
+            # get_current_track()で取得したIDを1秒前に取得したものと比較して異なっていたら新しい曲とみなし書き込む。
+            if current_track_info['id'] != session.get('current_id'):
+                pprint(
+                #ここで今はターミナルに表示させて曲情報をDBに書き込む予定。
+                # Ajaxの位置情報もここでうけとって、曲情報とセットにしてDBに書き込みたい。 
+                current_track_info,#これが曲情報
+                lat,
+                lng,
+                indent=4,
+                )
+            session['current_id'] = current_track_info['id']
+            
+            return redirect('/spotify-loading')
+        except TypeError:
+            lat = request.form.get('lat')
+            lng = request.form.get('lng')
+            print(
+                lat,
+                lng
+            )
+
+            return redirect("/spotify-loading")
+    else :
+            #認証しているか確認
+        session['token_info'], authorized = get_token()
+        session.modified = True
+        # していなかったらリダイレクト。
+        if not authorized:
+            return redirect('/')    
+        sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+        try:
+            item = sp.current_playback()['item']['id']
+            time.sleep(3) 
+            current_track_info = get_current_track()
+
+
+            # get_current_track()で取得したIDを1秒前に取得したものと比較して異なっていたら新しい曲とみなし書き込む。
+            if current_track_info['id'] != session.get('current_id'):
+                pprint(
+                #ここで今はターミナルに表示させて曲情報をDBに書き込む予定。
+                # Ajaxの位置情報もここでうけとって、曲情報とセットにしてDBに書き込みたい。 
+                current_track_info,#これが曲情報
+           
+                indent=4,
+                )
+            session['current_id'] = current_track_info['id']
+            return redirect('/spotify-loading')
+        except TypeError:
+
+            print(
+                'exept'
+            )
+
+            return redirect("/spotify-loading")
         return redirect("/spotify-loading")
 
 # 現在再生されている曲情報を取得
