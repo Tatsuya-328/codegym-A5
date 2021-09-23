@@ -2,13 +2,20 @@ import os
 import sqlite3
 import spotipy
 import time
+import datetime
 import requests
-from flask import Flask, flash, redirect, render_template, url_for, request, session
+import json
+from flask import Flask, flash, redirect, render_template, url_for, request, session, jsonify
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required, register_check, login_check
 from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
+import config
+
+GOOGLE_MAP_API_KEY = config.GOOGLE_MAP_API_KEY
+SPOTIFY_CLIENT_SECRET =config.SPOTIFY_CLIENT_SECRET
+SPOTIFY_CLIENT_ID = config.SPOTIFY_CLIENT_ID
 
 app = Flask(__name__)
 
@@ -30,7 +37,7 @@ db = con.cursor()
 @app.route('/', methods = ['GET'])
 @login_required
 def index():
-  return render_template('index.html')
+    return render_template('index.html')
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -105,7 +112,6 @@ def logout():
     # Redirect user to login form
     return redirect("/")
 
-
 # Spotifyの認証ページへリダイレクト
 @app.route('/spotify-login')
 @login_required
@@ -127,7 +133,7 @@ def spotify_authorize():
     token_info = sp_oauth.get_access_token(code)
     session["token_info"] = token_info
     # 仮のページにリダイレクト（これが地図画面になる？）
-    return redirect("/getTrack")
+    return redirect("/spotify-loading")
 
 # Spotifyからログアウト（現在使っていない。もしspotifyだけログアウトしたいならtokeninfoだけsession消す必要あり。）
 @app.route('/spotify-logout')
@@ -136,30 +142,51 @@ def spotify_logout():
     session.clear() 
     return redirect('/')
 
+@app.route('/spotify-loading')
+@login_required
+def spotify_loading():
+    return render_template("loading.html")
+
 # Spotfy認証後のリダイレクトページ
-@app.route('/getTrack')
+@app.route('/getTrack', methods = ['POST'])
 @login_required
 def getTrack():
-    
-    # 認証しているかの確認
-    session['token_info'], authorized = get_token()
-    session.modified = True
-    # していなかったらリダイレクト。
-    if not authorized:
-        return redirect('/')    
+    #認証しているか確認
+        session['token_info'], authorized = get_token()
+        session.modified = True
+        # していなかったらリダイレクト。
+        if not authorized:
+            return redirect('/')    
+        sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+        try:
+            # 連続で取得すると、エラーするため少し時間を置く（今は問題なさそうだからコメントアウト）
+            # time.sleep(3) 
+            current_track_info = get_current_track()
+            dt = datetime.datetime.now()
+            lat = request.form.get('lat')
+            lng = request.form.get('lng')
 
-    time.sleep(3) 
-    current_track_info = get_current_track()
-
-    # get_current_track()で取得したIDを1秒前に取得したものと比較して異なっていたら新しい曲とみなし書き込む。
-    if current_track_info['id'] != session.get('current_id'):
-        pprint(
-            current_track_info,
-            indent=4,
-        )
-        session['current_id'] = current_track_info['id']
-        
-    return redirect('/getTrack')
+            # get_current_track()で取得したIDを以前取得したものと比較して異なっていたら新しい曲とみなし書き込む。
+            if current_track_info['id'] != session.get('current_id'):
+                print(
+                    current_track_info,
+                    "緯度",
+                    lat,
+                    "経度",
+                    lng,
+                    "年月日",
+                    dt.year,
+                    dt.month,
+                    dt.day
+                    )
+            session['current_id'] = current_track_info['id']
+            return redirect('/')
+        except TypeError as e:
+            print(
+                # エラーの場合原因返す
+                e
+            )
+            return redirect("/")
 
 # 現在再生されている曲情報を取得
 def get_current_track():
@@ -169,7 +196,7 @@ def get_current_track():
     artists = [artist for artist in sp.current_playback()['item']['artists']]
     link = sp.current_playback()['item']['href']
     image = sp.current_playback()['item']['album']['images'][2]['url']
-    
+    # artistが複数ある場合に結合して一つの文字列にする
     artist_names = ', '.join([artist['name'] for artist in artists])
     
     current_track_info = {
@@ -207,10 +234,16 @@ def get_token():
 # SpotifyAPIを使うための情報
 def create_spotify_oauth():
     return SpotifyOAuth(
-            client_id="825c877985154e6984d86194893b110e",
-            client_secret="aa4798edc71a451593422d5aeea18361",
+            client_id=SPOTIFY_CLIENT_ID,
+            client_secret=SPOTIFY_CLIENT_SECRET,
             redirect_uri=url_for('spotify_authorize', _external=True),
             scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
+
+@app.route('/map', methods = ['GET'])
+def display_map():
+  googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+  print(googlemapURL)
+  return render_template('map.html', GOOGLEMAPURL=googlemapURL)
 
 if __name__ == '__main__':
     # app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
