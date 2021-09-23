@@ -180,7 +180,9 @@ def getTrack():
                     dt.day
                     )
             session['current_id'] = current_track_info['id']
-            return redirect('/')
+
+            
+            return redirect('/spotify-loading')
         except TypeError as e:
             print(
                 # エラーの場合原因返す
