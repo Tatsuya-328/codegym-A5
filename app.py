@@ -162,10 +162,21 @@ def getTrack():
             # 連続で取得すると、エラーするため少し時間を置く（今は問題なさそうだからコメントアウト）
             # time.sleep(3) 
             current_track_info = get_current_track()
-            dt = datetime.datetime.now()
+            
+            # POSTの受け取り
             lat = request.form.get('lat')
             lng = request.form.get('lng')
+            emotion = request.form.get('emotion')
+            comment = request.form.get('comment')
 
+            # addingで日付受け取った場合
+            if request.form.get('date'): 
+                # date = request.form.get('date')
+                date = datetime.date.today()
+            # loadingで現在地追加の日付を使う場合
+            else:
+                date = datetime.date.today()
+            
             # get_current_track()で取得したIDを以前取得したものと比較して異なっていたら新しい曲とみなし書き込む。
             if current_track_info['id'] != session.get('current_id'):
                 print(
@@ -175,15 +186,15 @@ def getTrack():
                     "経度",
                     lng,
                     "年月日",
-                    dt.year,
-                    dt.month,
-                    dt.day
+                    date,
+                    emotion,
+                    comment
                     )
             session['current_id'] = current_track_info['id']
 
             # GetTrack作動ボタンを/MAPに作って、ここにピン差をすコードを書く。するとリダイレクトしてピンが表示される。
             
-            return redirect('/spotify-loading')
+            return redirect('/map')
         except TypeError as e:
             print(
                 # エラーの場合原因返す
@@ -248,6 +259,12 @@ def display_map():
   googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
   print(googlemapURL)
   return render_template('map.html', GOOGLEMAPURL=googlemapURL)
+
+@app.route('/adding', methods = ['GET'])
+def adding_marker():
+  googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+  print(googlemapURL)
+  return render_template('adding.html', GOOGLEMAPURL=googlemapURL) 
 
 if __name__ == '__main__':
   app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)

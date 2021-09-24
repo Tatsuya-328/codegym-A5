@@ -5,8 +5,19 @@
 {% endblock %}
 
 {% block main %}
-<button id = "location" >曲取得して位置情報送る</button>
-<div id="return"></div>
+<form action="/getTrack" method="post">
+    <p>
+      <select name="emotion" size="4" required>
+      <option value="嬉しい">嬉しい</option>
+      <option value="楽しい">楽しい</option>
+      <option value="落ち着き">落ち着き</option>
+      <option value="悲しい">悲しい</option>
+      </select>
+    </p>
 
-<li class="nav-item"><a class="nav-link" href="/map">map</a></li>
+    <label for="comment"></label>
+    <textarea id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！" style="margin: 0px; width: 346px; height: 95px;"></textarea>      
+    <button input type="submit" value="button" id = "adding" >位置・曲情報取得</button>
+</form>
+<div id="return"></div>
 {% endblock %}
