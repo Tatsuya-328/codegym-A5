@@ -181,6 +181,7 @@ def getTrack():
                     )
             session['current_id'] = current_track_info['id']
 
+            # GetTrack作動ボタンを/MAPに作って、ここにピン差をすコードを書く。するとリダイレクトしてピンが表示される。
             
             return redirect('/spotify-loading')
         except TypeError as e:
@@ -196,7 +197,8 @@ def get_current_track():
     id = sp.current_playback()['item']['id']
     track_name = sp.current_playback()['item']['name']
     artists = [artist for artist in sp.current_playback()['item']['artists']]
-    link = sp.current_playback()['item']['href']
+    # link = sp.current_playback()['item']['album']['external_urls'] #こっちだとアルバムのURL
+    link = sp.current_playback()['item']['external_urls'] #こっちは曲単体のURL
     image = sp.current_playback()['item']['album']['images'][2]['url']
     # artistが複数ある場合に結合して一つの文字列にする
     artist_names = ', '.join([artist['name'] for artist in artists])

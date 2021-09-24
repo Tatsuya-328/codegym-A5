@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block main %}
-  <h1>map</h1>
+  <!-- <h1>map</h1>
   <style>
     #map{
       height: 900px;
@@ -31,5 +31,12 @@
     // Mapクラスの設定
     new google.maps.Map( mapDiv, mapOptions ) ;
   
-  </script>
+  </script> -->
+
+  <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
+  <body 
+
+  >
+    <div id="map" style="width: 800px; height: 900px ;margin: 0 auto"></div>
+  </body>
 {% endblock %}
