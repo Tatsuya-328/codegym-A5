@@ -5,8 +5,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
+  <link rel="shortcut icon" href="#">
   <title>{% block title %}{% endblock %}</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script type="text/javascript" src="static/js/locationAPI.js"></script>
+
 </head>
 <body>
   <nav>
@@ -14,6 +17,8 @@
     <ul class="navbar-nav">
       <li class="nav-item"><a class="nav-link" href="/spotify-login">Spotify Login</a></li>
       <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
+      <li class="nav-item"><a class="nav-link" href="/map">map</a></li>
+      <li class="nav-item"><a class="nav-link" href="/adding">adding</a></li>
     </ul>
     {% else %}
         <ul class="navbar-nav">
@@ -27,5 +32,6 @@
     {% block main %}{% endblock %}
   </main>
   <footer></footer>
+
 </body>
 </html>
