@@ -28,7 +28,7 @@ Session(app)
 
 # Spotify用
 app.secret_key = 'SOMETHING-RANDOM'
-app.config['SESSION_COOKIE_NAME'] = 'spotify-login-session'
+app.config['SESSION_COOKIE_NAME'] = 'session-id'
 
 #use SQLite database
 con = sqlite3.connect('spotify.db', check_same_thread=False)
@@ -163,16 +163,14 @@ def getTrack():
             # time.sleep(3) 
             current_track_info = get_current_track()
             
-            # POSTの受け取り
+             # POSTの受け取り
             lat = request.form.get('lat')
             lng = request.form.get('lng')
             emotion = request.form.get('emotion')
             comment = request.form.get('comment')
-
             # addingで日付受け取った場合
             if request.form.get('date'): 
-                # date = request.form.get('date')
-                date = datetime.date.today()
+                date = request.form.get('date')
             # loadingで現在地追加の日付を使う場合
             else:
                 date = datetime.date.today()
@@ -191,10 +189,8 @@ def getTrack():
                     comment
                     )
             session['current_id'] = current_track_info['id']
+            return redirect('/map') 
 
-            # GetTrack作動ボタンを/MAPに作って、ここにピン差をすコードを書く。するとリダイレクトしてピンが表示される。
-            
-            return redirect('/map')
         except TypeError as e:
             print(
                 # エラーの場合原因返す

@@ -6,30 +6,21 @@
 
 {% block main %}
   <h1>Adding maker</h1>
-  <form action="/getTrack" method="post">
+  
     <input type="date" id="date" name="date" value="2018-07-22" min="2000-01-01" max="2021-12-31" required>
-  <!-- <div class="form-group">
-      <input class="form-control" name="password" placeholder="Password" type="password">
-  </div>
-  <div class="form-group">
-      <input class="form-control" name="confirmation" placeholder="Password (again)" type="password">
-  </div>
-  <div class="form-group">
-      <input autofocus class="form-control" name="username" placeholder="Username" type="text">
-  </div> -->
     <p>
-      <select name="emotion" size="4" required>
+      <select name="emotion" id = "emotion" size="4" required>
       <option value="嬉しい">嬉しい</option>
       <option value="楽しい">楽しい</option>
       <option value="落ち着き">落ち着き</option>
       <option value="悲しい">悲しい</option>
       </select>
       </p>
-
       <label for="comment"></label>
       <textarea id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！" style="margin: 0px; width: 346px; height: 95px;"></textarea>            
-    <button input type="submit" value="button" id = "adding" >この場所に曲を追加する</button>
-</form>
+      <input type="button" value="この場所に曲を追加する" id = "adding" >
+      
+
   <style>
     #map{
       height: 900px;
@@ -175,16 +166,23 @@ function initMap() {
         $("#adding").click(function() {
                     var lat = event.latLng.lat() ;
                     var lng = event.latLng.lng() ;
+                    var date = document.getElementById("date").value;
+                    var emotion = document.getElementById("emotion").value;
+                    var comment = document.getElementById("comment").value;
                     $.ajax({
                       type:'POST',
                       url:'/getTrack',
                       data: {
                         "lat":lat,
                         "lng":lng,
+                        "date":date,
+                        "emotion":emotion,
+                        "comment":comment,
                       },
                       dataType: 'text',
                     }).done(function(){
                       console.log("success");
+                      window.location.href = '/map';
                     }).fail(function(){
                       console.log('failed');
                     });
