@@ -30,9 +30,64 @@ Session(app)
 app.secret_key = 'SOMETHING-RANDOM'
 app.config['SESSION_COOKIE_NAME'] = 'session-id'
 
-#use SQLite database
-con = sqlite3.connect('spotify.db', check_same_thread=False)
-db = con.cursor()
+#database
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, Integer, Float
+from sqlalchemy.sql.sqltypes import TEXT, DateTime
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.spotify'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+class users(db.Model):
+	__tablename__ = 'users'
+	id = db.Column(Integer, primary_key=True)
+	email = db.Column(TEXT, unique=True)
+	hash = db.Column(TEXT, unique=False)
+	username = db.Column(TEXT, unique=False)
+
+	def __init__(self, email=None, hash=None, username=None):
+		self.email = email
+		self.hash = hash
+		self.username = username
+
+class song_locations(db.Model):
+	__tablename__ = 'song_locations'
+	id = db.Column(Integer, primary_key=True)
+	user_id = db.Column(Integer, unique=False)
+	track_id = db.Column(Integer, unique=False)
+	longitude = db.Column(Float, unique=False)
+	latitude = db.Column(Float, unique=False)
+	datetime = db.Column(DateTime, unique=False)
+
+	def __init__(self, user_id=None, track_id=None, longitude=None, latitude=None, datetime=None):
+		self.user_id = user_id
+		self.track_id = track_id
+		self.longitude = longitude
+		self.latitude = latitude
+		self.datetime = datetime
+
+class songs(db.Model):
+	__tablename__ = 'songs'
+	id = db.Column(Integer, primary_key=True)
+	track_id = db.Column(Integer, unique=True)
+	track_name = db.Column(TEXT, unique=False)
+	artist_name = db.Column(TEXT, unique=False)
+	track_image = db.Column(TEXT, unique=False)
+	spotify_url = db.Column(TEXT, unique=True)
+
+	def __init__(self, track_id=None, track_name=None, artist_name=None, track_image=None, spotify_url=None):
+            self.track_id = track_id
+            self.track_name = track_name
+            self.artist_name = artist_name
+            self.track_image = track_image
+            self.spotify_url = spotify_url
+
+
+db.create_all()
+print("table is created")
+
 
 @app.route('/', methods = ['GET'])
 @login_required
@@ -45,6 +100,7 @@ def register():
     """Register user"""
     # Forget any user_id
     session.clear()
+    print("register")
 
     if request.method == "POST":
         email = request.form.get("email")
@@ -52,21 +108,28 @@ def register():
         confirmation = request.form.get("confirmation")
         username = request.form.get("username")
         
-        used_email = db.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchall()
+        used_email = db.session.query(users).filter(users.email == email).all()
+        if used_email != []:
+            print(used_email[0].email)
+            print("is used email")
 
         # Ensure email, password, confirmation password, username was submitted
         if register_check(email, password, confirmation, username, used_email):
             # Insert user data
-            db.execute("INSERT INTO users (email, hash, username) VALUES(?, ?, ?)", (email, generate_password_hash(password), username))
-            con.commit()
+            
+            new_user = users(email=email, hash=generate_password_hash(password), username=username)
+            db.session.add(new_user)
+            db.session.commit()
 
-            users = db.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchall()
+            users_row = db.session.query(users).filter(users.username == username).all()
+            print(users_row[0].email)
+            print("is new user email")
 
             # Ensure username exists and password is correct
-            if not check_password_hash(users[0][2], password):
+            if not check_password_hash(users_row[0].hash, password):
                 return render_template("register.html")
 
-            session["user_id"] = users[0][1]
+            session["user_id"] = users_row[0].email
             # Redirect user to home page
             return redirect("/")
         else:
@@ -81,20 +144,27 @@ def login():
     """Log user in"""
     # Forget any user_id
     session.clear()
+    print("login")
+
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
-        users = db.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchall()
+
+        users_row = db.session.query(users).filter(users.email == email).all()
+        if users_row != []:
+            print(users_row[0].email)
+            print("is login email")
+
         # Ensure email, password was submitted
         # Query database for username
-        if login_check(email, password, users):
+        if login_check(email, password, users_row):
             # Ensure username exists and password is correct
-            if not check_password_hash(users[0][2], password):
+            if not check_password_hash(users_row[0].hash, password):
                 return render_template("login.html")
 
             # Remember which user has logged in
-            session["user_id"] = users[0][1]
+            session["user_id"] = users_row[0].email
 
             # Redirect user to home page
             return redirect("/")
@@ -264,4 +334,5 @@ def adding_marker():
 
 if __name__ == '__main__':
     # app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
+    
     app()
