@@ -33,7 +33,7 @@ app.config['SESSION_COOKIE_NAME'] = 'spotify-login-session'
 #database
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, Float
-from sqlalchemy.sql.sqltypes import TEXT
+from sqlalchemy.sql.sqltypes import TEXT, DateTime
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.spotify'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -51,6 +51,39 @@ class users(db.Model):
 		self.email = email
 		self.hash = hash
 		self.username = username
+
+class song_locations(db.Model):
+	__tablename__ = 'song_locations'
+	id = db.Column(Integer, primary_key=True)
+	user_id = db.Column(Integer, unique=False)
+	track_id = db.Column(Integer, unique=False)
+	longitude = db.Column(Float, unique=False)
+	latitude = db.Column(Float, unique=False)
+	datetime = db.Column(DateTime, unique=False)
+
+	def __init__(self, user_id=None, track_id=None, longitude=None, latitude=None, datetime=None):
+		self.user_id = user_id
+		self.track_id = track_id
+		self.longitude = longitude
+		self.latitude = latitude
+		self.datetime = datetime
+
+class songs(db.Model):
+	__tablename__ = 'songs'
+	id = db.Column(Integer, primary_key=True)
+	track_id = db.Column(Integer, unique=True)
+	track_name = db.Column(TEXT, unique=False)
+	artist_name = db.Column(TEXT, unique=False)
+	track_image = db.Column(TEXT, unique=False)
+	spotify_url = db.Column(TEXT, unique=True)
+
+	def __init__(self, track_id=None, track_name=None, artist_name=None, track_image=None, spotify_url=None):
+            self.track_id = track_id
+            self.track_name = track_name
+            self.artist_name = artist_name
+            self.track_image = track_image
+            self.spotify_url = spotify_url
+
 
 db.create_all()
 print("table is created")
@@ -76,8 +109,9 @@ def register():
         username = request.form.get("username")
         
         used_email = db.session.query(users).filter(users.email == email).all()
-        print(used_email[0].email)
-        print("is used email")
+        if used_email != []:
+            print(used_email[0].email)
+            print("is used email")
 
         # Ensure email, password, confirmation password, username was submitted
         if register_check(email, password, confirmation, username, used_email):
@@ -118,8 +152,9 @@ def login():
         password = request.form.get("password")
 
         users_row = db.session.query(users).filter(users.email == email).all()
-        print(users_row[0].email)
-        print("is login email")
+        if users_row != []:
+            print(users_row[0].email)
+            print("is login email")
 
         # Ensure email, password was submitted
         # Query database for username
