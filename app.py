@@ -28,7 +28,7 @@ Session(app)
 
 # Spotify用
 app.secret_key = 'SOMETHING-RANDOM'
-app.config['SESSION_COOKIE_NAME'] = 'spotify-login-session'
+app.config['SESSION_COOKIE_NAME'] = 'session-id'
 
 #use SQLite database
 con = sqlite3.connect('spotify.db', check_same_thread=False)
@@ -162,10 +162,19 @@ def getTrack():
             # 連続で取得すると、エラーするため少し時間を置く（今は問題なさそうだからコメントアウト）
             # time.sleep(3) 
             current_track_info = get_current_track()
-            dt = datetime.datetime.now()
+            
+             # POSTの受け取り
             lat = request.form.get('lat')
             lng = request.form.get('lng')
-
+            emotion = request.form.get('emotion')
+            comment = request.form.get('comment')
+            # addingで日付受け取った場合
+            if request.form.get('date'): 
+                date = request.form.get('date')
+            # loadingで現在地追加の日付を使う場合
+            else:
+                date = datetime.date.today()
+            
             # get_current_track()で取得したIDを以前取得したものと比較して異なっていたら新しい曲とみなし書き込む。
             if current_track_info['id'] != session.get('current_id'):
                 print(
@@ -175,12 +184,13 @@ def getTrack():
                     "経度",
                     lng,
                     "年月日",
-                    dt.year,
-                    dt.month,
-                    dt.day
+                    date,
+                    emotion,
+                    comment
                     )
             session['current_id'] = current_track_info['id']
-            return redirect('/')
+            return redirect('/map') 
+
         except TypeError as e:
             print(
                 # エラーの場合原因返す
@@ -194,7 +204,8 @@ def get_current_track():
     id = sp.current_playback()['item']['id']
     track_name = sp.current_playback()['item']['name']
     artists = [artist for artist in sp.current_playback()['item']['artists']]
-    link = sp.current_playback()['item']['href']
+    # link = sp.current_playback()['item']['album']['external_urls'] #こっちだとアルバムのURL
+    link = sp.current_playback()['item']['external_urls'] #こっちは曲単体のURL
     image = sp.current_playback()['item']['album']['images'][2]['url']
     # artistが複数ある場合に結合して一つの文字列にする
     artist_names = ', '.join([artist['name'] for artist in artists])
@@ -244,6 +255,12 @@ def display_map():
   googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
   print(googlemapURL)
   return render_template('map.html', GOOGLEMAPURL=googlemapURL)
+
+@app.route('/adding', methods = ['GET'])
+def adding_marker():
+  googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+  print(googlemapURL)
+  return render_template('adding.html', GOOGLEMAPURL=googlemapURL) 
 
 if __name__ == '__main__':
     # app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
