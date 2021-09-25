@@ -106,4 +106,4 @@ venv.bak/
 flask_session/
 
 # db.spotify
-.db.spotify
+db.spotify
