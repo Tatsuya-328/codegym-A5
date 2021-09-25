@@ -258,6 +258,17 @@ def getTrack():
                     emotion,
                     comment
                     )
+                exist_song = db.session.query(songs).filter(songs.track_id == current_track_info["id"]).all()
+                    
+                if exist_song == []:
+                    new_song = users(track_id=current_track_info["id"], track_name=current_track_info["track_name"], artist_name=current_track_info["artists"], track_image=current_track_info["image"], spotify_url=current_track_info["link"])
+                    db.session.add(new_song)
+                    db.session.commit()
+                    print(current_track_info["track_name"])
+
+                new_song_location = song_locations(user_id=session["user_id"], track_id=current_track_info["id"], longitude=lng, latitude=lat, datetime=date)
+                db.session.add(new_song_location)
+                db.session.commit()
             session['current_id'] = current_track_info['id']
             return redirect('/map') 
 
@@ -328,9 +339,17 @@ def display_map():
 
 @app.route('/adding', methods = ['GET'])
 def adding_marker():
-  googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
-  print(googlemapURL)
-  return render_template('adding.html', GOOGLEMAPURL=googlemapURL) 
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+    print(googlemapURL)
+    #   SongData = [{'lat':'35.681236', 'lng':'139.767125',  'date':'2020/3/9', 'artist':'KOBUKURO', 'track':'桜', 'image':'https://i.scdn.co/image/ab67616d00004851584f8b783934669d26a7891f' ,'link':'https://open.spotify.com/track/5Hi4IAtdFZzg6IfAVMd6lZ'},]
+    pins = db.session.query(song_locations).all()
+    print(pins)
+    songdata = []
+    for pin in pins:
+        print(pin)
+        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        songdata.append({'lat':pin.latitude, 'lng':pin.longitude,  'date':pin.datetime, 'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.track_url})
+    return render_template('adding.html', GOOGLEMAPURL=googlemapURL, SongData=songdata) 
 
 if __name__ == '__main__':
     # app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
