@@ -129,7 +129,7 @@ def register():
             if not check_password_hash(users_row[0].hash, password):
                 return render_template("register.html")
 
-            session["user_id"] = users_row[0].email
+            session["user_id"] = users_row[0].id
             # Redirect user to home page
             return redirect("/")
         else:
@@ -164,7 +164,7 @@ def login():
                 return render_template("login.html")
 
             # Remember which user has logged in
-            session["user_id"] = users_row[0].email
+            session["user_id"] = users_row[0].id
 
             # Redirect user to home page
             return redirect("/")
@@ -261,7 +261,7 @@ def getTrack():
                 exist_song = db.session.query(songs).filter(songs.track_id == current_track_info["id"]).all()
                     
                 if exist_song == []:
-                    new_song = users(track_id=current_track_info["id"], track_name=current_track_info["track_name"], artist_name=current_track_info["artists"], track_image=current_track_info["image"], spotify_url=current_track_info["link"])
+                    new_song = songs(track_id=current_track_info["id"], track_name=current_track_info["track_name"], artist_name=current_track_info["artists"], track_image=current_track_info["image"], spotify_url=current_track_info["link"])
                     db.session.add(new_song)
                     db.session.commit()
                     print(current_track_info["track_name"])
@@ -270,6 +270,8 @@ def getTrack():
                 db.session.add(new_song_location)
                 db.session.commit()
             session['current_id'] = current_track_info['id']
+            song = db.session.query(songs).all()
+            return 
             return redirect('/map') 
 
         except TypeError as e:
@@ -286,7 +288,7 @@ def get_current_track():
     track_name = sp.current_playback()['item']['name']
     artists = [artist for artist in sp.current_playback()['item']['artists']]
     # link = sp.current_playback()['item']['album']['external_urls'] #こっちだとアルバムのURL
-    link = sp.current_playback()['item']['external_urls'] #こっちは曲単体のURL
+    link = sp.current_playback()['item']['external_urls']['spotify'] #こっちは曲単体のURL
     image = sp.current_playback()['item']['album']['images'][2]['url']
     # artistが複数ある場合に結合して一つの文字列にする
     artist_names = ', '.join([artist['name'] for artist in artists])
@@ -346,9 +348,9 @@ def adding_marker():
     print(pins)
     songdata = []
     for pin in pins:
-        print(pin)
+        # print(pin)
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-        songdata.append({'lat':pin.latitude, 'lng':pin.longitude,  'date':pin.datetime, 'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.track_url})
+        songdata.append({'lat':pin.latitude, 'lng':pin.longitude,  'date':pin.datetime, 'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
     return render_template('adding.html', GOOGLEMAPURL=googlemapURL, SongData=songdata) 
 
 if __name__ == '__main__':
