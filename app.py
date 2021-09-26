@@ -37,7 +37,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, Float
 from sqlalchemy.sql.sqltypes import TEXT, DateTime
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.spotify'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///spotify.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
