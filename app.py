@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from typing import Text
 import spotipy
 import time
 import datetime
@@ -11,6 +12,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required, register_check, login_check
 from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
+from sqlalchemy import Column, String, Integer
 import config
 
 GOOGLE_MAP_API_KEY = config.GOOGLE_MAP_API_KEY
@@ -28,11 +30,66 @@ Session(app)
 
 # Spotify用
 app.secret_key = 'SOMETHING-RANDOM'
-app.config['SESSION_COOKIE_NAME'] = 'spotify-login-session'
+app.config['SESSION_COOKIE_NAME'] = 'session-id'
 
-#use SQLite database
-con = sqlite3.connect('spotify.db', check_same_thread=False)
-db = con.cursor()
+#database
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, Integer, Float
+from sqlalchemy.sql.sqltypes import TEXT, DateTime
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.spotify'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+class users(db.Model):
+	__tablename__ = 'users'
+	id = db.Column(Integer, primary_key=True)
+	email = db.Column(TEXT, unique=True)
+	hash = db.Column(TEXT, unique=False)
+	username = db.Column(TEXT, unique=False)
+
+	def __init__(self, email=None, hash=None, username=None):
+		self.email = email
+		self.hash = hash
+		self.username = username
+
+class song_locations(db.Model):
+	__tablename__ = 'song_locations'
+	id = db.Column(Integer, primary_key=True)
+	user_id = db.Column(Integer, unique=False)
+	track_id = db.Column(TEXT, unique=False)
+	longitude = db.Column(Float, unique=False)
+	latitude = db.Column(Float, unique=False)
+	datetime = db.Column(TEXT, unique=False)
+
+	def __init__(self, user_id=None, track_id=None, longitude=None, latitude=None, datetime=None):
+		self.user_id = user_id
+		self.track_id = track_id
+		self.longitude = longitude
+		self.latitude = latitude
+		self.datetime = datetime
+
+class songs(db.Model):
+	__tablename__ = 'songs'
+	id = db.Column(Integer, primary_key=True)
+	track_id = db.Column(TEXT, unique=True)
+	track_name = db.Column(TEXT, unique=False)
+	artist_name = db.Column(TEXT, unique=False)
+	track_image = db.Column(TEXT, unique=False)
+	spotify_url = db.Column(TEXT, unique=True)
+
+	def __init__(self, track_id=None, track_name=None, artist_name=None, track_image=None, spotify_url=None):
+            self.track_id = track_id
+            self.track_name = track_name
+            self.artist_name = artist_name
+            self.track_image = track_image
+            self.spotify_url = spotify_url
+
+
+db.create_all()
+print("table is created")
+
 
 @app.route('/', methods = ['GET'])
 @login_required
@@ -45,6 +102,7 @@ def register():
     """Register user"""
     # Forget any user_id
     session.clear()
+    print("register")
 
     if request.method == "POST":
         email = request.form.get("email")
@@ -52,21 +110,28 @@ def register():
         confirmation = request.form.get("confirmation")
         username = request.form.get("username")
         
-        used_email = db.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchall()
+        used_email = db.session.query(users).filter(users.email == email).all()
+        if used_email != []:
+            print(used_email[0].email)
+            print("is used email")
 
         # Ensure email, password, confirmation password, username was submitted
         if register_check(email, password, confirmation, username, used_email):
             # Insert user data
-            db.execute("INSERT INTO users (email, hash, username) VALUES(?, ?, ?)", (email, generate_password_hash(password), username))
-            con.commit()
+            
+            new_user = users(email=email, hash=generate_password_hash(password), username=username)
+            db.session.add(new_user)
+            db.session.commit()
 
-            users = db.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchall()
+            users_row = db.session.query(users).filter(users.username == username).all()
+            print(users_row[0].email)
+            print("is new user email")
 
             # Ensure username exists and password is correct
-            if not check_password_hash(users[0][2], password):
+            if not check_password_hash(users_row[0].hash, password):
                 return render_template("register.html")
 
-            session["user_id"] = users[0][1]
+            session["user_id"] = users_row[0].email
             # Redirect user to home page
             return redirect("/")
         else:
@@ -81,20 +146,27 @@ def login():
     """Log user in"""
     # Forget any user_id
     session.clear()
+    print("login")
+
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
-        users = db.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchall()
+
+        users_row = db.session.query(users).filter(users.email == email).all()
+        if users_row != []:
+            print(users_row[0].email)
+            print("is login email")
+
         # Ensure email, password was submitted
         # Query database for username
-        if login_check(email, password, users):
+        if login_check(email, password, users_row):
             # Ensure username exists and password is correct
-            if not check_password_hash(users[0][2], password):
+            if not check_password_hash(users_row[0].hash, password):
                 return render_template("login.html")
 
             # Remember which user has logged in
-            session["user_id"] = users[0][1]
+            session["user_id"] = users_row[0].email
 
             # Redirect user to home page
             return redirect("/")
@@ -162,10 +234,19 @@ def getTrack():
             # 連続で取得すると、エラーするため少し時間を置く（今は問題なさそうだからコメントアウト）
             # time.sleep(3) 
             current_track_info = get_current_track()
-            dt = datetime.datetime.now()
+            
+             # POSTの受け取り
             lat = request.form.get('lat')
             lng = request.form.get('lng')
-
+            emotion = request.form.get('emotion')
+            comment = request.form.get('comment')
+            # addingで日付受け取った場合
+            if request.form.get('date'): 
+                date = request.form.get('date')
+            # loadingで現在地追加の日付を使う場合
+            else:
+                date = datetime.date.today()
+            
             # get_current_track()で取得したIDを以前取得したものと比較して異なっていたら新しい曲とみなし書き込む。
             if current_track_info['id'] != session.get('current_id'):
                 print(
@@ -175,12 +256,28 @@ def getTrack():
                     "経度",
                     lng,
                     "年月日",
-                    dt.year,
-                    dt.month,
-                    dt.day
+                    date,
+                    emotion,
+                    comment
                     )
+                
+                exist_song = db.session.query(songs).filter(songs.track_id == current_track_info["id"]).all()
+                if exist_song == []:
+                    new_song = songs(track_id=current_track_info["id"], track_name=current_track_info["track_name"], artist_name=current_track_info["artists"], track_image=current_track_info["image"], spotify_url=current_track_info["link"])
+                    db.session.add(new_song)
+                    db.session.commit()
+                    # print(current_track_info["track_name"])
+
+                new_song_location = song_locations(user_id=session["user_id"], track_id=current_track_info["id"], longitude=lng, latitude=lat, datetime=date)
+                db.session.add(new_song_location)
+                db.session.commit()
+
+     
             session['current_id'] = current_track_info['id']
-            return redirect('/')
+            return redirect("/map")
+            
+
+
         except TypeError as e:
             print(
                 # エラーの場合原因返す
@@ -194,7 +291,8 @@ def get_current_track():
     id = sp.current_playback()['item']['id']
     track_name = sp.current_playback()['item']['name']
     artists = [artist for artist in sp.current_playback()['item']['artists']]
-    link = sp.current_playback()['item']['href']
+    # link = sp.current_playback()['item']['album']['external_urls'] #こっちだとアルバムのURL
+    link = sp.current_playback()['item']['external_urls']['spotify'] #こっちは曲単体のURL
     image = sp.current_playback()['item']['album']['images'][2]['url']
     # artistが複数ある場合に結合して一つの文字列にする
     artist_names = ', '.join([artist['name'] for artist in artists])
@@ -241,10 +339,26 @@ def create_spotify_oauth():
 
 @app.route('/map', methods = ['GET'])
 def display_map():
-  googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
-  print(googlemapURL)
-  return render_template('map.html', GOOGLEMAPURL=googlemapURL)
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+    pins = db.session.query(song_locations).all()
+    # print(pins)
+    songdata = []
+    for pin in pins:
+        # print(pin)
+        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        songdata.append({'lat':pin.latitude, 'lng':pin.longitude,  
+        # 'date':pin.datetime,
+         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
+
+    # print(songdata)
+    return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+
+@app.route('/adding', methods = ['GET'])
+def adding_marker():
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY   
+    return render_template('adding.html', GOOGLEMAPURL=googlemapURL) 
 
 if __name__ == '__main__':
     # app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
+    
     app()
