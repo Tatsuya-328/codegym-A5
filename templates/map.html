@@ -127,7 +127,11 @@ $("#send_display_type").click(function() {
     dataType: 'text',
   }).done(function(){
     console.log("success");
-    // window.location.href = '/change_display_type';
+    if (display_type == 'show_my_pins'){
+      window.location.href = '/map?data_type=show_my_pins';
+    }else if (display_type == 'show_other_user_pins'){
+      window.location.href = '/map?data_type=show_other_user_pins';
+    }
   }).fail(function(){
     console.log('failed');
   });
