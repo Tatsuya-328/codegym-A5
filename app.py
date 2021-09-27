@@ -345,6 +345,7 @@ def create_spotify_oauth():
             scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
 
 @app.route('/map', methods = ['GET'])
+@login_required
 def display_map():
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
     pins = db.session.query(song_locations).all()
@@ -362,6 +363,7 @@ def display_map():
     return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
 @app.route('/adding', methods = ['GET'])
+@login_required
 def adding_marker():
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY   
     return render_template('adding.html', GOOGLEMAPURL=googlemapURL) 

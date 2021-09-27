@@ -13,10 +13,17 @@
       margin: 0 auto;
     }
   </style>
-    
+
+  <input type="radio" name = "display_type" value="show_other_user_pins">全てのユーザー
+  <input type="radio" name = "display_type" value="show_my_pins">自分のピン
+
+  
+
+
+  <input type="button" value="show other user's pins" id = "send_display_type" >
   <div id="map"></div>
     
- <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
+  <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
 
   <script>
   
@@ -39,7 +46,6 @@ function initMap() {
   });
 
   var SongData = {{ Songdatas | safe }};
-  // var SongData = Songdatas;
 
   // 一つだけピンを立てる
   var marker = new google.maps.Marker({
@@ -60,13 +66,13 @@ function initMap() {
   });
 
    //  // マーカークリック時に吹き出しを表示する（一つピンをたてるに対して）
-   oneEvent();
+  oneEvent();
 
-   function oneEvent() {
-     marker.addListener('click', function() {
-       infowindow.open(map, marker);//複数の時とmakerの変数が違うから注意
-     });
-   }
+  function oneEvent() {
+    marker.addListener('click', function() {
+      infowindow.open(map, marker);//複数の時とmakerの変数が違うから注意
+    });
+  }
 // 一つピンを立てるここまで。
 
 
@@ -105,5 +111,32 @@ function initMap() {
   }
 //  複数ピンをたてるここまで。
 }
+
+$("#send_display_type").click(function() {
+  var display_types = document.getElementsByName("display_type");
+  var display_type = ""
+  for (let i = 0; i < 2; i++) {
+    if (display_types[i].checked) { 
+      display_type = display_types[i].value;
+    }
+  }
+  $.ajax({
+    type:'GET',
+    url:'/map',
+    data: {
+      "display_type":display_type,
+    },
+    dataType: 'text',
+  }).done(function(){
+    console.log("success");
+    if (display_type == 'show_my_pins'){
+      window.location.href = '/map?data_type=show_my_pins';
+    }else if (display_type == 'show_other_user_pins'){
+      window.location.href = '/map?data_type=show_other_user_pins';
+    }
+  }).fail(function(){
+    console.log('failed');
+  });
+})
   </script> 
 {% endblock %}
