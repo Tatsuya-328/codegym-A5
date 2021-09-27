@@ -329,10 +329,10 @@ def get_token():
 # SpotifyAPIを使うための情報
 def create_spotify_oauth():
     return SpotifyOAuth(
-            client_id=SPOTIFY_CLIENT_ID,
-            client_secret=SPOTIFY_CLIENT_SECRET,
-            redirect_uri=url_for('spotify_authorize', _external=True),
-            scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
+        client_id=SPOTIFY_CLIENT_ID,
+        client_secret=SPOTIFY_CLIENT_SECRET,
+        redirect_uri=url_for('spotify_authorize', _external=True),
+        scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
 
 @app.route('/map', methods = ['GET'])
 def display_map():
