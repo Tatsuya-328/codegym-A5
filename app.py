@@ -349,17 +349,21 @@ def create_spotify_oauth():
 def display_map():
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
     pins = db.session.query(song_locations).all()
-    # print(pins)
     songdata = []
+    display_type = request.args.get('display_type')
+    print(display_type)
+    if display_type == "show_other_user_pins":
+        pins = db.session.query(song_locations).all()
+        print("all")
+        print(pins)
+    else:
+        pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+        print("my")
+        print(pins)
     for pin in pins:
-        # print(pin)
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         songdata.append({'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
-        # print("pindate")
-        # print(pin.date.strftime("%Y-%m-%d"))
-
-    # print(songdata)
     return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
 @app.route('/adding', methods = ['GET'])

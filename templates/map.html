@@ -13,14 +13,15 @@
       margin: 0 auto;
     }
   </style>
-
+<!-- 表示させるユーザー -->
   <input type="radio" name = "display_type" value="show_other_user_pins">全てのユーザー
   <input type="radio" name = "display_type" value="show_my_pins">自分のピン
-
-  
-
-
   <input type="button" value="show other user's pins" id = "send_display_type" >
+<!-- 表示させる期間 -->
+  <input type="date" id="period_from" value="period_from" min="2000-01-01" max="2021-12-31">ここから
+  <input type="date" id="period_upto" value="period_upto" min="2000-01-01" max="2021-12-31">ここまで
+  <input type="button" value="send_display_period" id = "send_display_period" >
+
   <div id="map"></div>
     
   <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
@@ -129,14 +130,34 @@ $("#send_display_type").click(function() {
     dataType: 'text',
   }).done(function(){
     console.log("success");
-    if (display_type == 'show_my_pins'){
-      window.location.href = '/map?data_type=show_my_pins';
-    }else if (display_type == 'show_other_user_pins'){
-      window.location.href = '/map?data_type=show_other_user_pins';
-    }
+    // if (display_type == 'show_my_pins'){
+    //   window.location.href = '/map?data_type=show_my_pins';
+    // }else if (display_type == 'show_other_user_pins'){
+    //   window.location.href = '/map?data_type=show_other_user_pins';
+    // }
   }).fail(function(){
     console.log('failed');
   });
 })
+
+$("#send_display_period").click(function() {
+  var period_from = document.getElementsById("period_from").value;
+  var period_upto =  document.getElementsById("period_upto").value;
+  $.ajax({
+    type:'GET',
+    url:'/map',
+    data: {
+      "period_from":period_from,
+      "period_upto":period_upto,      
+    },
+    dataType: 'text',
+  }).done(function(){
+    console.log("success");
+    // window.location.href = '/map';
+  }).fail(function(){
+    console.log('failed');
+  });
+})
+
   </script> 
 {% endblock %}
