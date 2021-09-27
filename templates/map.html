@@ -122,7 +122,7 @@ $("#send_display_type").click(function() {
     }
   }
   $.ajax({
-    type:'GET',
+    type:'POST',
     url:'/map',
     data: {
       "display_type":display_type,
@@ -130,6 +130,7 @@ $("#send_display_type").click(function() {
     dataType: 'text',
   }).done(function(){
     console.log("success");
+    // window.location.href = '/map'
     // if (display_type == 'show_my_pins'){
     //   window.location.href = '/map?data_type=show_my_pins';
     // }else if (display_type == 'show_other_user_pins'){
@@ -153,7 +154,7 @@ $("#send_display_period").click(function() {
     dataType: 'text',
   }).done(function(){
     console.log("success");
-    // window.location.href = '/map';
+    window.location.href = '/map';
   }).fail(function(){
     console.log('failed');
   });
