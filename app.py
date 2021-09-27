@@ -37,7 +37,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, Float
 from sqlalchemy.sql.sqltypes import TEXT, DateTime
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.spotify'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///spotify.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -131,7 +131,7 @@ def register():
             if not check_password_hash(users_row[0].hash, password):
                 return render_template("register.html")
 
-            session["user_id"] = users_row[0].email
+            session["user_id"] = users_row[0].id
             # Redirect user to home page
             return redirect("/")
         else:
@@ -166,7 +166,7 @@ def login():
                 return render_template("login.html")
 
             # Remember which user has logged in
-            session["user_id"] = users_row[0].email
+            session["user_id"] = users_row[0].id
 
             # Redirect user to home page
             return redirect("/")
@@ -235,7 +235,7 @@ def getTrack():
             # time.sleep(3) 
             current_track_info = get_current_track()
             
-             # POSTの受け取り
+            # POSTの受け取り
             lat = request.form.get('lat')
             lng = request.form.get('lng')
             emotion = request.form.get('emotion')
@@ -271,12 +271,9 @@ def getTrack():
                 new_song_location = song_locations(user_id=session["user_id"], track_id=current_track_info["id"], longitude=lng, latitude=lat, datetime=date)
                 db.session.add(new_song_location)
                 db.session.commit()
-
-     
             session['current_id'] = current_track_info['id']
             return redirect("/map")
             
-
 
         except TypeError as e:
             print(
@@ -298,10 +295,10 @@ def get_current_track():
     artist_names = ', '.join([artist['name'] for artist in artists])
     
     current_track_info = {
-    	"id": id,
-    	"track_name": track_name,
-    	"artists": artist_names,
-    	"link": link,
+        "id": id,
+        "track_name": track_name,
+        "artists": artist_names,
+        "link": link,
         "image": image
     }
     return current_track_info
@@ -348,7 +345,7 @@ def display_map():
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         songdata.append({'lat':pin.latitude, 'lng':pin.longitude,  
         # 'date':pin.datetime,
-         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
 
     # print(songdata)
     return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
