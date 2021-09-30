@@ -13,10 +13,13 @@
       margin: 0 auto;
     }
   </style>
-    
+
+  <a href="/map/all_pins">全てのユーザー</a>
+  <a href="/map/current_pins">ログイン中のユーザー</a>
+
   <div id="map"></div>
     
- <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
+  <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
 
   <script>
   
@@ -39,6 +42,7 @@ function initMap() {
   });
 
   var SongData = {{ Songdatas | safe }};
+  console.log(SongData);
 
   // 一つだけピンを立てる
   var marker = new google.maps.Marker({
@@ -59,13 +63,13 @@ function initMap() {
   });
 
    //  // マーカークリック時に吹き出しを表示する（一つピンをたてるに対して）
-   oneEvent();
+  oneEvent();
 
-   function oneEvent() {
-     marker.addListener('click', function() {
-       infowindow.open(map, marker);//複数の時とmakerの変数が違うから注意
-     });
-   }
+  function oneEvent() {
+    marker.addListener('click', function() {
+      infowindow.open(map, marker);//複数の時とmakerの変数が違うから注意
+    });
+  }
 // 一つピンを立てるここまで。
 
 
