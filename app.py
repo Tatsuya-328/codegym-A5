@@ -37,7 +37,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, Float
 from sqlalchemy.sql.sqltypes import DATE, TEXT, DateTime
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///spotify.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -149,7 +149,6 @@ def login():
     """Log user in"""
     # Forget any user_id
     # session.pop("user_id")
-    # session.pop("user_id", session["user_id"])
     session.pop("user_id", None)
     # session.clear()
     print("login")
@@ -188,7 +187,7 @@ def logout():
     # Forget any user_id
     # session.clear()
     session.pop("user_id", None)
-    # session.pop("user_id", session["user_id"])
+    
     # Redirect user to login form
     return redirect("/")
 
@@ -347,77 +346,54 @@ def get_token():
 # SpotifyAPIを使うための情報
 def create_spotify_oauth():
     return SpotifyOAuth(
-            client_id=SPOTIFY_CLIENT_ID,
-            client_secret=SPOTIFY_CLIENT_SECRET,
-            redirect_uri=url_for('spotify_authorize', _external=True),
-            scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
+        client_id=SPOTIFY_CLIENT_ID,
+        client_secret=SPOTIFY_CLIENT_SECRET,
+        redirect_uri=url_for('spotify_authorize', _external=True),
+        scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
 
 @app.route('/map', methods = ['GET', "POST"])
 @login_required
 def display_map():
-    if request.method == 'GET':
-        googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
-        pins =[]
+
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+    pins = []
+    songdata = []
+    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+
+    for pin in pins:
+        # print(pin)
+        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        songdata.append({'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
+        # print("pindate")
+        # print(pin.date.strftime("%Y-%m-%d"))
+
+    print(songdata)
+    return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+
+
+@app.route('/map/<display_type>', methods = ['GET'])
+def map(display_type):
+    pins = []
+    songdata = []
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+    if display_type == "all_pins":
         pins = db.session.query(song_locations).all()
-
-        songdata = []
-        display_type = request.args.get('display_type')
-        print(display_type)
-        period_from = request.args.get('period_from')
-        period_upto = request.args.get('period_upto')
-
-        if display_type == "show_other_user_pins":
-            pins = db.session.query(song_locations).all()
-            print("all")
-            print(pins)
-            # if period_from:
-            #     pins = db.session.query(song_locations).filter(period_from <= song_locations.date <= period_upto).all()
-            # print(pins)
-
-        else:
-            pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
-            print("my")
-            print(pins)
-            if period_from:
-                pins = db.session.query(song_locations).filter(period_from <= song_locations.date <= period_upto).all()
-            print(pins)
-
-        for pin in pins:
-            song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-            songdata.append({'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-            'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
-        return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
-    elif request.method == 'POST':
-        googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
-        pins =[]
-
-        songdata = []
-        display_type = request.form.get('display_type')
-        print(display_type)
-        period_from = request.form.get('period_from')
-        period_upto = request.form.get('period_upto')
-
-        if display_type == "show_other_user_pins":
-            pins = db.session.query(song_locations).all()
-            print("all")
-            print(pins)
-            if period_from:
-                pins = db.session.query(song_locations).filter(period_from <= song_locations.date <= period_upto).all()
-            print(pins)
-
-        else:
-            pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
-            print("my")
-            print(pins)
-            if period_from:
-                pins = db.session.query(song_locations).filter(period_from <= song_locations.date <= period_upto).all()
-            print(pins)
-
-        for pin in pins:
-            song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-            songdata.append({'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-            'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
-        return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+        print("all")
+        print(pins)
+    else:
+        pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+        print("my")
+        print(pins)
+    
+    for pin in pins:
+        # print(pin)
+        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        songdata.append({'lat':pin.latitude, 'lng':pin.longitude,  
+        # 'date':pin.datetime,
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
+    
+    return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
 
 @app.route('/adding', methods = ['GET'])
@@ -443,5 +419,4 @@ def adding_marker():
 
 if __name__ == '__main__':
     # app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
-    
     app()

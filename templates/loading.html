@@ -16,15 +16,14 @@
     </p>
 
     <label for="comment"></label>
-    <textarea id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！" style="margin: 0px; width: 346px; height: 95px;"></textarea>       
-    <!-- <button input type="submit" value="button" id = "location" >位置・曲情報取得</button> -->
-    <button onclick="clickPost()" id = "location" >位置・曲情報取得</button>
+    <textarea id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！" style="margin: 0px; width: 346px; height: 95px;"></textarea>
+    <button type="button" value="button" id = "location" >位置・曲情報取得</button>
 
 <div id="return"></div>
 
 <script>
   $(document).ready(function () {
-  function clickPost() {
+    $("#location").click(function() {
       if( navigator.geolocation )
         {
           // 現在地を取得
@@ -51,7 +50,7 @@
                 dataType: 'text',
               }).done(function(){
                 console.log("success");
-              //   window.location.href = '/map';
+                window.location.href = '/map';
               }).fail(function(){
                 console.log('failed');
               });
@@ -83,7 +82,7 @@
             }
           ) ;
         }
-    };
+    });
   });
   
   </script>
