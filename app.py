@@ -13,7 +13,6 @@ from helpers import login_required, register_check, login_check
 from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
 from sqlalchemy import Column, String, Integer
-from werkzeug.serving import is_running_from_reloader
 import config
 
 GOOGLE_MAP_API_KEY = config.GOOGLE_MAP_API_KEY
