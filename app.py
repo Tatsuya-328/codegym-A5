@@ -339,16 +339,7 @@ def display_map():
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
     pins = []
     songdata = []
-    display_type = request.args.get('display_type')
-    print(display_type)
-    if display_type == "show_other_user_pins":
-        pins = db.session.query(song_locations).all()
-        print("all")
-        print(pins)
-    else:
-        pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
-        print("my")
-        print(pins)
+    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
 
     for pin in pins:
         # print(pin)
@@ -360,6 +351,30 @@ def display_map():
     print(songdata)
     return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
+
+@app.route('/map/<display_type>', methods = ['GET'])
+def map(display_type):
+    pins = []
+    songdata = []
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+    if display_type == "all_pins":
+        pins = db.session.query(song_locations).all()
+        print("all")
+        print(pins)
+    else:
+        pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+        print("my")
+        print(pins)
+    
+    for pin in pins:
+        # print(pin)
+        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        songdata.append({'lat':pin.latitude, 'lng':pin.longitude,  
+        # 'date':pin.datetime,
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
+    
+    return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+
 @app.route('/adding', methods = ['GET'])
 def adding_marker():
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY   
@@ -367,5 +382,4 @@ def adding_marker():
 
 if __name__ == '__main__':
     # app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
-    
     app()
