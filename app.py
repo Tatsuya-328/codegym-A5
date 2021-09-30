@@ -102,7 +102,9 @@ def index():
 def register():
     """Register user"""
     # Forget any user_id
-    session.clear()
+    # session.clear()
+    # session.pop("user_id")
+    session.pop("user_id", None)
     print("register")
 
     if request.method == "POST":
@@ -146,7 +148,10 @@ def register():
 def login():
     """Log user in"""
     # Forget any user_id
-    session.clear()
+    # session.pop("user_id")
+    # session.pop("user_id", session["user_id"])
+    session.pop("user_id", None)
+    # session.clear()
     print("login")
 
     # User reached route via POST (as by submitting a form via POST)
@@ -181,7 +186,9 @@ def login():
 def logout():
     """Log user out"""
     # Forget any user_id
-    session.clear()
+    # session.clear()
+    session.pop("user_id", None)
+    # session.pop("user_id", session["user_id"])
     # Redirect user to login form
     return redirect("/")
 
