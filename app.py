@@ -250,28 +250,26 @@ def getTrack():
                 date_str = request.form.get('date')
                 Datetime = datetime.datetime.strptime(date_str, "%Y-%m-%d")
                 date = Datetime.date()
-                print("is regsterd")
             # loadingで現在地追加の日付を使う場合
             else:
                 date = datetime.date.today()
                 # Datetime = datetime.datetime.now()
-                print("is today")
 
 
 
             # get_current_track()で取得したIDを以前取得したものと比較して異なっていたら新しい曲とみなし書き込む。
             if current_track_info['id'] != session.get('current_id'):
-                print(
-                    current_track_info,
-                    "緯度",
-                    lat,
-                    "経度",
-                    lng,
-                    "年月日",
-                    date,
-                    emotion,
-                    comment
-                    )
+                # print(
+                #     current_track_info,
+                #     "緯度",
+                #     lat,
+                #     "経度",
+                #     lng,
+                #     "年月日",
+                #     date,
+                #     emotion,
+                #     comment
+                #     )
                 
                 exist_song = db.session.query(songs).filter(songs.track_id == current_track_info["id"]).all()
                 if exist_song == []:
@@ -354,14 +352,14 @@ def display_map():
     pins = []
     songdata = []
     pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+    
 
     for pin in pins:
         # print(pin)
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         songdata.append({'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
-        # print("pindate")
-        # print(pin.date.strftime("%Y-%m-%d"))
+        print(pin.date)
 
     return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
@@ -380,9 +378,25 @@ def map(display_type):
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         songdata.append({'lat':pin.latitude, 'lng':pin.longitude,  
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
+        
     
     return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
+@app.route('/map/period/<displayfrom>/<displayto>', methods = ['GET'])
+def mapPeriod(displayfrom, displayto):
+    pins = []
+    songdata = []
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+
+    pins = db.session.query(song_locations).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).all()
+    
+    for pin in pins:
+        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        songdata.append({'lat':pin.latitude, 'lng':pin.longitude,  
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
+        print(pin.date.strftime("%Y-%m-%d"))
+    
+    return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
 @app.route('/adding', methods = ['GET'])
 @login_required
