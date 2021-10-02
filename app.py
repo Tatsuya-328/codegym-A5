@@ -84,7 +84,16 @@ class songs(db.Model):
             self.artist_name = artist_name
             self.track_image = track_image
             self.spotify_url = spotify_url
+class follow(db.Model):
+    __tablename__ = 'follow'
+    id = db.Column(Integer, primary_key=True)
+    follow_user_id = db.Column(Integer)
+    followed_user_id = db.Column(Integer)
 
+
+    def __init__(self, follow_user_id=None, followed_user_id = None):
+        self.follow_user_id = follow_user_id
+        self.followed_user_id = followed_user_id
 
 db.create_all()
 print("table is created")
@@ -188,6 +197,22 @@ def logout():
     
     # Redirect user to login form
     return redirect("/")
+
+
+@app.route('/profile', methods = ['GET'])
+@login_required
+def profile():
+    user_id = session["user_id"]
+
+    user_info = []
+    track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).all()
+    username = db.session.query(users.username).filter(users.id == user_id).first()
+    user_info.append(track_id)
+    user_info.append(username[0])
+    print(user_id)
+    print(user_info)
+    print(username)
+    return render_template('profile.html', user_info=user_info) 
 
 # Spotifyの認証ページへリダイレクト
 @app.route('/spotify-login')
