@@ -110,6 +110,7 @@ def index():
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
     pins = []
     songdata = []
+    print(session["user_id"])
     pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
     
     for pin in pins:
@@ -225,7 +226,7 @@ def profile():
     track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).all()
     username = db.session.query(users.username).filter(users.id == user_id).first()
     user_info.append(track_id)
-    user_info.append(username[0])
+    user_info.append(username)
     print(user_id)
     print(user_info)
     print(username)
@@ -255,20 +256,20 @@ def search():
 
 
 
-@app.route('/profile/<user_id>/<follow_or_not>', methods = ['GET'])
+@app.route('/profile/<user_id>/<follow_or_cancell>', methods = ['GET'])
 @login_required
 # profile->follow 
-def followimg(user_id, follow_or_not):
+def following(user_id, follow_or_cancell):
     operator = session["user_id"]
     operated = user_id
-    if follow_or_not == "follow":
+    if follow_or_cancell == "follow":
         new_follow = follow(follow_user_id=operator, followed_user_id=operated)
         db.session.add(new_follow)
         db.session.commit()
         print("follow", end="")
         print(user_id)
         return render_template('profile.html', follow="follow", user_id=user_id) 
-    elif follow_or_not == "cancell":
+    elif follow_or_cancell == "cancell":
         # 指定したデータを削除
         delete_follow = session.query(follow).filter_by(follow_user_id=operator, followed_user_id=operated).all()
         session.delete(delete_follow)
