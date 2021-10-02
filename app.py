@@ -61,13 +61,17 @@ class song_locations(db.Model):
 	longitude = db.Column(Float, unique=False)
 	latitude = db.Column(Float, unique=False)
 	date = db.Column(DATE, unique=False)
+	emotion = db.Column(TEXT, unique=False)
+	comment = db.Column(TEXT, unique=False)
 
-	def __init__(self, user_id=None, track_id=None, longitude=None, latitude=None, date=None):
+	def __init__(self, user_id=None, track_id=None, longitude=None, latitude=None, date=None, emotion = None, comment = None):
 		self.user_id = user_id
 		self.track_id = track_id
 		self.longitude = longitude
 		self.latitude = latitude
 		self.date = date
+		self.emotion = emotion
+		self.comment = comment
 
 class songs(db.Model):
 	__tablename__ = 'songs'
@@ -241,7 +245,7 @@ def getTrack():
             # time.sleep(3) 
             current_track_info = get_current_track()
             
-             # POSTの受け取り
+            # POSTの受け取り
             lat = request.form.get('lat')
             lng = request.form.get('lng')
             emotion = request.form.get('emotion')
@@ -284,7 +288,7 @@ def getTrack():
                     db.session.commit()
                     # print(current_track_info["track_name"])
 
-                new_song_location = song_locations(user_id=session["user_id"], track_id=current_track_info["id"], longitude=lng, latitude=lat, date=date)
+                new_song_location = song_locations(user_id=session["user_id"], track_id=current_track_info["id"], longitude=lng, latitude=lat, date=date, emotion=emotion, comment=comment)
                 db.session.add(new_song_location)
                 db.session.commit()     
             session['current_id'] = current_track_info['id']
@@ -360,15 +364,15 @@ def display_map():
     pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
 
     for pin in pins:
-        # print(pin)
+        print(pin)
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-        songdata.append({'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
+        songdata.append({'id':pin.id,'user_id':pin.user_id, 'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'emotion':pin.emotion, 'comment':pin.comment})
         # print("pindate")
         # print(pin.date.strftime("%Y-%m-%d"))
 
     print(songdata)
-    return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+    return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, user_id=session["user_id"])
 
 
 @app.route('/map/<display_type>', methods = ['GET'])
@@ -388,12 +392,44 @@ def map(display_type):
     for pin in pins:
         # print(pin)
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-        songdata.append({'lat':pin.latitude, 'lng':pin.longitude,  
-        # 'date':pin.datetime,
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
+        songdata.append({'id':pin.id,'user_id':pin.user_id, 'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'emotion':pin.emotion, 'comment':pin.comment})
     
-    return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+    return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, user_id=session["user_id"])
 
+@app.route('/map/<song_location_id>/edit', methods=['GET','POST'])
+def edit_map(song_location_id):
+    songdata = []
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+    song_location = db.session.query(song_locations).filter(song_locations.id == song_location_id).first()
+        # print(pin)
+    song = db.session.query(songs).filter(songs.track_id == song_location.track_id).first()
+    songdata.append({'id':song_location.id,'user_id':song_location.user_id, 'lat':song_location.latitude, 'lng':song_location.longitude, 'date':song_location.date.strftime("%Y-%m-%d"),'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'emotion':song_location.emotion, 'comment':song_location.comment})
+    
+    if song_location.user_id != session["user_id"]:
+        return redirect('/map')
+
+    if request.method == "POST":
+        if request.form.get('date'): 
+            date_str = request.form.get('date')
+            Datetime = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+            date = Datetime.date()
+            print(date)
+            print("is registerd")
+            # loadingで現在地追加の日付を使う場合
+        else:
+            date = datetime.date.today()
+            # Datetime = datetime.datetime.now()
+            print(date)
+            print("is today")
+        song_location.date = date
+        song_location.emotion = request.form.get('emotion')
+        song_location.comment = request.form.get('comment')
+        db.session.commit()
+        return redirect('/map')
+    else:
+        return render_template('edit_map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, user_id=session["user_id"], lat=song_location.latitude,lng=song_location.longitude)
 
 @app.route('/adding', methods = ['GET'])
 @login_required
