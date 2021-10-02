@@ -54,20 +54,24 @@ class users(db.Model):
 		self.username = username
 
 class song_locations(db.Model):
-	__tablename__ = 'song_locations'
-	id = db.Column(Integer, primary_key=True)
-	user_id = db.Column(Integer, unique=False)
-	track_id = db.Column(TEXT, unique=False)
-	longitude = db.Column(Float, unique=False)
-	latitude = db.Column(Float, unique=False)
-	date = db.Column(DATE, unique=False)
-
-	def __init__(self, user_id=None, track_id=None, longitude=None, latitude=None, date=None):
-		self.user_id = user_id
-		self.track_id = track_id
-		self.longitude = longitude
-		self.latitude = latitude
-		self.date = date
+    __tablename__ = 'song_locations'
+    id = db.Column(Integer, primary_key=True)
+    user_id = db.Column(Integer, unique=False)
+    track_id = db.Column(TEXT, unique=False)
+    longitude = db.Column(Float, unique=False)
+    latitude = db.Column(Float, unique=False)
+    date = db.Column(DATE, unique=False)
+    emotion = db.Column(TEXT, unique=False)
+    comment = db.Column(TEXT, unique=False)
+    
+    def __init__(self, user_id=None, track_id=None, longitude=None, latitude=None, date=None, emotion = None, comment = None):
+        self.user_id = user_id
+        self.track_id = track_id
+        self.longitude = longitude
+        self.latitude = latitude
+        self.date = date
+        self.emotion = emotion
+        self.comment = comment
 
 class songs(db.Model):
 	__tablename__ = 'songs'
@@ -102,7 +106,20 @@ print("table is created")
 @app.route('/', methods = ['GET'])
 @login_required
 def index():
-    return render_template('index.html')
+    # マップ表示
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+    pins = []
+    songdata = []
+    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+    
+    for pin in pins:
+        # print(pin)
+        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        songdata.append({'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
+        print(pin.date)
+
+    return render_template('index.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -202,8 +219,8 @@ def logout():
 @app.route('/profile', methods = ['GET'])
 @login_required
 def profile():
+    # ユーザの情報
     user_id = session["user_id"]
-
     user_info = []
     track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).all()
     username = db.session.query(users.username).filter(users.id == user_id).first()
@@ -212,7 +229,30 @@ def profile():
     print(user_id)
     print(user_info)
     print(username)
-    return render_template('profile.html', user_info=user_info) 
+
+    # マップ表示
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+    pins = []
+    songdata = []
+    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+    
+    for pin in pins:
+        # print(pin)
+        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
+        print(pin.date)
+
+    return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+
+@app.route('/search', methods = ['GET'])
+@login_required
+def search():
+    #ユーザ検索
+
+    return render_template('search.html')
+
+
 
 # Spotifyの認証ページへリダイレクト
 @app.route('/spotify-login')
@@ -265,7 +305,7 @@ def getTrack():
             # time.sleep(3) 
             current_track_info = get_current_track()
             
-             # POSTの受け取り
+            # POSTの受け取り
             lat = request.form.get('lat')
             lng = request.form.get('lng')
             emotion = request.form.get('emotion')
@@ -303,11 +343,11 @@ def getTrack():
                     db.session.add(new_song)
                     db.session.commit()
 
-                new_song_location = song_locations(user_id=session["user_id"], track_id=current_track_info["id"], longitude=lng, latitude=lat, date=date)
+                new_song_location = song_locations(user_id=session["user_id"], track_id=current_track_info["id"], longitude=lng, latitude=lat, date=date, emotion=emotion, comment=comment)
                 db.session.add(new_song_location)
                 db.session.commit()     
             session['current_id'] = current_track_info['id']
-            return redirect("/map")
+            return redirect("/profile")
             
 
         except TypeError as e:
@@ -369,24 +409,24 @@ def create_spotify_oauth():
         redirect_uri=url_for('spotify_authorize', _external=True),
         scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
 
-@app.route('/map', methods = ['GET', "POST"])
-@login_required
-def display_map():
+# @app.route('/map', methods = ['GET', "POST"])
+# @login_required
+# def display_map():
 
-    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
-    pins = []
-    songdata = []
-    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+#     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+#     pins = []
+#     songdata = []
+#     pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
     
 
-    for pin in pins:
-        # print(pin)
-        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-        songdata.append({'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
-        print(pin.date)
+#     for pin in pins:
+#         # print(pin)
+#         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+#         songdata.append({'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+#         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
+#         print(pin.date)
 
-    return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+#     return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
 
 @app.route('/map/<display_type>', methods = ['GET'])
@@ -401,11 +441,45 @@ def map(display_type):
     
     for pin in pins:
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-        songdata.append({'lat':pin.latitude, 'lng':pin.longitude,  
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
+    songdata.append({'id':pin.id,'user_id':pin.user_id, 'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'emotion':pin.emotion, 'comment':pin.comment})
         
     
-    return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+    return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, user_id=session["user_id"])
+
+@app.route('/map/<song_location_id>/edit', methods=['GET','POST'])
+def edit_map(song_location_id):
+    songdata = []
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+    song_location = db.session.query(song_locations).filter(song_locations.id == song_location_id).first()
+        # print(pin)
+    song = db.session.query(songs).filter(songs.track_id == song_location.track_id).first()
+    songdata.append({'id':song_location.id,'user_id':song_location.user_id, 'lat':song_location.latitude, 'lng':song_location.longitude, 'date':song_location.date.strftime("%Y-%m-%d"),'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'emotion':song_location.emotion, 'comment':song_location.comment})
+
+    if song_location.user_id != session["user_id"]:
+        return redirect('/map')
+
+    if request.method == "POST":
+        if request.form.get('date'): 
+            date_str = request.form.get('date')
+            Datetime = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+            date = Datetime.date()
+            print(date)
+            print("is registerd")
+            # loadingで現在地追加の日付を使う場合
+        else:
+            date = datetime.date.today()
+            # Datetime = datetime.datetime.now()
+            print(date)
+            print("is today")
+        song_location.date = date
+        song_location.emotion = request.form.get('emotion')
+        song_location.comment = request.form.get('comment')
+        db.session.commit()
+        return redirect('/profile')
+    else:
+        return render_template('edit_map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, user_id=session["user_id"], lat=song_location.latitude,lng=song_location.longitude)
 
 @app.route('/map/period/<displayfrom>/<displayto>', methods = ['GET'])
 def mapPeriod(displayfrom, displayto):
