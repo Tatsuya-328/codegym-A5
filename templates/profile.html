@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Profile
+{% endblock %}
+
+{% block main %}
+    <p>{{  user_info  }}</p>
+    <button>follow</button>
+    <a href="/map/follow">follow</a>
+    <a href="/map/follower">follower</a>
+    
+{% endblock %}
