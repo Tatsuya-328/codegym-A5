@@ -239,33 +239,6 @@ def followimg(user_id, follow_or_not):
         print("error")
         return render_template('profile.html') 
 
-# @app.route('/follow/<user_id>/<follower_or_following>', methods = ['GET'])
-# @login_required
-# def display_follow(follower_or_following, user_id):
-#     if follower_or_following == "follow":
-#         user_id = session["user_id"]
-#         user_info = []
-#         track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).all()
-#         username = db.session.query(users.username).filter(users.id == user_id).first()
-#         user_info.append(track_id)
-#         user_info.append(username[0])
-#         print(user_id)
-#         print(user_info)
-#         print(username)
-#         return render_template('profile.html', user_info=user_info) 
-#     elif follower_or_following == "followed":
-#         user_id = session["user_id"]
-#         user_info = []
-#         track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).all()
-#         username = db.session.query(users.username).filter(users.id == user_id).first()
-#         user_info.append(track_id)
-#         user_info.append(username[0])
-#         print(user_id)
-#         print(user_info)
-#         print(username)
-#     else:
-#         return render_template('profile.html', user_info=user_info) 
-
 
 # Spotifyの認証ページへリダイレクト
 @app.route('/spotify-login')
