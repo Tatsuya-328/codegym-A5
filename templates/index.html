@@ -1,9 +1,185 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Index
+  Home
 {% endblock %}
 
 {% block main %}
+  <h1>Home</h1>
+  <style>
+    #map{
+      height: 900px;
+      width: 800px;
+      margin: 0 auto;
+    }
+  </style>
+  
+  <!-- ユーザーの表示切替 -->
+  <a href="/map/all_pins">全てのユーザー</a>
+  <a href="/map/current_pins">ログイン中のユーザー</a>
+
+  <!-- 表示期間切替 -->  
+  <!-- カレンダー jQuery, popper.js, Bootstrap JS -->
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script> -->
+    <!-- カレンダー bootstrap-datepicker -->
+    <!-- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ja.min.js"></script> -->
+    <!-- カレンダー html -->
+    <!-- <div class="input-daterange input-group" id="datepicker">
+      <div class="input-group-prepend">
+        <span class="input-group-text">開始日付</span>
+      </div>
+      <input type="text" class="input-sm form-control" name="from" id="from" autocomplete="off">
     
+      <div class="input-group-append">
+        <span class="input-group-text">終了日付</span>
+      </div>
+      <input type="text" class="input-sm form-control" name="to" id="to" autocomplete="off">
+
+      <button type="submit"  onClick="hoge();"> 期間表示</button>>
+    </div> -->
+
+
+
+  <script type="text/javascript">
+
+
+</script>
+
+  <div id="map"></div>
+    
+  <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
+
+  <script>
+// // カレンダー bootstrap-datepickerの設定
+// $('.input-daterange').datepicker({
+//   // オプションを設定
+//   language:'ja', // 日本語化
+//   format: 'yyyy/mm/dd', // 日付表示をyyyy/mm/ddにフォーマット
+// });  
+
+// $('.input-daterange').datepicker({
+//   language:'ja',
+//   format: 'yyyy/mm/dd',
+// })
+// .on({
+//   changeDate: function() {
+//     // datepickerの日付を取得
+//     console.log('開始日付 :', $('input[name="from"]').val() );  // 開始日付を取得
+//     console.log('終了日付 :', $('input[name="to"]').val() );    // 終了日付を取得
+//   }
+// });
+
+
+
+// function hoge(){
+//     var url = "/map/period/";
+//     let from = document.getElementById('from').value;
+// let newfrom = from.replace(/\//g,"-"); 
+
+// let to = document.getElementById('to').value;
+// let newtill = to.replace(/\//g,"-"); 
+    
+//     if( document.getElementById('from').value ){
+
+//     url += newfrom;
+//     }
+//     if( document.getElementById('to').value ){
+//     url += '/' + newtill;
+//     }
+//     location.href = url;
+//     }
+
+
+
+
+// 地図関連
+let map;
+let mainMarker;
+let marker =[];
+let infoWindow = [];
+
+
+function initMap() {
+  // DB代わりに配列を作成してデータを入れた。
+  // let SongData = [];
+
+  // var SongData = "{{ Songdatas | tojson }}";
+  // 地図表示
+  var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 14,
+      center: {lat: 35.665498, lng: 139.75964}
+  });
+
+  var SongData = {{ Songdatas | safe }};
+  console.log(SongData);
+
+  // 一つだけピンを立てる
+  var marker = new google.maps.Marker({
+    position: {lat: 35.678655, lng:139.748318},
+    map: map,
+    icon: "https://i.scdn.co/image/ab67616d00004851ba5db46f4b838ef6027e6f96"
+  });
+
+  var onebox = '<div class="box">' + 
+            '<p>2020年9月1日</p>' +
+            '<p>Artist: Ed Sheeran</p>' +
+            '<p>Truck: Shape of You </p>' +
+              '<a href = "https://api.spotify.com/v1/tracks/7qiZfU4dY1lWllzX7mPBI3">Open Spotify</a>' +
+            '</div>'
+
+  var infowindow = new google.maps.InfoWindow({
+    content: onebox
+  });
+
+   //  // マーカークリック時に吹き出しを表示する（一つピンをたてるに対して）
+  oneEvent();
+
+  function oneEvent() {
+    marker.addListener('click', function() {
+      infowindow.open(map, marker);//複数の時とmakerの変数が違うから注意
+    });
+  }
+// 一つピンを立てるここまで。
+
+
+  // 複数ピンを立てる
+  for (var i = 0; i < SongData.length; i++) {
+  
+    // マーカーの追加
+    marker[i] = new google.maps.Marker({
+      position: new google.maps.LatLng( SongData[i]['lat'], SongData[i]['lng']),
+      map: map,
+      icon: SongData[i]['image'],
+    });
+
+    // 吹き出しの内容（一つ立てるときみたいにHTMLにしたかったけれど変数がうまく使えなかったから保留）
+    box = '<div class="box">' + 
+    '<p>SongData[i]["date"]</p>' +
+    '<p>Artist: SongData[i]["artist"]</p>' +
+    '<p>Truck:SongData[i]["track"]</p>' +
+      '<a href = SongData[i]["link"]>Open Spotify</a>' +
+    '</div>'
+
+    // 吹き出しの追加
+    infoWindow[i] = new google.maps.InfoWindow({
+    // 吹き出しに詳細を追加（ほんとはboxをはりつけたい。）
+    content: 'Date' + SongData[i]["date"] + 'Artist' + SongData[i]["artist"] + 'Track' + SongData[i]["track"] +  'Spotify' + SongData[i]["link"]
+    });
+
+    markerEvent(i); 
+  }
+
+  // マーカークリック時に吹き出しを表示する（複数ピンに対して）
+  function markerEvent(i) {
+    marker[i].addListener('click', function() {
+      infoWindow[i].open(map, marker[i]); //一つの時とmakerの変数が違うから注意
+    });
+  }
+//  複数ピンをたてるここまで。
+}
+  </script> 
 {% endblock %}

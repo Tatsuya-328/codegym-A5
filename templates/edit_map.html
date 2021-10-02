@@ -1,0 +1,203 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Edit
+{% endblock %}
+
+{% block main %}
+  <h1>Edit Pin </h1>
+  <style>
+    #map{
+      height: 400px;
+      width: 800px;
+      margin: 0 auto;
+    }
+  </style>
+
+  <a href="/map/all_pins">全てのユーザー</a>
+  <a href="/map/current_pins">ログイン中のユーザー</a>
+
+  <div id="map"></div>
+
+  <div class = "edit_form">
+    <input type="date" id="date" name="date" value = {{ Songdatas[0]["date"] }} min="2000-01-01" max="2021-12-31" required>
+    <p>
+      アーティスト名：{{Songdatas[0]["artist"]}}
+    <p>
+    <p>
+      曲名：{{Songdatas[0]["track"]}}
+    <p>
+      <select name="emotion" id = "emotion"  required>
+        {% if Songdatas[0]["emotion"] == "嬉しい" %}
+          <option value="嬉しい" selected>嬉しい</option>
+        {% else %}
+          <option value="嬉しい">嬉しい</option>
+        {% endif %}
+        {% if Songdatas[0]["emotion"] == "楽しい" %}
+          <option value="楽しい" selected>楽しい</option>
+        {% else %}
+          <option value="楽しい">楽しい</option>
+        {% endif %}
+        {% if Songdatas[0]["emotion"] == "落ち着き" %}
+          <option value="落ち着き" selected>落ち着き</option>
+        {% else %}
+          <option value="落ち着き">落ち着き</option>
+        {% endif %}
+        {% if Songdatas[0]["emotion"] == "悲しい" %}
+          <option value="悲しい" selected>悲しい</option>
+        {% else %}
+          <option value="悲しい">悲しい</option>
+        {% endif %}
+      </select>
+    </p>
+    <label for="comment"></label>
+    <textarea id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！" style="margin: 0px; width: 346px; height: 95px;" >{{Songdatas[0]["comment"]}}</textarea>
+    <div>
+      <input type="button" value="更新する" id = "update" >
+    </div>
+  </div>
+
+  <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
+
+  <script>
+
+// 地図関連
+let map;
+let mainMarker;
+let marker =[];
+let infoWindow = [];
+
+
+function initMap() {
+  // DB代わりに配列を作成してデータを入れた。
+  // let SongData = [];
+
+  var Lat = {{ lat | safe }};
+  var Lng = {{ lng | safe }};
+  console.log(Lat)
+  console.log(Lng)
+  // 地図表示
+  var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 14,
+      center: {lat: Lat, lng: Lng}
+  });
+
+  var SongData = {{ Songdatas | safe }};
+  // console.log(SongData);
+
+  // 一つだけピンを立てる
+  var marker = new google.maps.Marker({
+    position: {lat: 35.678655, lng:139.748318},
+    map: map,
+    icon: "https://i.scdn.co/image/ab67616d00004851ba5db46f4b838ef6027e6f96"
+  });
+
+  var onebox = '<div class="box">' + 
+            '<p>2020年9月1日</p>' +
+            '<p>Artist: Ed Sheeran</p>' +
+            '<p>Truck: Shape of You </p>' +
+              '<a href = "https://api.spotify.com/v1/tracks/7qiZfU4dY1lWllzX7mPBI3">Open Spotify</a>' +
+            '</div>'
+
+  var infowindow = new google.maps.InfoWindow({
+    content: onebox
+  });
+
+   //  // マーカークリック時に吹き出しを表示する（一つピンをたてるに対して）
+  infowindow.open(map, marker);
+// 一つピンを立てるここまで。
+
+
+  // 編集するピン
+  for (var i = 0; i < SongData.length; i++) {
+    // マーカーの追加
+    marker[i] = new google.maps.Marker({
+      position: new google.maps.LatLng( SongData[i]['lat'], SongData[i]['lng']),
+      map: map,
+      icon: SongData[i]['image'],
+    });
+
+    // 編集フォームの作成
+    var box_node = document.createElement('div');
+    var p_node_date = document.createElement('p');
+    var text_node_date = document.createTextNode(SongData[i]["date"]);
+    p_node_date.appendChild(text_node_date);
+    box_node.appendChild(p_node_date);
+
+    var p_node_artist = document.createElement('p');
+    var text_node_artist = document.createTextNode("Artist：" + SongData[i]["artist"]);
+    p_node_artist.appendChild(text_node_artist);
+    box_node.appendChild(p_node_artist);
+
+    var p_node_track = document.createElement('p');
+    var text_node_track = document.createTextNode("曲名：" + SongData[i]["track"]);
+    p_node_track.appendChild(text_node_track);
+    box_node.appendChild(p_node_track);
+
+    var p_node_emotion = document.createElement('p');
+    var text_node_emotion = document.createTextNode("感情：" + SongData[i]["emotion"]);
+    p_node_emotion.appendChild(text_node_emotion);
+    box_node.appendChild(p_node_emotion);
+
+    var p_node_comment = document.createElement('p');
+    var text_node_comment = document.createTextNode("コメント：" + SongData[i]["comment"]);
+    p_node_comment.appendChild(text_node_comment);
+    box_node.appendChild(p_node_comment);
+
+
+    var p_node_spotify = document.createElement("p");
+    var a_node_spotify = document.createElement("a");
+    a_node_spotify.href = SongData[i]["link"];
+    var text_node_spotify = document.createTextNode("Open Spotify");
+    a_node_spotify.appendChild(text_node_spotify);
+    p_node_spotify.appendChild(a_node_spotify);
+    box_node.appendChild(p_node_spotify);
+
+    // 吹き出しの追加
+    infoWindow[i] = new google.maps.InfoWindow({
+      content: box_node
+    });
+
+    // markerEvent(i); 
+    infoWindow[i].open(map, marker[i]);
+  }
+
+
+  $("#update").click(function() {
+    var SongDataId = SongData[0]["id"];
+    console.log("success")
+    var date = document.getElementById("date").value;
+    var emotion = document.getElementById("emotion").value;
+    var comment = document.getElementById("comment").value;
+    $.ajax({
+      type:'POST',
+      url:'/map/' + SongDataId + '/edit',
+      data: {
+        "date":date,
+        "emotion":emotion,
+        "comment":comment,
+      },
+      dataType: 'text',
+    }).done(function(){
+      console.log("success");
+      window.location.href = '/profile';
+    }).fail(function(){
+      console.log('failed');
+    });
+  })
+
+  function buttonClick(){
+    alert('Click');
+  }
+
+
+  // マーカークリック時に吹き出しを表示する（複数ピンに対して）
+  // function markerEvent(i) {
+  //   marker[i].addListener('click', function() {
+  //     infoWindow[i].open(map, marker[i]); //一つの時とmakerの変数が違うから注意
+  //   });
+  // }
+//  複数ピンをたてるここまで。
+}
+  </script> 
+{% endblock %} 
