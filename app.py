@@ -115,11 +115,11 @@ def index():
     for pin in pins:
         # print(pin)
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-        songdata.append({'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
+        songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
         print(pin.date)
 
-    return render_template('index.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+    return render_template('profile.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
 
 @app.route("/register", methods=["GET", "POST"])
