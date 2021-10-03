@@ -110,7 +110,7 @@ def index():
     session.modified = True
     # していなかったらリダイレクト。
     if not authorized:
-        return redirect('/')    
+        return redirect('/spotify-login')    
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     # マップ表示
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
@@ -229,7 +229,7 @@ def profile():
     session.modified = True
     # していなかったらリダイレクト。
     if not authorized:
-        return redirect('/')    
+        return redirect('/spotify-login')    
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     # ユーザの情報
     user_id = session["user_id"]
@@ -310,7 +310,7 @@ def getTrack():
         session.modified = True
         # していなかったらリダイレクト。
         if not authorized:
-            return redirect('/')    
+            return redirect('/spotify-login')    
         sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
         try:
             # 連続で取得すると、エラーするため少し時間を置く（今は問題なさそうだからコメントアウト）
@@ -447,7 +447,7 @@ def map(display_type):
     session.modified = True
     # していなかったらリダイレクト。
     if not authorized:
-        return redirect('/')    
+        return redirect('/spotify-login')    
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     pins = []
     songdata = []
@@ -505,7 +505,7 @@ def profilePeriod(displayfrom, displayto):
     session.modified = True
     # していなかったらリダイレクト。
     if not authorized:
-        return redirect('/')    
+        return redirect('/spotify-login')    
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     # ユーザの情報
     user_id = session["user_id"]
@@ -530,7 +530,6 @@ def profilePeriod(displayfrom, displayto):
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
 
-
     return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto)
 
 @app.route('/home/period/<displayfrom>/<displayto>', methods = ['GET'])
@@ -539,7 +538,7 @@ def homePeriod(displayfrom, displayto):
     session.modified = True
     # していなかったらリダイレクト。
     if not authorized:
-        return redirect('/')    
+        return redirect('/spotify-login')    
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     # ユーザの情報
     user_id = session["user_id"]
@@ -574,7 +573,7 @@ def adding_marker():
     session.modified = True
     # していなかったらリダイレクト。
     if not authorized:
-        return redirect('/')    
+        return redirect('/spotify-login')    
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY   
     return render_template('adding.html', GOOGLEMAPURL=googlemapURL) 
