@@ -41,17 +41,19 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+
+
 class users(db.Model):
 	__tablename__ = 'users'
 	id = db.Column(Integer, primary_key=True)
-	email = db.Column(TEXT, unique=True)
+	username = db.Column(TEXT, unique=True)# emailカラム→usernameカラム
 	hash = db.Column(TEXT, unique=False)
-	username = db.Column(TEXT, unique=False)
+	nickname = db.Column(TEXT, unique=False)# nameカラム→nicknameカラム
 
-	def __init__(self, email=None, hash=None, username=None):
-		self.email = email
-		self.hash = hash
+	def __init__(self, username=None, hash=None, nickname=None):
 		self.username = username
+		self.hash = hash
+		self.nickname = nickname
 
 class song_locations(db.Model):
     __tablename__ = 'song_locations'
@@ -132,29 +134,29 @@ def register():
     print("register")
 
     if request.method == "POST":
-        email = request.form.get("email")
+        username = request.form.get("email")
         password = request.form.get("password")
         confirmation = request.form.get("confirmation")
-        username = request.form.get("username")
+        nickname = request.form.get("username")
         
-        used_email = db.session.query(users).filter(users.email == email).all()
+        used_email = db.session.query(users).filter(users.username == username).all()
         if used_email != []:
-            print(used_email[0].email)
-            print("is used email")
+            print(used_email[0].username)
+            print("is used username")
 
-        # Ensure email, password, confirmation password, username was submitted
-        if register_check(email, password, confirmation, username, used_email):
+        # Ensure username, password, confirmation password, nickname was submitted
+        if register_check(username, password, confirmation, nickname, used_email):
             # Insert user data
             
-            new_user = users(email=email, hash=generate_password_hash(password), username=username)
+            new_user = users(username=username, hash=generate_password_hash(password), nickname=nickname)
             db.session.add(new_user)
             db.session.commit()
 
-            users_row = db.session.query(users).filter(users.username == username).all()
-            print(users_row[0].email)
-            print("is new user email")
+            users_row = db.session.query(users).filter(users.nickname == nickname).all()
+            print(users_row[0].username)
+            print("is new user username")
 
-            # Ensure username exists and password is correct
+            # Ensure nickname exists and password is correct
             if not check_password_hash(users_row[0].hash, password):
                 return render_template("register.html")
 
@@ -179,18 +181,18 @@ def login():
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-        email = request.form.get("email")
+        username = request.form.get("email")
         password = request.form.get("password")
 
-        users_row = db.session.query(users).filter(users.email == email).all()
+        users_row = db.session.query(users).filter(users.username == username).all()
         if users_row != []:
-            print(users_row[0].email)
-            print("is login email")
+            print(users_row[0].username)
+            print("is login username")
 
-        # Ensure email, password was submitted
-        # Query database for username
-        if login_check(email, password, users_row):
-            # Ensure username exists and password is correct
+        # Ensure username, password was submitted
+        # Query database for nickname
+        if login_check(username, password, users_row):
+            # Ensure nickname exists and password is correct
             if not check_password_hash(users_row[0].hash, password):
                 return render_template("login.html")
 
@@ -223,12 +225,12 @@ def profile():
     user_id = session["user_id"]
     user_info = []
     track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).all()
-    username = db.session.query(users.username).filter(users.id == user_id).first()
+    nickname = db.session.query(users.nickname).filter(users.id == user_id).first()
     user_info.append(track_id)
-    user_info.append(username[0])
+    user_info.append(nickname[0])
     print(user_id)
     print(user_info)
-    print(username)
+    print(nickname)
 
     # マップ表示
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
@@ -248,9 +250,15 @@ def profile():
 @app.route('/search', methods = ['GET'])
 @login_required
 def search():
-    #ユーザ検索
-
-    return render_template('search.html')
+    # #ユーザ検索
+	# __tablename__ = 'users'
+	# id = db.Column(Integer, primary_key=True) これを含んだURLが飛ばせればよい。
+    userlist = []
+    userdata = db.session.query(users.id,users.nickname).all()
+    for id,nickname in userdata:
+        userlist.append({'id':id,'nickname':nickname})
+    print(userlist)     
+    return render_template('search.html',userlist=userlist)
 
 
 
@@ -487,12 +495,12 @@ def profilePeriod(displayfrom, displayto):
     user_id = session["user_id"]
     user_info = []
     track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).all()
-    username = db.session.query(users.username).filter(users.id == user_id).first()
+    nickname = db.session.query(users.nickname).filter(users.id == user_id).first()
     user_info.append(track_id)
-    user_info.append(username[0])
+    user_info.append(nickname[0])
     print(user_id)
     print(user_info)
-    print(username)
+    print(nickname)
 
     pins = []
     songdata = []
@@ -515,12 +523,12 @@ def homePeriod(displayfrom, displayto):
     user_id = session["user_id"]
     user_info = []
     track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).all()
-    username = db.session.query(users.username).filter(users.id == user_id).first()
+    nickname = db.session.query(users.nickname).filter(users.id == user_id).first()
     user_info.append(track_id)
-    user_info.append(username[0])
+    user_info.append(nickname[0])
     print(user_id)
     print(user_info)
-    print(username)
+    print(nickname)
 
     pins = []
     songdata = []
