@@ -1,5 +1,7 @@
 import os
 import sqlite3
+
+from flask.wrappers import Request
 # from typing import AwaitableGenerator, Text
 import spotipy
 import time
@@ -256,30 +258,44 @@ def search():
 
 
 
-@app.route('/profile/<user_id>/<follow_or_cancell>', methods = ['GET'])
+@app.route('/profile', methods = ['POST'])
 @login_required
 # profile->follow 
-def following(user_id, follow_or_cancell):
+def following():
     operator = session["user_id"]
-    operated = user_id
-    if follow_or_cancell == "follow":
-        new_follow = follow(follow_user_id=operator, followed_user_id=operated)
-        db.session.add(new_follow)
-        db.session.commit()
-        print("follow", end="")
-        print(user_id)
-        return render_template('profile.html', follow="follow", user_id=user_id) 
-    elif follow_or_cancell == "cancell":
-        # 指定したデータを削除
-        delete_follow = session.query(follow).filter_by(follow_user_id=operator, followed_user_id=operated).all()
-        session.delete(delete_follow)
-        db.session.commit()
-        print("cancell", end="")
-        print(user_id)
-        return render_template('profile.html', follow="cancell", user_id=user_id) 
+    operated = request.form.get("user_id")
+    follow_or_cancell = request.form.get("follow_or_cancell")
+    if operator != operated:
+        if follow_or_cancell == "follow":
+            new_follow = follow(follow_user_id=operator, followed_user_id=operated)
+            db.session.add(new_follow)
+            db.session.commit()
+            print("follow", end=": ")
+            print(operated)
+            # rows = db.session.query(follow).all()
+            # print(rows)
+            return redirect("/profile")
+            # return render_template('profile.html', follow="follow", user_id=operated) 
+        elif follow_or_cancell == "cancell":
+            # 指定したデータを削除
+            delete_follows = db.session.query(follow).filter_by(follow_user_id=operator, followed_user_id=operated).all()
+            print(delete_follows)
+            for delete_follow in delete_follows:
+                db.session.delete(delete_follow)
+            db.session.commit()
+            print("cancell", end=": ")
+            print(operated)
+            # rows = db.session.query(follow).all()
+            # print(rows)
+            return redirect("/profile")
+            # return render_template('profile.html', follow="cancell", user_id=operated) 
+        else:
+            print("error")
+            return redirect("/profile")
+        # return render_template('profile.html') 
     else:
-        print("error")
-        return render_template('profile.html') 
+            print("error")
+            return redirect("/profile")
 
 
 # Spotifyの認証ページへリダイレクト

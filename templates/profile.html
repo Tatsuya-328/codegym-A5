@@ -11,10 +11,8 @@
   <p>{{  user_info  }}</p>
     <!-- ログアウト -->
     <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
-  <button onClick="follow()">follow</button>
-  <button onClick="cancell()" >cancell</button>
-  <a href="/map/follow">follow</a>
-  <a href="/map/follower">follower</a>
+  <button type="button" value="button" id = "follow">follow</button>
+  <button type="button" value="button" id = "cancell" >cancell</button>
   
   <!-- ユーザーの表示切替 -->
   <a href="/map/all_pins">全てのユーザー</a>
@@ -133,18 +131,8 @@
               }
             ) ;
           }
-      });
+        });
     });
-
-
-    // フォロー
-    function follow(){
-        console.log("fol")
-    }
-
-    function cancell(){
-        console.log("can")
-    }
 </script>
 
 <!-- 表示期間切り替え -->
