@@ -119,7 +119,7 @@ def index():
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
         print(pin.date)
 
-    return render_template('profile.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+    return render_template('index.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -481,8 +481,19 @@ def edit_map(song_location_id):
     else:
         return render_template('edit_map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, user_id=session["user_id"], lat=song_location.latitude,lng=song_location.longitude)
 
-@app.route('/map/period/<displayfrom>/<displayto>', methods = ['GET'])
-def mapPeriod(displayfrom, displayto):
+@app.route('/profile/period/<displayfrom>/<displayto>', methods = ['GET'])
+def profilePeriod(displayfrom, displayto):
+    # ユーザの情報
+    user_id = session["user_id"]
+    user_info = []
+    track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).all()
+    username = db.session.query(users.username).filter(users.id == user_id).first()
+    user_info.append(track_id)
+    user_info.append(username[0])
+    print(user_id)
+    print(user_info)
+    print(username)
+
     pins = []
     songdata = []
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
@@ -490,12 +501,41 @@ def mapPeriod(displayfrom, displayto):
     pins = db.session.query(song_locations).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).all()
     
     for pin in pins:
+        # print(pin)
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-        songdata.append({'lat':pin.latitude, 'lng':pin.longitude,  
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url})
-        print(pin.date.strftime("%Y-%m-%d"))
+        songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
+
+
+    return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto)
+
+@app.route('/home/period/<displayfrom>/<displayto>', methods = ['GET'])
+def homePeriod(displayfrom, displayto):
+    # ユーザの情報
+    user_id = session["user_id"]
+    user_info = []
+    track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).all()
+    username = db.session.query(users.username).filter(users.id == user_id).first()
+    user_info.append(track_id)
+    user_info.append(username[0])
+    print(user_id)
+    print(user_info)
+    print(username)
+
+    pins = []
+    songdata = []
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+
+    pins = db.session.query(song_locations).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).all()
     
-    return render_template('map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+    for pin in pins:
+        # print(pin)
+        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
+
+    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto)
+
 
 @app.route('/adding', methods = ['GET'])
 @login_required
