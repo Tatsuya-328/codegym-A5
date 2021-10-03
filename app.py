@@ -219,46 +219,40 @@ def logout():
     return redirect("/")
 
 
-@app.route('/profile', methods = ['GET'])
+@app.route('/search', methods = ['GET'])
 @login_required
-def profile():
+def search():
+    #ユーザ検索
+    return render_template('search.html')
+
+
+@app.route('/profile/<display_user_id>', methods = ['GET'])
+@login_required
+def profile(display_user_id):
     # ユーザの情報
-    user_id = session["user_id"]
-    user_info = []
-    track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).all()
-    username = db.session.query(users.username).filter(users.id == user_id).first()
-    user_info.append(track_id)
-    user_info.append(username)
-    print(user_id)
-    print(user_info)
-    print(username)
+    login_user_id = session["user_id"]
+    track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == display_user_id).all()
+    username = db.session.query(users.username).filter(users.id == display_user_id).first()
+    print(login_user_id)
+    print(username[0])
 
     # マップ表示
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
     pins = []
     songdata = []
-    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+    pins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).all()
     
     for pin in pins:
-        # print(pin)
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
         print(pin.date)
 
-    return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
-
-@app.route('/search', methods = ['GET'])
-@login_required
-def search():
-    #ユーザ検索
-
-    return render_template('search.html')
+    user_info = dict(id=display_user_id, name=username[0])
+    return render_template('profile.html', user_id=login_user_id ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
 
-
-
-@app.route('/profile', methods = ['POST'])
+@app.route('/follow', methods = ['POST'])
 @login_required
 # profile->follow 
 def following():
@@ -274,8 +268,6 @@ def following():
             print(operated)
             # rows = db.session.query(follow).all()
             # print(rows)
-            return redirect("/profile")
-            # return render_template('profile.html', follow="follow", user_id=operated) 
         elif follow_or_cancell == "cancell":
             # 指定したデータを削除
             delete_follows = db.session.query(follow).filter_by(follow_user_id=operator, followed_user_id=operated).all()
@@ -285,17 +277,31 @@ def following():
             db.session.commit()
             print("cancell", end=": ")
             print(operated)
-            # rows = db.session.query(follow).all()
-            # print(rows)
-            return redirect("/profile")
-            # return render_template('profile.html', follow="cancell", user_id=operated) 
         else:
             print("error")
             return redirect("/profile")
-        # return render_template('profile.html') 
+        
+        # マップ表示
+        # googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+        # pins = []
+        # songdata = []
+        # display_user_id = operated
+        # pins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).all()
+        
+        # for pin in pins:
+        #     song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        #     songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        #     'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
+        #     print(pin.date)
+
+
+        # user_info = dict(id=display_user_id, name="ma-")
+        # return render_template('profile.html',login_user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+        
     else:
-            print("error")
-            return redirect("/profile")
+        print("error")
+        return redirect("/profile")
+        # return render_template('profile.html') 
 
 
 # Spotifyの認証ページへリダイレクト
@@ -391,7 +397,8 @@ def getTrack():
                 db.session.add(new_song_location)
                 db.session.commit()     
             session['current_id'] = current_track_info['id']
-            return redirect("/profile")
+            url = "/profile/" + session["user_id"]
+            return redirect(url)
             
 
         except TypeError as e:

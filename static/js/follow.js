@@ -4,7 +4,7 @@ $(document).ready(function () {
     user_id = "111";
     $.ajax({
         type:'POST',
-        url:'/profile',
+        url:'/follow',
         data: {
           "follow_or_cancell" :"follow",
           "user_id" : user_id
@@ -21,7 +21,7 @@ $(document).ready(function () {
     user_id = "111";
     $.ajax({
       type:'POST',
-      url:'/profile',
+      url:'/follow',
       data: {
         "follow_or_cancell" :"cancell",
         "user_id" : user_id
