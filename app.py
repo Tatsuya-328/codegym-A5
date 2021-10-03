@@ -522,7 +522,7 @@ def profilePeriod(displayfrom, displayto):
     songdata = []
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
 
-    pins = db.session.query(song_locations).filter(song_locations.user_id == session[":user_id"]).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).all()
+    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).all()
     
     for pin in pins:
         # print(pin)
