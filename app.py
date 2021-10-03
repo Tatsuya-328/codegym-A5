@@ -458,7 +458,7 @@ def edit_map(song_location_id):
     songdata.append({'id':song_location.id,'user_id':song_location.user_id, 'lat':song_location.latitude, 'lng':song_location.longitude, 'date':song_location.date.strftime("%Y-%m-%d"),'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'emotion':song_location.emotion, 'comment':song_location.comment})
 
     if song_location.user_id != session["user_id"]:
-        return redirect('/map')
+        return redirect('/')
 
     if request.method == "POST":
         if request.form.get('date'): 
@@ -480,6 +480,16 @@ def edit_map(song_location_id):
         return redirect('/profile')
     else:
         return render_template('edit_map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, user_id=session["user_id"], lat=song_location.latitude,lng=song_location.longitude)
+
+@app.route('/map/<song_location_id>/delete', methods=['GET'])
+def deletePin(song_location_id):
+    song_location = db.session.query(song_locations).filter(song_locations.id == song_location_id).first()
+    if song_location.user_id != session["user_id"]:
+        return redirect('/')
+    db.session.delete(song_location)
+    db.session.commit()
+    return redirect('/profile')
+
 
 @app.route('/map/period/<displayfrom>/<displayto>', methods = ['GET'])
 def mapPeriod(displayfrom, displayto):
