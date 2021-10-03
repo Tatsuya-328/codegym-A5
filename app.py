@@ -112,7 +112,7 @@ def index():
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
     pins = []
     songdata = []
-    print(session["user_id"])
+    # print(session["user_id"])
     pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
     
     for pin in pins:
@@ -120,7 +120,7 @@ def index():
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
-        print(pin.date)
+        # print(pin.date)
 
     return render_template('profile.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
@@ -129,8 +129,6 @@ def index():
 def register():
     """Register user"""
     # Forget any user_id
-    # session.clear()
-    # session.pop("user_id")
     session.pop("user_id", None)
     print("register")
 
@@ -175,9 +173,7 @@ def register():
 def login():
     """Log user in"""
     # Forget any user_id
-    # session.pop("user_id")
     session.pop("user_id", None)
-    # session.clear()
     print("login")
 
     # User reached route via POST (as by submitting a form via POST)
@@ -212,7 +208,6 @@ def login():
 def logout():
     """Log user out"""
     # Forget any user_id
-    # session.clear()
     session.pop("user_id", None)
     
     # Redirect user to login form
@@ -233,7 +228,9 @@ def profile(display_user_id):
     login_user_id = session["user_id"]
     track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == display_user_id).all()
     username = db.session.query(users.username).filter(users.id == display_user_id).first()
+    print("login_user_id: ", end="")
     print(login_user_id)
+    print("username: ", end="")
     print(username[0])
 
     # マップ表示
@@ -248,13 +245,28 @@ def profile(display_user_id):
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
         print(pin.date)
 
-    user_info = dict(id=display_user_id, name=username[0])
+    # 表示しているユーザーのフォロー情報  
+    if display_user_id == login_user_id:
+        following_status = "myself"
+    else:
+        following = db.session.query(follow).filter(follow.follow_user_id == login_user_id, follow.followed_user_id == display_user_id).first()
+        if following:
+            following_status = True
+        else:
+            following_status = False
+    
+    
+    
+    print("following: ", end="")
+    print(following)
+
+    user_info = dict(id=display_user_id, name=username[0], following=following_status)
     return render_template('profile.html', user_id=login_user_id ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
 
 @app.route('/follow', methods = ['POST'])
 @login_required
-# profile->follow 
+# profile->follow->home
 def following():
     operator = session["user_id"]
     operated = request.form.get("user_id")
@@ -285,7 +297,7 @@ def following():
                 print(row.followed_user_id)
         else:
             print("error")
-            return redirect("/profile")
+            return redirect("/")
         
         return redirect("/")
         

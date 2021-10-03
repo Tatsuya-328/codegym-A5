@@ -12,11 +12,19 @@
   {% if user_info %}
   <p id = "display_user_id">{{  user_info["id"]  }}</p>
   <p>プロフィールユーザー{{  user_info["name"]  }}</p>
+    {% if user_info["following"] == True %}
+    <button type="button" value="button" id = "cancell" >cancell</button>
+    {% elif user_info["following"] == False %}
+    <button type="button" value="button" id = "follow">follow</button>
+    {% elif user_info["following"] == False %}
+    <p>My profile</p>
+    {% else %}
+    <p>error</p>
+    {% endif %}
   {% endif %}
+  
     <!-- ログアウト -->
     <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
-  <button type="button" value="button" id = "follow">follow</button>
-  <button type="button" value="button" id = "cancell" >cancell</button>
   
   <!-- ユーザーの表示切替 -->
   <a href="/map/all_pins">全てのユーザー</a>
