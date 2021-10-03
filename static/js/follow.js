@@ -1,35 +1,35 @@
 $(document).ready(function () {
   // フォロー
   $("#follow").click(function() {
-    user_id = "111";
+    display_user_id = document.getElementById("display_user_id").textContent
     $.ajax({
         type:'POST',
         url:'/follow',
         data: {
           "follow_or_cancell" :"follow",
-          "user_id" : user_id
+          "user_id" : display_user_id
         },
         dataType: 'text',
       }).done(function(){
         console.log("success");
-        window.location.href = '/profile';
+        window.location.href = '/';
       }).fail(function(){
         console.log('failed');
       });
   });
   $("#cancell").click(function() {
-    user_id = "111";
+    display_user_id = document.getElementById("display_user_id").textContent
     $.ajax({
       type:'POST',
       url:'/follow',
       data: {
         "follow_or_cancell" :"cancell",
-        "user_id" : user_id
+        "user_id" : display_user_id
       },
       dataType: 'text',
     }).done(function(){
       console.log("success");
-      window.location.href = '/profile';
+      window.location.href = '/';
     }).fail(function(){
       console.log('failed');
     });

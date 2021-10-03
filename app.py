@@ -266,8 +266,10 @@ def following():
             db.session.commit()
             print("follow", end=": ")
             print(operated)
-            # rows = db.session.query(follow).all()
-            # print(rows)
+            rows = db.session.query(follow).all()
+            for row in rows:
+                print(row.follow_user_id, end="->")
+                print(row.followed_user_id)
         elif follow_or_cancell == "cancell":
             # 指定したデータを削除
             delete_follows = db.session.query(follow).filter_by(follow_user_id=operator, followed_user_id=operated).all()
@@ -277,9 +279,15 @@ def following():
             db.session.commit()
             print("cancell", end=": ")
             print(operated)
+            rows = db.session.query(follow).all()
+            for row in rows:
+                print(row.follow_user_id, end="->")
+                print(row.followed_user_id)
         else:
             print("error")
             return redirect("/profile")
+        
+        return redirect("/")
         
         # マップ表示
         # googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY

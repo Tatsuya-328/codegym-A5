@@ -9,7 +9,10 @@
 
   <!-- ユーザー情報 -->
   <p>ログインユーザーID{{  user_id  }}</p>
-  <p>プロフィールユーザー{{  user_info  }}</p>
+  {% if user_info %}
+  <p id = "display_user_id">{{  user_info["id"]  }}</p>
+  <p>プロフィールユーザー{{  user_info["name"]  }}</p>
+  {% endif %}
     <!-- ログアウト -->
     <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
   <button type="button" value="button" id = "follow">follow</button>
@@ -305,4 +308,44 @@ function initMap() {
 //  複数ピンをたてるここまで。
 }
   </script> 
+
+<script>
+    $(document).ready(function () {
+        // フォロー
+        $("#follow").click(function() {
+            display_user_id = document.getElementById("display_user_id").textContent
+            $.ajax({
+                type:'POST',
+                url:'/follow',
+                data: {
+                "follow_or_cancell" :"follow",
+                "user_id" : display_user_id
+                },
+                dataType: 'text',
+            }).done(function(){
+                console.log("success");
+                window.location.href = '/';
+            }).fail(function(){
+                console.log('failed');
+            });
+        });
+        $("#cancell").click(function() {
+            display_user_id = document.getElementById("display_user_id").textContent
+            $.ajax({
+            type:'POST',
+            url:'/follow',
+            data: {
+                "follow_or_cancell" :"cancell",
+                "user_id" : display_user_id
+            },
+            dataType: 'text',
+            }).done(function(){
+            console.log("success");
+            window.location.href = '/';
+            }).fail(function(){
+            console.log('failed');
+            });
+        });
+    });
+</script>
 {% endblock %}
