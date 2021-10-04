@@ -251,16 +251,31 @@ def profile():
 @login_required
 def search():
     # #ユーザ検索
-	# __tablename__ = 'users'
+	# まずはログインユーザのもってるアーティストリストを出す。
+    artistslist = []
+    artistsdata = db.session.query(songs.artist_name).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()   
+
+    for artistname in artistsdata:
+        artistslist.append({'artistname':artistname})
+
+    print(artistslist)
+    return render_template('search.html',artistslist=artistslist)
+
+@app.route('/search/<selectedartistname>', methods = ['GET'])
+@login_required
+def searchuser(selectedartistname):
+    # __tablename__ = 'users'
 	# id = db.Column(Integer, primary_key=True) これを含んだURLが飛ばせればよい。
+    # selectedartistname = selectedartistname.replace('%20', ' ')
+    print(selectedartistname)
     userlist = []
-    userdata = db.session.query(users.id,users.nickname).all()
-    for id,nickname in userdata:
-        userlist.append({'id':id,'nickname':nickname})
+    # userdata = db.session.query(songs.track_id).filter(songs.artist_name == "('MAX, TINI, Daneon',)").all()
+    userdata = db.session.query(songs.artist_name).filter(songs.artist_name == selectedartistname).all()
+
+    for id in userdata:
+        userlist.append({'id':id})
     print(userlist)     
     return render_template('search.html',userlist=userlist)
-
-
 
 # Spotifyの認証ページへリダイレクト
 @app.route('/spotify-login')

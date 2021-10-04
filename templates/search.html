@@ -8,11 +8,35 @@
     
 <h1>search</h1>
 
-{% for i in userlist %}
+{% for artist in artistslist %}
 <tbody>
-    <tr>
-        <td>{{ i }}</td>
-        <td><button type="button" onclick="test({{ i }})">userlist.[i].id </button></td>
+    <tr >
+        <input type="text" name="from" id="artist"  value = "{{ artist.artistname }}" autocomplete="off">
+        <td>{{ artist.artistname }}</td>
+        <button type="submit"  onClick="search();"> 決定</button>
+        <script>
+     
+
+        function search(){
+            var url = "/search/";
+            let from = document.getElementById('artist').value;
+            // let newfrom = from.replace(/\(/g,"").replace(/\)/g,"").replace(/'/g,"").replace(/ /g, ' ');
+            let newfrom = from
+            console.log(newfrom)
+        
+        // let to = document.getElementById('to').value;
+        // let newtill = to.replace(/\//g,"-"); 
+            
+            if( document.getElementById('artist').value ){
+        
+            url += encodeURI(newfrom) ;
+            }
+            // if( document.getElementById('to').value ){
+            // url += '/' + newtill;
+            // }
+            location.href = url;
+            }
+        </script>
     </tr>
 </tbody>
 {% endfor %}
