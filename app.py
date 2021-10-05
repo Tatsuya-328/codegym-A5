@@ -469,14 +469,13 @@ def map(display_type):
 def edit_map(song_location_id):
     songdata = []
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
-    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
     song_location = db.session.query(song_locations).filter(song_locations.id == song_location_id).first()
-        # print(pin)
+    # song_locationがないか、他のユーザーのsong_locationの場合
+    if not song_location or  song_location.user_id != session["user_id"]:
+        return redirect('/')
     song = db.session.query(songs).filter(songs.track_id == song_location.track_id).first()
     songdata.append({'id':song_location.id,'user_id':song_location.user_id, 'lat':song_location.latitude, 'lng':song_location.longitude, 'date':song_location.date.strftime("%Y-%m-%d"),'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'emotion':song_location.emotion, 'comment':song_location.comment})
 
-    if song_location.user_id != session["user_id"]:
-        return redirect('/map')
 
     if request.method == "POST":
         if request.form.get('date'): 
@@ -497,7 +496,18 @@ def edit_map(song_location_id):
         db.session.commit()
         return redirect('/profile')
     else:
-        return render_template('edit_map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, user_id=session["user_id"], lat=song_location.latitude,lng=song_location.longitude)
+        return render_template('edit_map.html', GOOGLEMAPURL=googlemapURL, Songdatas=songdata, user_id=session["user_id"], lat=song_location.latitude, lng=song_location.longitude)
+
+@app.route('/map/<song_location_id>/delete', methods=['GET'])
+def deletePin(song_location_id):
+    song_location = db.session.query(song_locations).filter(song_locations.id == song_location_id).first()
+    # song_locationがないか、他のユーザーのsong_locationの場合
+    if not song_location or song_location.user_id != session["user_id"]:
+        return redirect('/')
+    db.session.delete(song_location)
+    db.session.commit()
+    print("delete pin")
+    return redirect('/profile')
 
 @app.route('/profile/period/<displayfrom>/<displayto>', methods = ['GET'])
 def profilePeriod(displayfrom, displayto):
