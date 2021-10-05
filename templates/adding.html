@@ -183,7 +183,10 @@ function initMap() {
                       dataType: 'text',
                     }).done(function(){
                       console.log("success");
-                      window.location.href = '/map';
+
+                      // 将来的にはログインしているユーザーのプロフィール
+                      // window.location.href = "/";
+                      window.location.href = '/profile/1';
                     }).fail(function(){
                       console.log('failed');
                     });

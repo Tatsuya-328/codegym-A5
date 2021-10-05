@@ -1,6 +1,8 @@
 import os
 import sqlite3
-from typing import Text
+
+from flask.wrappers import Request
+# from typing import AwaitableGenerator, Text
 import spotipy
 import time
 import datetime
@@ -108,10 +110,17 @@ print("table is created")
 @app.route('/', methods = ['GET'])
 @login_required
 def index():
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    # していなかったらリダイレクト。
+    if not authorized:
+        return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     # マップ表示
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
     pins = []
     songdata = []
+    # print(session["user_id"])
     pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
     
     for pin in pins:
@@ -119,7 +128,7 @@ def index():
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
-        print(pin.date)
+        # print(pin.date)
 
     return render_template('index.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
@@ -128,8 +137,6 @@ def index():
 def register():
     """Register user"""
     # Forget any user_id
-    # session.clear()
-    # session.pop("user_id")
     session.pop("user_id", None)
     print("register")
 
@@ -174,9 +181,7 @@ def register():
 def login():
     """Log user in"""
     # Forget any user_id
-    # session.pop("user_id")
     session.pop("user_id", None)
-    # session.clear()
     print("login")
 
     # User reached route via POST (as by submitting a form via POST)
@@ -211,41 +216,121 @@ def login():
 def logout():
     """Log user out"""
     # Forget any user_id
-    # session.clear()
     session.pop("user_id", None)
     
     # Redirect user to login form
     return redirect("/")
 
 
-@app.route('/profile', methods = ['GET'])
+
+@app.route('/profile/<display_user_id>', methods = ['GET'])
 @login_required
-def profile():
+def profile(display_user_id):
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    # していなかったらリダイレクト。
+    if not authorized:
+        return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+
     # ユーザの情報
-    user_id = session["user_id"]
-    user_info = []
-    track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).all()
-    nickname = db.session.query(users.nickname).filter(users.id == user_id).first()
-    user_info.append(track_id)
-    user_info.append(nickname[0])
-    print(user_id)
-    print(user_info)
-    print(nickname)
+    login_user_id = session["user_id"]
+    track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == display_user_id).all()
+    username = db.session.query(users.username).filter(users.id == display_user_id).first()
+    print("login_user_id: ", end="")
+    print(login_user_id)
+    print("username: ", end="")
+    print(username[0])
 
     # マップ表示
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
     pins = []
     songdata = []
-    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+    pins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).all()
     
     for pin in pins:
-        # print(pin)
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
         print(pin.date)
 
-    return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+    # 表示しているユーザーのフォロー情報  
+    if display_user_id == login_user_id:
+        following_status = "myself"
+    else:
+        following = db.session.query(follow).filter(follow.follow_user_id == login_user_id, follow.followed_user_id == display_user_id).first()
+        if following:
+            following_status = True
+        else:
+            following_status = False
+    
+    
+    
+    print("following: ", end="")
+    print(following)
+
+    user_info = dict(id=display_user_id, name=username[0], following=following_status)
+    return render_template('profile.html', user_id=login_user_id ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+
+
+@app.route('/follow', methods = ['POST'])
+@login_required
+# profile->follow->home
+def following():
+    operator = session["user_id"]
+    operated = request.form.get("user_id")
+    follow_or_cancell = request.form.get("follow_or_cancell")
+    if operator != operated:
+        if follow_or_cancell == "follow":
+            new_follow = follow(follow_user_id=operator, followed_user_id=operated)
+            db.session.add(new_follow)
+            db.session.commit()
+            print("follow", end=": ")
+            print(operated)
+            rows = db.session.query(follow).all()
+            for row in rows:
+                print(row.follow_user_id, end="->")
+                print(row.followed_user_id)
+        elif follow_or_cancell == "cancell":
+            # 指定したデータを削除
+            delete_follows = db.session.query(follow).filter_by(follow_user_id=operator, followed_user_id=operated).all()
+            print(delete_follows)
+            for delete_follow in delete_follows:
+                db.session.delete(delete_follow)
+            db.session.commit()
+            print("cancell", end=": ")
+            print(operated)
+            rows = db.session.query(follow).all()
+            for row in rows:
+                print(row.follow_user_id, end="->")
+                print(row.followed_user_id)
+        else:
+            print("error")
+            return redirect("/")
+        
+        return redirect("/")
+        
+        # マップ表示
+        # googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+        # pins = []
+        # songdata = []
+        # display_user_id = operated
+        # pins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).all()
+        
+        # for pin in pins:
+        #     song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        #     songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        #     'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
+        #     print(pin.date)
+
+
+        # user_info = dict(id=display_user_id, name="ma-")
+        # return render_template('profile.html',login_user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+        
+    else:
+        print("error")
+        return redirect("/profile")
+        # return render_template('profile.html') 
 
 @app.route('/search', methods = ['GET'])
 @login_required
@@ -309,7 +394,7 @@ def spotify_authorize():
     token_info = sp_oauth.get_access_token(code)
     session["token_info"] = token_info
     # 仮のページにリダイレクト（これが地図画面になる？）
-    return redirect("/spotify-loading")
+    return redirect("/")
 
 # Spotifyからログアウト（現在使っていない。もしspotifyだけログアウトしたいならtokeninfoだけsession消す必要あり。）
 @app.route('/spotify-logout')
@@ -332,7 +417,7 @@ def getTrack():
         session.modified = True
         # していなかったらリダイレクト。
         if not authorized:
-            return redirect('/')    
+            return redirect('/spotify-login')    
         sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
         try:
             # 連続で取得すると、エラーするため少し時間を置く（今は問題なさそうだからコメントアウト）
@@ -381,7 +466,8 @@ def getTrack():
                 db.session.add(new_song_location)
                 db.session.commit()     
             session['current_id'] = current_track_info['id']
-            return redirect("/profile")
+            url = "/profile/" + session["user_id"]
+            return redirect(url)
             
 
         except TypeError as e:
@@ -466,6 +552,12 @@ def create_spotify_oauth():
 
 @app.route('/map/<display_type>', methods = ['GET'])
 def map(display_type):
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    # していなかったらリダイレクト。
+    if not authorized:
+        return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     pins = []
     songdata = []
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
@@ -486,14 +578,13 @@ def map(display_type):
 def edit_map(song_location_id):
     songdata = []
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
-    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
     song_location = db.session.query(song_locations).filter(song_locations.id == song_location_id).first()
-        # print(pin)
+    # song_locationがないか、他のユーザーのsong_locationの場合
+    if not song_location or  song_location.user_id != session["user_id"]:
+        return redirect('/')
     song = db.session.query(songs).filter(songs.track_id == song_location.track_id).first()
     songdata.append({'id':song_location.id,'user_id':song_location.user_id, 'lat':song_location.latitude, 'lng':song_location.longitude, 'date':song_location.date.strftime("%Y-%m-%d"),'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'emotion':song_location.emotion, 'comment':song_location.comment})
 
-    if song_location.user_id != session["user_id"]:
-        return redirect('/map')
 
     if request.method == "POST":
         if request.form.get('date'): 
@@ -514,10 +605,27 @@ def edit_map(song_location_id):
         db.session.commit()
         return redirect('/profile')
     else:
-        return render_template('edit_map.html', GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, user_id=session["user_id"], lat=song_location.latitude,lng=song_location.longitude)
+        return render_template('edit_map.html', GOOGLEMAPURL=googlemapURL, Songdatas=songdata, user_id=session["user_id"], lat=song_location.latitude, lng=song_location.longitude)
+
+@app.route('/map/<song_location_id>/delete', methods=['GET'])
+def deletePin(song_location_id):
+    song_location = db.session.query(song_locations).filter(song_locations.id == song_location_id).first()
+    # song_locationがないか、他のユーザーのsong_locationの場合
+    if not song_location or song_location.user_id != session["user_id"]:
+        return redirect('/')
+    db.session.delete(song_location)
+    db.session.commit()
+    print("delete pin")
+    return redirect('/profile')
 
 @app.route('/profile/period/<displayfrom>/<displayto>', methods = ['GET'])
 def profilePeriod(displayfrom, displayto):
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    # していなかったらリダイレクト。
+    if not authorized:
+        return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     # ユーザの情報
     user_id = session["user_id"]
     user_info = []
@@ -533,7 +641,7 @@ def profilePeriod(displayfrom, displayto):
     songdata = []
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
 
-    pins = db.session.query(song_locations).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).all()
+    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).all()
     
     for pin in pins:
         # print(pin)
@@ -541,11 +649,16 @@ def profilePeriod(displayfrom, displayto):
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
 
-
     return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto)
 
 @app.route('/home/period/<displayfrom>/<displayto>', methods = ['GET'])
 def homePeriod(displayfrom, displayto):
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    # していなかったらリダイレクト。
+    if not authorized:
+        return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     # ユーザの情報
     user_id = session["user_id"]
     user_info = []
@@ -575,6 +688,12 @@ def homePeriod(displayfrom, displayto):
 @app.route('/adding', methods = ['GET'])
 @login_required
 def adding_marker():
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    # していなかったらリダイレクト。
+    if not authorized:
+        return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY   
     return render_template('adding.html', GOOGLEMAPURL=googlemapURL) 
 
