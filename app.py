@@ -34,7 +34,7 @@ app.config['SESSION_COOKIE_NAME'] = 'session-id'
 #database
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, Float
-from sqlalchemy.sql.sqltypes import DATE, TEXT, DateTime
+from sqlalchemy.sql.sqltypes import DATE, STRINGTYPE, TEXT, DateTime
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -256,9 +256,17 @@ def search():
     artistsdata = db.session.query(songs.artist_name).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()   
 
     for artistname in artistsdata:
-        artistslist.append({'artistname':artistname})
+        print(artistname[0]) 
+        # print (artistname.replace("(","").replace(")","").replace("'",""))
+        artistslist.append(artistname[0])
 
-    print(artistslist)
+    # newartistlist =[]
+    # # print(artistslist.replace("(","").replace(")","").replace("'",""))
+    # for artist in artistslist:
+    #     artist = artist.replace("(","").replace(")","").replace("'","")
+    #     print(artist)
+    #     newartistlist.append({'artistname':artist})
+
     return render_template('search.html',artistslist=artistslist)
 
 @app.route('/search/<selectedartistname>', methods = ['GET'])
@@ -266,14 +274,17 @@ def search():
 def searchuser(selectedartistname):
     # __tablename__ = 'users'
 	# id = db.Column(Integer, primary_key=True) これを含んだURLが飛ばせればよい。
-    # selectedartistname = selectedartistname.replace('%20', ' ')
-    print(selectedartistname)
-    userlist = []
-    # userdata = db.session.query(songs.track_id).filter(songs.artist_name == "('MAX, TINI, Daneon',)").all()
-    userdata = db.session.query(songs.artist_name).filter(songs.artist_name == selectedartistname).all()
 
-    for id in userdata:
-        userlist.append({'id':id})
+    print(selectedartistname)
+    userlist = set([])
+    trackdata = db.session.query(songs.track_id).filter(songs.artist_name == selectedartistname).all()
+    # userdata = db.session.query(songs.artist_name).filter(songs.artist_name == selectedartistname).all()
+    # userdata = db.session.query(songsn)
+
+    for track in trackdata:
+        userdata = db.session.query(song_locations.user_id).filter(song_locations.track_id == track[0]).all()
+        for id in userdata:
+            userlist.add(id[0])
     print(userlist)     
     return render_template('search.html',userlist=userlist)
 
@@ -361,7 +372,7 @@ def getTrack():
                 
                 exist_song = db.session.query(songs).filter(songs.track_id == current_track_info["id"]).all()
                 if exist_song == []:
-
+                    print(current_track_info["artists"])
                     new_song = songs(track_id=current_track_info["id"], track_name=current_track_info["track_name"], artist_name=current_track_info["artists"], track_image=current_track_info["image"], spotify_url=current_track_info["link"])
                     db.session.add(new_song)
                     db.session.commit()
@@ -386,6 +397,7 @@ def get_current_track():
     id = sp.current_playback()['item']['id']
     track_name = sp.current_playback()['item']['name']
     artists = [artist for artist in sp.current_playback()['item']['artists']]
+    # artist_names = sp.current_playback()['item']['artists']['name']
     # link = sp.current_playback()['item']['album']['external_urls'] #こっちだとアルバムのURL
     link = sp.current_playback()['item']['external_urls']['spotify'] #こっちは曲単体のURL
     image = sp.current_playback()['item']['album']['images'][2]['url']
