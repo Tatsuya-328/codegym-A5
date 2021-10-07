@@ -4,6 +4,15 @@
   Home
 {% endblock %}
 
+{% block js %}
+  <script type="text/javascript">
+    var SongData = {{ Songdatas | safe }};
+    var UserId = {{ user_id | safe }};
+  </script>
+
+  <script type="text/javascript" src="/static/js/index.js"></script>
+{% endblock %}
+
 {% block main %}
   <h1>Home</h1>
   <style>
@@ -14,9 +23,6 @@
     }
   </style>
   
-  <!-- ユーザーの表示切替 -->
-  <a href="/map/all_pins">全てのユーザー</a>
-  <a href="/map/current_pins">ログイン中のユーザー</a>
   <!-- 表示期間切替 -->  
   <!-- カレンダー html -->
   <div class="input-daterange input-group" id="datepicker"> 
@@ -34,166 +40,9 @@
 
     <button type="submit"  onClick="period();"> 指定期間表示</button>
     <button onclick="location.href='/'">全期間表示</button>
-</div> 
-
-
-
-  <script type="text/javascript">
-
-
-</script>
+  </div> 
 
   <div id="map"></div>
-    
+
   <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
-
-  <script>
-
-//  表示期間切り替え 
-function period(){
-    var url = "/home/period/";
-    let from = document.getElementById('from').value;
-    let newfrom = from.replace(/\//g,"-"); 
-
-let to = document.getElementById('to').value;
-let newtill = to.replace(/\//g,"-"); 
-    
-    if( document.getElementById('from').value ){
-
-    url += newfrom;
-    }
-    if( document.getElementById('to').value ){
-    url += '/' + newtill;
-    }
-    location.href = url;
-    }
-
-
-
-
-// 地図関連
-let map;
-let mainMarker;
-let marker =[];
-let infoWindow = [];
-
-
-function initMap() {
-  // DB代わりに配列を作成してデータを入れた。
-  // let SongData = [];
-
-  // var SongData = "{{ Songdatas | tojson }}";
-  // 地図表示
-  var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 14,
-      center: {lat: 35.665498, lng: 139.75964}
-  });
-
-  var SongData = {{ Songdatas | safe }};
-  console.log(SongData);
-
-  // 一つだけピンを立てる
-  var marker = new google.maps.Marker({
-    position: {lat: 35.678655, lng:139.748318},
-    map: map,
-    icon: "https://i.scdn.co/image/ab67616d00004851ba5db46f4b838ef6027e6f96"
-  });
-
-  var onebox = '<div class="box">' + 
-            '<p>2020年9月1日</p>' +
-            '<p>Artist: Ed Sheeran</p>' +
-            '<p>Truck: Shape of You </p>' +
-              '<a href = "https://api.spotify.com/v1/tracks/7qiZfU4dY1lWllzX7mPBI3">Open Spotify</a>' +
-            '</div>'
-
-  var infowindow = new google.maps.InfoWindow({
-    content: onebox
-  });
-
-   //  // マーカークリック時に吹き出しを表示する（一つピンをたてるに対して）
-  oneEvent();
-
-  function oneEvent() {
-    marker.addListener('click', function() {
-      infowindow.open(map, marker);//複数の時とmakerの変数が違うから注意
-    });
-  }
-// 一つピンを立てるここまで。
-
-
-  // 複数ピンを立てる
-  for (var i = 0; i < SongData.length; i++) {
-  
-    // マーカーの追加
-    marker[i] = new google.maps.Marker({
-      position: new google.maps.LatLng( SongData[i]['lat'], SongData[i]['lng']),
-      map: map,
-      icon: SongData[i]['image'],
-    });
-
-    // 吹き出し作成
-    var box_node = document.createElement('div');
-    var p_node_date = document.createElement('p');
-    var text_node_date = document.createTextNode(SongData[i]["date"]);
-    p_node_date.appendChild(text_node_date);
-    box_node.appendChild(p_node_date);
-
-    var p_node_artist = document.createElement('p');
-    var text_node_artist = document.createTextNode("Artist：" + SongData[i]["artist"]);
-    p_node_artist.appendChild(text_node_artist);
-    box_node.appendChild(p_node_artist);
-
-    var p_node_track = document.createElement('p');
-    var text_node_track = document.createTextNode("曲名：" + SongData[i]["track"]);
-    p_node_track.appendChild(text_node_track);
-    box_node.appendChild(p_node_track);
-
-    var p_node_emotion = document.createElement('p');
-    var text_node_emotion = document.createTextNode("感情：" + SongData[i]["emotion"]);
-    p_node_emotion.appendChild(text_node_emotion);
-    box_node.appendChild(p_node_emotion);
-
-    var p_node_comment = document.createElement('p');
-    var text_node_comment = document.createTextNode("コメント：" + SongData[i]["comment"]);
-    p_node_comment.appendChild(text_node_comment);
-    box_node.appendChild(p_node_comment);
-
-    var p_node_spotify = document.createElement("p");
-    var a_node_spotify = document.createElement("a");
-    a_node_spotify.href = SongData[i]["link"];
-    var text_node_spotify = document.createTextNode("Open Spotify");
-    a_node_spotify.appendChild(text_node_spotify);
-    p_node_spotify.appendChild(a_node_spotify);
-    box_node.appendChild(p_node_spotify);
-
-    // 自分の作ったピンしか編集ボタンを表示しない
-    var UserId = {{ user_id | safe }};
-    console.log(UserId)
-    if (UserId == SongData[i]["user_id"]){
-      console.log(SongData[i]["id"] )
-      var a_node_edit = document.createElement("a");
-      a_node_edit.href = "/map/" + SongData[i]["id"] + "/edit";
-      var text_node_edit = document.createTextNode("編集");
-      a_node_edit.appendChild(text_node_edit);
-      box_node.appendChild(a_node_edit);
-    }
-
-    // 吹き出しの追加
-    infoWindow[i] = new google.maps.InfoWindow({
-    // 吹き出しに詳細を追加（ほんとはboxをはりつけたい。）
-    content: box_node
-    });
-
-    markerEvent(i); 
-  }
-
-  // マーカークリック時に吹き出しを表示する（複数ピンに対して）
-  function markerEvent(i) {
-    marker[i].addListener('click', function() {
-      infoWindow[i].open(map, marker[i]); //一つの時とmakerの変数が違うから注意
-    });
-  }
-//  複数ピンをたてるここまで。
-}
-  </script> 
 {% endblock %}

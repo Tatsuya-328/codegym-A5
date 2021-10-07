@@ -8,4 +8,40 @@
     
 <h1>search</h1>
 
+{% for i in artistslist %}
+<tbody>
+    <tr >
+        <td>{{ i }}</td>
+        <td><button type="button" onclick="search('{{ i }}')">ボタン</button></td>
+        
+        <script>
+        function search( i ){
+            var url = "/search/";
+            let artisitname =i;
+            url += artisitname ;
+            location.href = url;
+            }
+        </script>
+    </tr>
+</tbody>
+{% endfor %}
+
+{% for i in userlist %}
+<tbody>
+    <tr >
+        <td>{{ i }}</td>
+        <td><button type="button" onclick="search('{{ i }}')">ボタン</button></td>
+        
+        <script>
+        function search( i ){
+            var url = "/profile/";
+            let userid =i;
+            url += userid ;
+            location.href = url;
+            }
+        </script>
+    </tr>
+</tbody>
+{% endfor %}
+
 {% endblock %}
