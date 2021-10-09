@@ -1,4 +1,7 @@
-//  表示期間切り替え 
+
+
+
+//  表示期間切り替え
 function period(){
   var url = "/home/period/";
   let from = document.getElementById('from').value;

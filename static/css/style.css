@@ -7,3 +7,23 @@ img {
 	max-width: 100%;
 	height: auto;
 }
+
+a:link, a:visited, a:hover, a:active {
+  color:black;
+}
+
+
+/* @media (min-width: 544px){
+.index-map{
+  width: 100%;
+  height: 75vh;
+}} */
+
+.index-map{
+  width: 100%;
+  height: 75vh;
+}
+
+.input-period{
+  width: 95px;
+}
