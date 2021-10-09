@@ -14,32 +14,32 @@ Map
 {% endblock %}
 
 {% block main %}
-  <h1>Adding maker</h1>
-  
-    <input type="date" id="date" name="date" value="2018-07-22" min="2000-01-01" max="2021-12-31" required>
-    <p>
-      <select name="emotion" id = "emotion" required>
-        <option value="">--感情を選んでください--</option>
+<div class="adding" >
+  <p>Adding</p>
+</div>
+<div class="text-right">
+  <a type="button" class="btn btn-secondary m-3" href="/current_location">現在地</a>
+</div>
+<div id="map" class="adding-map"></div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-xl-3"></div>
+    <div class="col-xl-6">
+      <select class="adding-emotion-form" name="emotion" id = "emotion" required>
+        <option value=""><p>感情を選んでください</p></option>
         <option value="嬉しい">嬉しい</option>
         <option value="楽しい">楽しい</option>
         <option value="落ち着き">落ち着き</option>
         <option value="悲しい">悲しい</option>
       </select>
-    </p>
-    <label for="comment"></label>
-    <textarea id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！" style="margin: 0px; width: 346px; height: 95px;"></textarea>            
-    <input type="button" value="この場所に曲を追加する" id = "adding" >
-      
+      <textarea class="adding-comment-form" id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！"></textarea>
+      <input class="adding-date-form" type="date" id="date" name="date" value="2018-07-22" min="2000-01-01" max="2021-12-31" required>
+      <input class="adding-submit-button" type="button" value="この場所に曲を追加する" id = "adding" >
+    </div>
+    <div class="col-xl-3"></div>
+  </div>
+</div>
 
-  <style>
-    #map{
-      height: 900px;
-      width: 800px;
-      margin: 0 auto;
-    }
-  </style>
-    
-  <div id="map"></div>
-    
   <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
 {% endblock %}

@@ -1,0 +1,50 @@
+a:link, a:visited, a:hover, a:active {
+  color:black;
+}
+
+/* adding */
+.adding-map{
+  width: 100%;
+  height: 40vh;
+}
+.adding-comment-form{
+  width: 100%;
+  height: 15vh;
+  margin-bottom: 15px
+}
+.adding-emotion-form{
+  width: 100%;
+  height: 5vh;
+  margin: 15px 0;
+}
+.adding-date-form{
+  width: 100%;
+  margin-bottom: 20px;
+}
+.adding-submit-button{
+  color: white;
+  width: 100%;
+  height: 5vh;
+}
+.adding{
+  display: inline-block;
+  float: left;
+  margin: 10px;
+  text-align: center;
+}
+
+/* current_location */
+.current-location-map{
+  width: 100%;
+  height: 45vh;
+}
+.current-location-map > p{
+  margin-top: 10px;
+}
+.current-location{
+  display: inline-block;
+  float: left;
+  margin: 10px;
+  text-align: center;
+}
+@media (max-width: 544px)

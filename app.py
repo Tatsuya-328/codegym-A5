@@ -448,6 +448,22 @@ def create_spotify_oauth():
         redirect_uri=url_for('spotify_authorize', _external=True),
         scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
 
+@app.route('/current_location', methods=['GET'])
+@login_required
+def current_location():
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+    songdata=[]
+    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+    
+    for pin in pins:
+        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
+        print(pin.date)
+    return render_template('current_location.html', user_id=session["user_id"], GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+
+
+
 @app.route('/map/<song_location_id>/edit', methods=['GET','POST'])
 def edit_map(song_location_id):
     songdata = []
