@@ -353,12 +353,18 @@ def search():
     # #ユーザ検索
 	# まずはログインユーザのもってるアーティストリストを出す。
     artistslist = []
-    artistsdata = db.session.query(songs.artist_name).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()   
+    artistsdata = db.session.query(songs.artist_name, songs.track_image, songs.track_name).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()   
 
-    for artistname in artistsdata:
-        print(artistname[0]) 
+    for artistdata in artistsdata:
+        print(artistdata[0]) 
+        # print(artistdata.track_name)
+        print(artistdata[2])
         # print (artistname.replace("(","").replace(")","").replace("'",""))
-        artistslist.append(artistname[0])
+        artistslist.append(artistdata[0])
+
+    artist_info = []
+    for artistdata in artistsdata:
+        artist_info.append(artistdata)
 
     # newartistlist =[]
     # # print(artistslist.replace("(","").replace(")","").replace("'",""))
@@ -367,7 +373,8 @@ def search():
     #     print(artist)
     #     newartistlist.append({'artistname':artist})
 
-    return render_template('search.html',artistslist=artistslist)
+    return render_template('search.html',artistslist=artistslist, artist_info=artist_info)
+
 
 @app.route('/search/<selectedartistname>', methods = ['GET'])
 @login_required
@@ -385,8 +392,12 @@ def searchuser(selectedartistname):
         userdata = db.session.query(song_locations.user_id).filter(song_locations.track_id == track[0]).all()
         for id in userdata:
             userlist.add(id[0])
+    
+    user_info = []
+    # for user in userlist:
+    #     user_info.append(db.session.query(users.id, users.username).filter(users.id == int(user[0])).first())
     print(userlist)     
-    return render_template('search.html',userlist=userlist)
+    return render_template('search.html',userlist=userlist, user_info=user_info)
 
 # Spotifyの認証ページへリダイレクト
 @app.route('/spotify-login')

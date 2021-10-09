@@ -7,3 +7,25 @@ img {
 	max-width: 100%;
 	height: auto;
 }
+
+/* @media (max-width: 544px) */
+/* .col-xs-10 {
+  width: 83.333333%;
+} */
+
+@media (max-width: 544px){
+  .container{
+    width: 80%;
+  }
+
+  .search-artist-button{
+    height: 20px;
+  }
+}
+
+a:link, a:visited, a:hover, a:active {
+  color:black;
+}
+
+
+

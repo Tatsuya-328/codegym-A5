@@ -5,43 +5,66 @@
 {% endblock %}
 
 {% block main %}
-    
-<h1>search</h1>
 
-{% for i in artistslist %}
-<tbody>
-    <tr >
-        <td>{{ i }}</td>
-        <td><button type="button" onclick="search('{{ i }}')">ボタン</button></td>
-        
-        <script>
-        function search( i ){
-            var url = "/search/";
-            let artisitname =i;
-            url += artisitname ;
-            location.href = url;
-            }
-        </script>
-    </tr>
-</tbody>
-{% endfor %}
+{% if artistslist %}
+<div class="col-xs-10">
+  <h1 style="font-size: 25px; text-align: center">アーティストからユーザー検索</h1>
+</div>
+<div class="container">
+  <!-- <div class="row"> -->
+    <div class="col-xs-2"></div>
+    <div class="col-xs-8">
+      <div class="list-group">
+        <!-- <div class="d-grid gap-2 col-6 mx-auto"> -->
+          {% for i in artist_info %}
+          
+          <a href="{{ url_for('searchuser', selectedartistname = i[0] ) }}">
+            <div style="border: solid 1px; margin-bottom: 2px ; background-color: #AFEEEE;">
+              <img src="{{ i[1] }}" alt="">
+              <div style="float: right">
+                <p style="text-align: center;">artist {{  i[0]  }}</p>
+                <p style="text-align: center;">artist {{  i[2]  }}</p>
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        <!-- </div> -->
+      </div>
+    </div>
+    <div class="col-xs-2"></div>
+  <!-- </div> -->
+</div>
+{% endif %}
 
-{% for i in userlist %}
-<tbody>
-    <tr >
-        <td>{{ i }}</td>
-        <td><button type="button" onclick="search('{{ i }}')">ボタン</button></td>
-        
-        <script>
-        function search( i ){
-            var url = "/profile/";
-            let userid =i;
-            url += userid ;
-            location.href = url;
-            }
-        </script>
-    </tr>
-</tbody>
-{% endfor %}
+{% if userlist %}
+<div class="col-xs-10">
+  <h1 style="font-size: 25px; text-align: center">ユーザーリスト</h1>
+</div>
+<div class="container">
+  <!-- <div class="row"> -->
+    <div class="col-xs-2"></div>
+    <div class="col-xs-8">
+      <div class="list-group">
+        <!-- <div class="d-grid gap-2 col-6 mx-auto"> -->
+          {% for i in userlist %}
+          <!-- <button class="btn btn-primary search-artist-button" type="button" onclick="search_from_user('{{ i }}')" style="height: 30px; margin-bottom: 2px;">{{ i }}</button> -->
+          <a href="{{ url_for('profile', display_user_id = i ) }}">
+            <div style="border: solid 1px; margin-bottom: 2px">
+              <img src="/static/css/home2.png" alt="">
+              <div style="float: right">
+                <!-- <p style="text-align: center;">user_name {{  i[0]  }}</p>
+                <p style="text-align: center;">user_id {{  i[1]  }}</p> -->
+                <p style="text-align: center;">user_id {{  i  }}></p>
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        <!-- </div> -->
+      </div>
+    </div>
+    <div class="col-xs-2"></div>
+  <!-- </div> -->
+</div>
+{% endif %}
 
 {% endblock %}

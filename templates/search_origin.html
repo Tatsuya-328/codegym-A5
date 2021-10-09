@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    search
+{% endblock %}
+
+{% block main %}
+<div class="col-xs-10">
+    {{ if artistslist }}
+    {{ endif }}
+    <h1>アーティストからユーザー検索</h1>
+    {{ if userlist }}
+    {{ endif }}
+</div>
+
+  <div class="list-group">
+    <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
+      The current link item
+    </a>
+    <a href="#" class="list-group-item list-group-item-action">A second link item</a>
+    <a href="#" class="list-group-item list-group-item-action">A third link item</a>
+    <a href="#" class="list-group-item list-group-item-action">A fourth link item</a>
+    <a href="#" class="list-group-item list-group-item-action disabled" tabindex="-1" aria-disabled="true">A disabled link item</a>
+  </div>
+
+
+{% for i in artistslist %}
+<tbody>
+    <tr >
+        <td>{{ i }}</td>
+        <td><button type="button" onclick="search('{{ i }}')">ボタン</button></td>
+        
+        <script>
+        function search( i ){
+            var url = "/search/";
+            let artisitname =i;
+            url += artisitname ;
+            location.href = url;
+            }
+        </script>
+    </tr>
+</tbody>
+{% endfor %}
+
+{% for i in userlist %}
+<tbody>
+    <tr >
+        <td>{{ i }}</td>
+        <td><button type="button" onclick="search('{{ i }}')">ボタン</button></td>
+        
+        <script>
+        function search( i ){
+            var url = "/profile/";
+            let userid =i;
+            url += userid ;
+            location.href = url;
+            }
+        </script>
+    </tr>
+</tbody>
+{% endfor %}
+
+{% endblock %}
+
+<!-- <script>
+  function search_from_artist( i ){
+    var url = "/search/";
+    let artisitname =i;
+    url += artisitname ;
+    location.href = url;
+    }
+</script>
+<script>
+function search_from_user( i ){
+  var url = "/profile/";
+  let userid =i;
+  url += userid ;
+  location.href = url;
+  }
+</script> -->
+
+<!-- <button class="btn btn-primary search-artist-button" type="button" onclick="search_from_artist('{{ i }}')" style="height: 30px; margin-bottom: 2px;">{{ i }}</button> -->
+
+  <!-- <div class="list-group">
+    <div class="d-grid gap-2 col-6 mx-auto"></div>
+      {% for i in artistslist %}
+      <button class="btn btn-primary" type="button" onclick="search('{{ i }}')" value='{{ i }}'></button>
+      {% endfor %}
+    </div>
+  </div> -->
+
+
+<!-- <tbody>
+    <tr >
+        <td>{{ i }}</td>
+        <td><button type="button" onclick="search('{{ i }}')">ボタン</button></td>
+        
+        <script>
+        function search( i ){
+            var url = "/search/";
+            let artisitname =i;
+            url += artisitname ;
+            location.href = url;
+            }
+        </script>
+    </tr>
+</tbody> -->
