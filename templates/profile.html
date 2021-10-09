@@ -35,6 +35,18 @@
     {% else %}
     <p>error</p>
     {% endif %}
+
+    <!-- プレイリスト作成 期間指定かどうかで分岐-->
+    {% if nowdisplayfrom %}
+    <form action="/profile/period/{{nowdisplayfrom}}/{{nowdisplayto}}" method="post">
+    {% else %}
+    <form action="/profile/{{user_id}}" method="post">
+    {% endif %}
+      <input type="text" name="playlistname" id="playlistname">
+      <button class="btn btn-primary" type="submit">プレイリスト作成</button>
+    </form>
+
+
     <!-- {% if user_info["songlists"] %}
     <ul>
       {% for songlist in user_info["songlists"] %}
@@ -128,5 +140,8 @@ $('.input-daterange').datepicker({
 
   <div id="map" class="profile-map"></div>
   <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
+
+  
+
 
 {% endblock %}
