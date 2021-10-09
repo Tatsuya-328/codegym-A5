@@ -14,8 +14,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required, register_check, login_check
 from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
-from sqlalchemy import Column, String, Integer
 import config
+from models import users, song_locations, songs, follow, db
 
 GOOGLE_MAP_API_KEY = config.GOOGLE_MAP_API_KEY
 SPOTIFY_CLIENT_SECRET =config.SPOTIFY_CLIENT_SECRET
@@ -34,78 +34,13 @@ app.secret_key = 'SOMETHING-RANDOM'
 app.config['SESSION_COOKIE_NAME'] = 'session-id'
 
 #database
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Integer, Float
-from sqlalchemy.sql.sqltypes import DATE, STRINGTYPE, TEXT, DateTime
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-
-
-
-class users(db.Model):
-	__tablename__ = 'users'
-	id = db.Column(Integer, primary_key=True)
-	username = db.Column(TEXT, unique=True)# emailカラム→usernameカラム
-	hash = db.Column(TEXT, unique=False)
-	nickname = db.Column(TEXT, unique=False)# nameカラム→nicknameカラム
-
-	def __init__(self, username=None, hash=None, nickname=None):
-		self.username = username
-		self.hash = hash
-		self.nickname = nickname
-
-class song_locations(db.Model):
-    __tablename__ = 'song_locations'
-    id = db.Column(Integer, primary_key=True)
-    user_id = db.Column(Integer, unique=False)
-    track_id = db.Column(TEXT, unique=False)
-    longitude = db.Column(Float, unique=False)
-    latitude = db.Column(Float, unique=False)
-    date = db.Column(DATE, unique=False)
-    emotion = db.Column(TEXT, unique=False)
-    comment = db.Column(TEXT, unique=False)
-    
-    def __init__(self, user_id=None, track_id=None, longitude=None, latitude=None, date=None, emotion = None, comment = None):
-        self.user_id = user_id
-        self.track_id = track_id
-        self.longitude = longitude
-        self.latitude = latitude
-        self.date = date
-        self.emotion = emotion
-        self.comment = comment
-
-class songs(db.Model):
-	__tablename__ = 'songs'
-	id = db.Column(Integer, primary_key=True)
-	track_id = db.Column(TEXT, unique=True)
-	track_name = db.Column(TEXT, unique=False)
-	artist_name = db.Column(TEXT, unique=False)
-	track_image = db.Column(TEXT, unique=False)
-	spotify_url = db.Column(TEXT, unique=True)
-
-	def __init__(self, track_id=None, track_name=None, artist_name=None, track_image=None, spotify_url=None):
-            self.track_id = track_id
-            self.track_name = track_name
-            self.artist_name = artist_name
-            self.track_image = track_image
-            self.spotify_url = spotify_url
-class follow(db.Model):
-    __tablename__ = 'follow'
-    id = db.Column(Integer, primary_key=True)
-    follow_user_id = db.Column(Integer)
-    followed_user_id = db.Column(Integer)
-
-
-    def __init__(self, follow_user_id=None, followed_user_id = None):
-        self.follow_user_id = follow_user_id
-        self.followed_user_id = followed_user_id
+db.init_app(app)
+db.app = app
 
 db.create_all()
 print("table is created")
-
 
 @app.route('/', methods = ['GET'])
 @login_required
@@ -538,6 +473,22 @@ def create_spotify_oauth():
         client_secret=SPOTIFY_CLIENT_SECRET,
         redirect_uri=url_for('spotify_authorize', _external=True),
         scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
+
+@app.route('/current_location', methods=['GET'])
+@login_required
+def current_location():
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+    songdata=[]
+    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+    
+    for pin in pins:
+        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
+        print(pin.date)
+    return render_template('current_location.html', user_id=session["user_id"], GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+
+
 
 @app.route('/map/<song_location_id>/edit', methods=['GET','POST'])
 def edit_map(song_location_id):
