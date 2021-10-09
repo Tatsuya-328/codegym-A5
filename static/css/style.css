@@ -33,32 +33,32 @@ a:link, a:visited, a:hover, a:active {
 a:link, a:visited, a:hover, a:active {
   color:black;
 }
-
-/* adding */
-.adding-map{
-  width: 100%;
-  height: 40vh;
-}
-.adding-comment-form{
+/* select_location, current_locationの共通部分 */
+.location-comment-form{
   width: 100%;
   height: 15vh;
   margin-bottom: 15px
 }
-.adding-emotion-form{
+.location-emotion-form{
   width: 100%;
   height: 5vh;
   margin: 15px 0;
 }
-.adding-date-form{
-  width: 100%;
-  margin-bottom: 20px;
-}
-.adding-submit-button{
-  color: white;
+.location-submit-button{
   width: 100%;
   height: 5vh;
 }
-.adding{
+
+/* select_location */
+.select-location-map{
+  width: 100%;
+  height: 40vh;
+}
+.select-location-date-form{
+  width: 100%;
+  margin-bottom: 20px;
+}
+.select-location{
   display: inline-block;
   float: left;
   margin: 10px;
@@ -92,4 +92,8 @@ a:link, a:visited, a:hover, a:active {
   width: 95px;
 }
 
-
+/* profile */
+.profile-map{
+  width: 100%;
+  height: 60vh;
+}

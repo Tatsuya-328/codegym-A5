@@ -172,10 +172,12 @@ def profile(display_user_id):
     login_user_id = session["user_id"]
     track_ids = db.session.query(song_locations.track_id).filter(song_locations.user_id == display_user_id).all()
     username = db.session.query(users.username).filter(users.id == display_user_id).first()
+    nickname = db.session.query(users.nickname).filter(users.id == display_user_id).first()
     print("login_user_id: ", end="")
     print(login_user_id)
     print("username: ", end="")
     print(username[0])
+    print(nickname[0])
 
     # マップ表示
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
@@ -189,18 +191,21 @@ def profile(display_user_id):
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
         print(pin.date)
 
-    # 表示しているユーザーのフォロー情報  
+    following_status = ""
+
+    # 表示しているユーザーのフォロー情報
+    display_user_id = int(display_user_id) # int型に統一
     if display_user_id == login_user_id:
         following_status = "myself"
     else:
         following = db.session.query(follow).filter(follow.follow_user_id == login_user_id, follow.followed_user_id == display_user_id).first()
         if following:
-            following_status = True
+            following_status = "True"
         else:
-            following_status = False
+            following_status = "False"
     
-    print("following: ", end="")
-    print(following)
+    # print("following: ", end="")
+    # print(following)
 
     # フォローフォロワー数
     follow_user = db.session.query(follow).filter(follow.follow_user_id == display_user_id).all()
@@ -219,7 +224,7 @@ def profile(display_user_id):
     for track_id in track_ids:
         songlists.append(db.session.query(songs.track_name, songs.artist_name, songs.track_image, songs.spotify_url).filter(songs.track_id == track_id[0]).first())
     
-    user_info = dict(id=display_user_id, name=username[0], following=following_status, follow_number=follow_number, followed_number=followed_number, songlists=songlists)
+    user_info = dict(id=display_user_id, username=username[0], following=following_status, follow_number=follow_number, followed_number=followed_number, songlists=songlists, nickname=nickname[0])
     return render_template('profile.html', user_id=login_user_id ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
 
@@ -599,9 +604,9 @@ def homePeriod(displayfrom, displayto):
     return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto)
 
 
-@app.route('/adding', methods = ['GET'])
+@app.route('/select_location', methods = ['GET'])
 @login_required
-def adding_marker():
+def select_location():
     session['token_info'], authorized = get_token()
     session.modified = True
     # していなかったらリダイレクト。
@@ -615,7 +620,7 @@ def adding_marker():
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY   
-    return render_template('adding.html', GOOGLEMAPURL=googlemapURL, Songdatas = songdata, user_id = session["user_id"])
+    return render_template('select_location.html', GOOGLEMAPURL=googlemapURL, Songdatas = songdata, user_id = session["user_id"])
 
 
 # if __name__ == '__main__':
