@@ -21,20 +21,28 @@
   {% if user_info %}
   <p id = "display_user_id">{{  user_info["id"]  }}</p>
   <p>プロフィールユーザー{{  user_info["name"]  }}</p>
+  <p>follow {{ user_info["follow_number"] }}</p>
+  <p>follower {{ user_info["followed_number"] }}</p>
     {% if user_info["following"] == True %}
     <button type="button" value="button" id = "cancell" >cancell</button>
     {% elif user_info["following"] == False %}
     <button type="button" value="button" id = "follow">follow</button>
-    {% elif user_info["following"] == False %}
+    {% elif user_info["following"] == "Myself" %}
     <p>My profile</p>
     {% else %}
     <p>error</p>
+    {% endif %}
+    {% if user_info["songlists"] %}
+    <ul>
+      {% for songlist in user_info["songlists"] %}
+        <li>{{ songlist }}</li>
+      {% endfor %}
+    </ul>
     {% endif %}
   {% endif %}
   
     <!-- ログアウト -->
     <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
-
   <!-- 表示期間切替 -->  
   <!-- カレンダー html -->
   <div class="input-daterange input-group" id="datepicker"> 

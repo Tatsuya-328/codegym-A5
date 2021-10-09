@@ -170,7 +170,7 @@ def profile(display_user_id):
 
     # ユーザの情報
     login_user_id = session["user_id"]
-    track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == display_user_id).all()
+    track_ids = db.session.query(song_locations.track_id).filter(song_locations.user_id == display_user_id).all()
     username = db.session.query(users.username).filter(users.id == display_user_id).first()
     print("login_user_id: ", end="")
     print(login_user_id)
@@ -199,12 +199,27 @@ def profile(display_user_id):
         else:
             following_status = False
     
-    
-    
     print("following: ", end="")
     print(following)
 
-    user_info = dict(id=display_user_id, name=username[0], following=following_status)
+    # フォローフォロワー数
+    follow_user = db.session.query(follow).filter(follow.follow_user_id == display_user_id).all()
+    if follow_user:
+        follow_number = len(follow_user)
+    else: 
+        follow_number = 0
+
+    followed_user = db.session.query(follow).filter(follow.followed_user_id == display_user_id).all()
+    if followed_user:
+        followed_number = len(followed_user)
+    else:
+        followed_number = 0
+
+    songlists = []
+    for track_id in track_ids:
+        songlists.append(db.session.query(songs.track_name, songs.artist_name, songs.track_image, songs.spotify_url).filter(songs.track_id == track_id[0]).first())
+    
+    user_info = dict(id=display_user_id, name=username[0], following=following_status, follow_number=follow_number, followed_number=followed_number, songlists=songlists)
     return render_template('profile.html', user_id=login_user_id ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
 
 
