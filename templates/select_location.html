@@ -10,32 +10,32 @@ Map
     var UserId = {{ user_id | safe }};
   </script>
 
-  <script type="text/javascript" src="/static/js/adding.js"></script>
+  <script type="text/javascript" src="/static/js/select_location.js"></script>
 {% endblock %}
 
 {% block main %}
-<div class="adding" >
-  <p>Adding</p>
+<div class="select-location" >
+  <p>select location</p>
 </div>
 <div class="text-right">
-  <a type="button" class="btn btn-secondary m-3" href="/current_location">現在地</a>
+  <a type="button" class="btn btn-secondary m-3" href="/current_location" style="color: white;">current location</a>
 </div>
-<div id="map" class="adding-map"></div>
+<div id="map" class="select-location-map"></div>
 
 <div class="container">
   <div class="row">
     <div class="col-xl-3"></div>
     <div class="col-xl-6">
-      <select class="adding-emotion-form" name="emotion" id = "emotion" required>
+      <select class="location-emotion-form" name="emotion" id = "emotion" required>
         <option value=""><p>感情を選んでください</p></option>
         <option value="嬉しい">嬉しい</option>
         <option value="楽しい">楽しい</option>
         <option value="落ち着き">落ち着き</option>
         <option value="悲しい">悲しい</option>
       </select>
-      <textarea class="adding-comment-form" id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！"></textarea>
-      <input class="adding-date-form" type="date" id="date" name="date" value="2018-07-22" min="2000-01-01" max="2021-12-31" required>
-      <input class="adding-submit-button" type="button" value="この場所に曲を追加する" id = "adding" >
+      <textarea class="location-comment-form" id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！"></textarea>
+      <input class="select-location-date-form" type="date" id="date" name="date" value="2018-07-22" min="2000-01-01" max="2021-12-31" required>
+      <input class="location-submit-button" type="button" value="この場所に曲を追加する" id = "adding" >
     </div>
     <div class="col-xl-3"></div>
   </div>

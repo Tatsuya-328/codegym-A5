@@ -81,12 +81,29 @@ function initMap() {
     // 自分の作ったピンしか編集ボタンを表示しない
     console.log(UserId)
     if (UserId == SongData[i]["user_id"]){
-      console.log(SongData[i]["id"] )
+      var div_edit_delete = document.createElement("div");
+
+      var p_node_edit = document.createElement("p");
       var a_node_edit = document.createElement("a");
       a_node_edit.href = "/map/" + SongData[i]["id"] + "/edit";
       var text_node_edit = document.createTextNode("編集");
       a_node_edit.appendChild(text_node_edit);
-      box_node.appendChild(a_node_edit);
+      p_node_edit.appendChild(a_node_edit);
+      p_node_edit.style.display = "inline-block";
+      p_node_edit.style.margin= "0 5px";
+      div_edit_delete.appendChild(p_node_edit);
+
+      var p_node_delete = document.createElement("p");
+      var a_node_delete = document.createElement("a");
+      a_node_delete.href = "/map/" + SongData[i]["id"] + "/delete";
+      var text_node_delete = document.createTextNode("削除");
+      a_node_delete.appendChild(text_node_delete);
+      p_node_delete.appendChild(a_node_delete);
+      p_node_delete.style.display = "inline-block";
+      p_node_delete.style.margin= "0 5px";
+      div_edit_delete.appendChild(p_node_delete);
+
+      box_node.appendChild(div_edit_delete);
     }
 
     // 吹き出しの追加

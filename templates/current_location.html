@@ -15,28 +15,28 @@
 
 {% block main %}
   <div class="current-location" >
-    <p>現在地</p>
+    <p>current location</p>
   </div>
   <div class="text-right">
-    <a class="btn btn-secondary m-3" href="/adding">adding</a>
+    <a class="btn btn-secondary m-3" href="/select_location" style="color: white;">select location</a>
   </div>
 
-    <div id="map" class="adding-map"></div>
+    <div id="map" class="current-location-map"></div>
   <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
 
   <div class="container">
     <div class="row">
       <div class="col-xl-3"></div>
       <div class="col-xl-6">
-        <select class="adding-emotion-form" name="emotion" id = "emotion" required>
+        <select class="location-emotion-form" name="emotion" id = "emotion" required>
           <option value=""><p>感情を選んでください</p></option>
           <option value="嬉しい">嬉しい</option>
           <option value="楽しい">楽しい</option>
           <option value="落ち着き">落ち着き</option>
           <option value="悲しい">悲しい</option>
         </select>
-        <textarea class="adding-comment-form" id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！"></textarea>
-        <input class="adding-submit-button" type="button" value="位置・曲情報取得" id = "location" >
+        <textarea class="location-comment-form" id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！"></textarea>
+        <input class="location-submit-button" type="button" value="位置・曲情報取得" id = "location" >
     </div>
     <div class="col-xl-3"></div>
   </div>

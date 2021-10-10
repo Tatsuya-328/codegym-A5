@@ -65,7 +65,7 @@ $(document).ready(function () {
 
 //  表示期間切り替え 
 function period(){
-  var url = "/profile/period/";
+  var url = "/profile/" + UserInfo.id + "/period/";
   let from = document.getElementById('from').value;
   let newfrom = from.replace(/\//g,"-");
 
