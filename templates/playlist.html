@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Playlist
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+    var Playlist = {{ playlist | safe }};
+    var UserId = {{ user_id | safe }};
+  </script>
+
+  <!-- <script type="text/javascript" src="/static/js/playlist.js"></script> -->
+{% endblock %}
+
+{% block main %}
+
+
+{% endblock %}

@@ -16,7 +16,7 @@ from helpers import login_required, register_check, login_check
 from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
 import config
-from models import users, song_locations, songs, follow, db
+from models import users, song_locations, songs, follow, made_playlists, db
 
 GOOGLE_MAP_API_KEY = config.GOOGLE_MAP_API_KEY
 SPOTIFY_CLIENT_SECRET =config.SPOTIFY_CLIENT_SECRET
@@ -590,6 +590,9 @@ def profilePeriod(displayfrom, displayto):
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
     if request.method == "GET":
+        playlistaa = db.session.query(made_playlists.playlist_uri).filter(made_playlists.user_id == user_id).all()
+
+        print("play",playlistaa[0] )
         return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto)
     
     if request.method == "POST":
@@ -598,7 +601,7 @@ def profilePeriod(displayfrom, displayto):
         sp_user_id = sp.current_user()['id']
         sp.user_playlist_create(sp_user_id, playlist_name) 
         #プレイリストIDをsessionに保存
-        session['playlist_id'] = sp.current_user_playlists()['items'][0]['id']
+        playlist_id = sp.current_user_playlists()['items'][0]['id']
         #プレイリストURIをsessionに保存
         playlist_uri_test = sp.current_user_playlists()['items'][0]['uri']
         playlist_uri = playlist_uri_test.removeprefix('spotify:playlist:')
@@ -607,7 +610,18 @@ def profilePeriod(displayfrom, displayto):
         periodsongs = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).all()
         # print("this",periodsongs)
         numbers = len(periodsongs)
-        [sp.playlist_add_items(playlist_id = sp.current_user_playlists()['items'][0]['id'], items = [periodsongs[i][0]], position=None) for i in range(0, numbers)]
+        [sp.playlist_add_items(playlist_id = playlist_id, items = [periodsongs[i][0]], position=None) for i in range(0, numbers)]
+        
+        playlist_image = sp.playlist_cover_image(playlist_id)
+
+
+        new_playlist = made_playlists(user_id=session["user_id"],playlist_id = playlist_id ,playlist_uri=playlist_uri,playlist_image=playlist_image)
+        db.session.add(new_playlist)
+        db.session.commit()    
+        
+        playlistaa = db.session.query(made_playlists.playlist_uri).filter(made_playlists.user_id == user_id).all()
+
+        print("play",playlistaa[0] )
         return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto)
 
 @app.route('/home/period/<displayfrom>/<displayto>', methods = ['GET'])

@@ -62,3 +62,18 @@ class follow(db.Model):
   def __init__(self, follow_user_id=None, followed_user_id = None):
     self.follow_user_id = follow_user_id
     self.followed_user_id = followed_user_id
+
+class made_playlists(db.Model):
+  __tablename__ = 'made_playlists'
+  id = db.Column(Integer, primary_key=True)
+  user_id = db.Column(Integer, unique=False)
+  playlist_id = db.Column(TEXT, unique=False)
+  playlist_uri = db.Column(TEXT, unique=False)
+  playlist_image = db.Column(TEXT, unique=False)
+
+
+  def __init__(self, user_id=None, playlist_id=None, playlist_uri=None, playlist_image=None):
+    self.user_id = user_id
+    self.playlist_id = playlist_id
+    self.playlist_uri = playlist_uri
+    self.playlist_image = playlist_image
