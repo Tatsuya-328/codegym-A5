@@ -329,8 +329,8 @@ def searchuser(selectedartistname):
             userlist.add(id[0])
     
     user_info = []
-    # for user in userlist:
-    #     user_info.append(db.session.query(users.id, users.username).filter(users.id == int(user[0])).first())
+    for user in userlist:
+        user_info.append(db.session.query(users.id, users.username).filter(users.id == int(user)).first())
     print(userlist)     
     return render_template('search.html',userlist=userlist, user_info=user_info)
 
