@@ -537,8 +537,8 @@ def deletePin(song_location_id):
     print("delete pin")
     return redirect(url_for('profile', display_user_id=session['user_id']))
 
-@app.route('/profile/period/<displayfrom>/<displayto>', methods = ['GET'])
-def profilePeriod(displayfrom, displayto):
+@app.route('/profile/<display_user_id>/period/<displayfrom>/<displayto>', methods = ['GET'])
+def profilePeriod(display_user_id,displayfrom, displayto):
     session['token_info'], authorized = get_token()
     session.modified = True
     # していなかったらリダイレクト。
@@ -547,12 +547,38 @@ def profilePeriod(displayfrom, displayto):
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     # ユーザの情報
     user_id = session["user_id"]
-    user_info = []
-    track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).all()
-    nickname = db.session.query(users.nickname).filter(users.id == user_id).first()
-    user_info.append(track_id)
-    user_info.append(nickname[0])
-    print(user_id)
+    following_status = ""
+    login_user_id = session["user_id"]
+
+    # 表示しているユーザーのフォロー情報
+    display_user_id = int(display_user_id) # int型に統一
+    if display_user_id == login_user_id:
+        following_status = "myself"
+    else:
+        following = db.session.query(follow).filter(follow.follow_user_id == login_user_id, follow.followed_user_id == display_user_id).first()
+        if following:
+            following_status = "True"
+        else:
+            following_status = "False"
+    
+    # print("following: ", end="")
+    # print(following)
+
+    # フォローフォロワー数
+    follow_user = db.session.query(follow).filter(follow.follow_user_id == display_user_id).all()
+    if follow_user:
+        follow_number = len(follow_user)
+    else: 
+        follow_number = 0
+
+    followed_user = db.session.query(follow).filter(follow.followed_user_id == display_user_id).all()
+    if followed_user:
+        followed_number = len(followed_user)
+    else:
+        followed_number = 0
+    nickname = db.session.query(users.nickname).filter(users.id == display_user_id).first()
+    username = db.session.query(users.username).filter(users.id == display_user_id).first()
+    user_info = dict(id=display_user_id, username=username[0], following=following_status, follow_number=follow_number, followed_number=followed_number, nickname=nickname[0])
     print(user_info)
     print(nickname)
 
@@ -560,7 +586,7 @@ def profilePeriod(displayfrom, displayto):
     songdata = []
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
 
-    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).all()
+    pins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).all()
     
     for pin in pins:
         # print(pin)
@@ -568,7 +594,7 @@ def profilePeriod(displayfrom, displayto):
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment})
 
-    return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto)
+    return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto, display_user_id=display_user_id )
 
 @app.route('/home/period/<displayfrom>/<displayto>', methods = ['GET'])
 def homePeriod(displayfrom, displayto):
