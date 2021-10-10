@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, Float
-from sqlalchemy.sql.sqltypes import DATE, STRINGTYPE, TEXT, DateTime
+from sqlalchemy.sql.sqltypes import DATE, STRINGTYPE, TEXT, DateTime, BOOLEAN
 from sqlalchemy import Column, String, Integer
 
 db = SQLAlchemy()
@@ -27,8 +27,9 @@ class song_locations(db.Model):
   date = db.Column(DATE, unique=False)
   emotion = db.Column(TEXT, unique=False)
   comment = db.Column(TEXT, unique=False)
+  is_private = db.Column(TEXT, unique=False)
 
-  def __init__(self, user_id=None, track_id=None, longitude=None, latitude=None, date=None, emotion = None, comment = None):
+  def __init__(self, user_id=None, track_id=None, longitude=None, latitude=None, date=None, emotion = None, comment = None, is_private= None):
     self.user_id = user_id
     self.track_id = track_id
     self.longitude = longitude
@@ -36,6 +37,7 @@ class song_locations(db.Model):
     self.date = date
     self.emotion = emotion
     self.comment = comment
+    self.is_private = is_private
 
 class songs(db.Model):
   __tablename__ = 'songs'

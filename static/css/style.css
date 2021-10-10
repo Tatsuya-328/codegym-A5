@@ -36,7 +36,7 @@ a:link, a:visited, a:hover, a:active {
 /* select_location, current_locationの共通部分 */
 .location-comment-form{
   width: 100%;
-  height: 15vh;
+  height: 10vh;
   margin-bottom: 15px
 }
 .location-emotion-form{
