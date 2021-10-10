@@ -39,11 +39,11 @@
 
     <!-- プレイリスト作成 期間指定かどうかで分岐-->
     {% if nowdisplayfrom %}
-    <form action="/profile/period/{{nowdisplayfrom}}/{{nowdisplayto}}" method="post">
+    <form action="/profile/{{user_id}}/period/{{nowdisplayfrom}}/{{nowdisplayto}}" method="post">
     {% else %}
     <form action="/profile/{{user_id}}" method="post">
     {% endif %}
-      <input type="text" name="playlistname" id="playlistname">
+      <input type="text" name="playlistname" id="playlistname" placeholder="プレイリスト名">
       <button class="btn btn-primary" type="submit">プレイリスト作成</button>
     </form>
 
