@@ -48,7 +48,7 @@
   
         <button onclick="location.href='/search'" type="button" class="btn btn-secondary w-100" style="color: black; background-color: white;border-color: white;"><i class="fas fa-search"></i></a></button>
   
-        <button onclick="location.href='/profile/1'" type="button" class="btn btn-secondary w-100"style="color: black;background-color: white;
+        <button onclick="location.href='/profile/' + {{ session.user_id }}" type="button" class="btn btn-secondary w-100"style="color: black;background-color: white;
         border-color: white;
       "><i class="fas fa-user"></i></a></button>
   
