@@ -70,10 +70,12 @@ class made_playlists(db.Model):
   playlist_id = db.Column(TEXT, unique=False)
   playlist_uri = db.Column(TEXT, unique=False)
   playlist_image = db.Column(TEXT, unique=False)
+  playlist_name = db.Column(TEXT, unique=False)
 
 
-  def __init__(self, user_id=None, playlist_id=None, playlist_uri=None, playlist_image=None):
+  def __init__(self, user_id=None, playlist_id=None, playlist_uri=None, playlist_image=None, playlist_name=None):
     self.user_id = user_id
     self.playlist_id = playlist_id
     self.playlist_uri = playlist_uri
     self.playlist_image = playlist_image
+    self.playlist_name = playlist_name

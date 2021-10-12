@@ -46,6 +46,7 @@
       <input type="hidden" name="playlistname" id="playlistname" value="プレイリスト名"> 
       <button class="btn btn-primary" type="submit">プレイリスト作成</button>
     </form>
+    <button onclick="location.href='{{ url_for('profile', display_user_id = user_info['id'] ) }}'" class="btn btn-primary">プレイリスト一覧</button>
 
 
     <!-- {% if user_info["songlists"] %}

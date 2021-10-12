@@ -617,8 +617,8 @@ def profilePeriod(display_user_id,displayfrom, displayto):
         return render_template('makeplaylist.html', data = songdata, name = playlist_name)
 
 
-@app.route('/confirm', methods=['GET','POST'])
-def confirm():
+@app.route('/makeplaylist', methods=['GET','POST'])
+def makeplaylist():
     session['token_info'], authorized = get_token()
     session.modified = True
     # していなかったらリダイレクト。
@@ -643,17 +643,10 @@ def confirm():
         playlist_uri = playlist_uri_test.removeprefix('spotify:playlist:')
         session['playlist_uri'] = playlist_uri
 
-        #曲を追加
-        # periodsongs = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).all()
-        # print("this",periodsongs)
-
-        # numbers = len(periodsongs)
-        # [sp.playlist_add_items(playlist_id = playlist_id, items = [periodsongs[i][0]], position=None) for i in range(0, numbers)]
-        
         playlist_image = sp.playlist_cover_image(playlist_id)[0]['url']
+        playlist_name =sp.playlist(playlist_id)["name"]
 
-
-        new_playlist = made_playlists(user_id=session["user_id"],playlist_id = playlist_id ,playlist_uri=playlist_uri,playlist_image=playlist_image)
+        new_playlist = made_playlists(user_id=session["user_id"],playlist_id = playlist_id ,playlist_uri=playlist_uri,playlist_image=playlist_image,playlist_name=playlist_name)
         db.session.add(new_playlist)
         db.session.commit()    
         
@@ -663,23 +656,44 @@ def confirm():
         return redirect('/playlist')
 
 
-@app.route('/playlist', methods = ['GET'])
-def playlist():
+@app.route('/profile/<display_user_id>/playlist/', methods = ['GET'])
+def playlist(display_user_id):
     session['token_info'], authorized = get_token()
     session.modified = True
     # していなかったらリダイレクト。
     if not authorized:
         return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+
     
-    playlist_date = db.session.query(made_playlists).filter(made_playlists.user_id == session["user_id"]).all()
+    playlist_date = db.session.query(made_playlists).filter(made_playlists.user_id == display_user_id).all()
     playlists =[]
 
     for pin in playlist_date:
-        print(pin.playlist_id)
+        # print(sp.playlist(pin.playlist_id)["name"])
         playlists.append({'id':pin.id,'user_id':pin.user_id, 'playlist_id':pin.playlist_id, 'playlist_uri':pin.playlist_uri,
-        'playlist_image':pin.playlist_image})
+        'playlist_image':pin.playlist_image,'playlist_name':pin.playlist_name})
 
     return render_template('playlist.html', playlists = playlists,user_id = session['user_id']) 
+
+@app.route('/delete_playlist/', methods = ['POST'])
+def deletePlaylist():
+    if request.method == 'POST':
+        session['token_info'], authorized = get_token()
+        session.modified = True
+        # していなかったらリダイレクト。
+        if not authorized:
+            return redirect('/spotify-login')    
+        sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+        
+        deletelists = request.form.getlist("deletelists")
+        for i in deletelists:
+            sp.current_user_unfollow_playlist(i)
+            deleting = db.session.query(made_playlists).filter(made_playlists.user_id == session['user_id'] , made_playlists.playlist_id == i).first()
+            db.session.delete(deleting)
+            db.session.commit()
+        
+        return redirect('/playlist')
 
 
 @app.route('/home/period/<displayfrom>/<displayto>', methods = ['GET'])
