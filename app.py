@@ -77,10 +77,10 @@ def register():
     print("register")
 
     if request.method == "POST":
-        username = request.form.get("email")
+        username = request.form.get("username")
         password = request.form.get("password")
         confirmation = request.form.get("confirmation")
-        nickname = request.form.get("username")
+        nickname = request.form.get("nickname")
         
         used_email = db.session.query(users).filter(users.username == username).all()
         if used_email != []:
@@ -122,7 +122,7 @@ def login():
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-        username = request.form.get("email")
+        username = request.form.get("username")
         password = request.form.get("password")
 
         users_row = db.session.query(users).filter(users.username == username).all()

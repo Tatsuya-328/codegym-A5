@@ -17,25 +17,37 @@
 {% block main %}
 
 <!-- ユーザー情報 -->
-  <h1>{{  user_info["nickname"]  }}</h1>
   <!-- <p >ログインユーザーID{{  user_id  }}</p> -->
   {% if user_info %}
-    <p id = "display_user_id" style="visibility: hidden; height: 0px; margin: 0px;">{{  user_info["id"]  }}</p>
-    <p>{{  user_info["username"]  }}</p>
-    <!-- <p>{{  user_info["following"]  }}</p> -->
-    <p>follow {{ user_info["follow_number"] }} follower {{ user_info["followed_number"] }}</p>
     {% if user_info["following"] == "True" %}
       <button type="button" value="button" id = "cancell" >cancell</button>
     {% elif user_info["following"] == "False" %}
       <button type="button" value="button" id = "follow">follow</button>
     {% elif user_info["following"] == "myself" %}
-    <p>
-      My profile
-      <a class="nav-link" href="/logout">Log out</a>
-    </p>
+      <div class="nav_area">
+        <a class="menu">
+            <span class="menu__line menu__line--top"></span>
+            <span class="menu__line menu__line--bottom"></span>
+        </a>
+        <nav class="gnav">
+          <div class="gnav__wrap">
+              <ul class="gnav__menu">
+                <li class="gnav__menu__item"><a href="/spotify-login">Spotify Log in</a></li>
+                  <li class="gnav__menu__item"><a href="/logout">Log out</a></li>
+              </ul>
+          </div><!--gnav-wrap-->
+        </nav>
+        <div class="hero"></div>
+      </div>
     {% else %}
-    <p>error</p>
+      <p>error</p>
     {% endif %}
+    <h1>{{  user_info["nickname"]  }}</h1>
+    <p id = "display_user_id" style="visibility: hidden; height: 0px; margin: 0px;">{{  user_info["id"]  }}</p>
+    <p>{{  user_info["username"]  }}</p>
+    <!-- <p>{{  user_info["following"]  }}</p> -->
+    <p>follow {{ user_info["follow_number"] }} follower {{ user_info["followed_number"] }}</p>
+    
 
     <!-- プレイリスト作成 期間指定かどうかで分岐-->
     {% if nowdisplayfrom %}

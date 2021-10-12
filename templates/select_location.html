@@ -15,10 +15,10 @@ Map
 
 {% block main %}
 <div class="select-location" >
-  <p>select location</p>
+  <p>場所指定曲取得</p>
 </div>
 <div class="text-right">
-  <a type="button" class="btn btn-secondary m-3" href="/current_location" style="color: white;">current location</a>
+  <a type="button" class="btn btn-secondary m-3" href="/current_location" style="color: white;">現在地曲取得</a>
 </div>
 <div id="map" class="select-location-map"></div>
 
@@ -35,7 +35,7 @@ Map
       </select>
       <textarea class="location-comment-form" id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！"></textarea>
       <input class="select-location-date-form" type="date" id="date" name="date" value="2018-07-22" min="2000-01-01" max="2021-12-31" required>
-      <input class="location-submit-button" type="button" value="この場所に曲を追加する" id = "adding" >
+      <input class="location-submit-button" type="button" value="この場所に曲を追加" id = "adding" >
     </div>
     <div class="col-xl-3"></div>
   </div>

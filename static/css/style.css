@@ -3,6 +3,11 @@
 	position: static;
 }
 
+ul {
+  list-style: none;
+}
+
+
 img {
 	max-width: 100%;
 	height: auto;
@@ -96,4 +101,64 @@ a:link, a:visited, a:hover, a:active {
 .profile-map{
   width: 100%;
   height: 60vh;
+}
+
+/*menu*/
+.menu{
+  height: 12px;
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 24px;
+  z-index: 99;
+}
+.menu__line{
+  background: #000;
+  display: block;
+  height: 2px;
+  position: absolute;
+  transition:transform .3s;
+  width: 100%;
+}
+.menu__line--bottom{
+  bottom: 0;
+}
+.menu__line--top.active{
+  top: 4px;
+  transform: rotate(45deg);
+}
+.menu__line--bottom.active{
+  bottom: 6px;
+  transform: rotate(135deg);
+}
+/*gnav*/
+.gnav{
+  background: #fafafa;
+  display: none;
+  height: 100%;
+  position: fixed;
+  width: 100%;
+  z-index: 98;
+}
+.gnav__wrap{
+  display: flex;
+  width: 85%;
+  height: 100%;
+  margin: auto;
+  position: absolute;
+}
+.gnav__menu__item{
+  margin: 3rem 0;
+}
+.gnav__menu__item a{
+  color: #000;
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: .1rem;
+  padding: 2.5rem;
+  text-decoration: none;
+  transition: .2s;
+}
+.gnav__menu__item a:hover{
+  color: #337ab7;
 }
