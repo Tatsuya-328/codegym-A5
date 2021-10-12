@@ -18,6 +18,7 @@
 
 <!-- ユーザー情報 -->
   <!-- <p >ログインユーザーID{{  user_id  }}</p> -->
+
   {% if user_info %}
     {% if user_info["following"] == "True" %}
       <button type="button" value="button" id = "cancell" >cancell</button>
@@ -46,8 +47,10 @@
     <p id = "display_user_id" style="visibility: hidden; height: 0px; margin: 0px;">{{  user_info["id"]  }}</p>
     <p>{{  user_info["username"]  }}</p>
     <!-- <p>{{  user_info["following"]  }}</p> -->
-    <p>follow {{ user_info["follow_number"] }} follower {{ user_info["followed_number"] }}</p>
-    
+    <div id="follower">
+      <p><a href="{{ url_for('display_follower', user_id = user_info['id'] ) }}"><span>{{ user_info["follow_number"] }}</span>フォロー </a><a href="{{ url_for('display_follower', user_id = user_info['id'] ) }}"><span>{{ user_info["followed_number"] }}</span> フォロワー</a></p>
+    </div>
+
 
     <!-- プレイリスト作成 期間指定かどうかで分岐-->
     {% if nowdisplayfrom %}

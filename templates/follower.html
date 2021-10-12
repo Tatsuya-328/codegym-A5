@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Home
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+  // var SongData = {{ Songdatas | safe }};
+  // var display_user_id = {{ user_id | safe }};
+  var user_info = {{ user_info | safe }};
+  var following_user_info = {{following_user_info |safe }}
+  var followed_user_info = {{followed_user_info |safe }}
+</script>
+
+<script>
+  jQuery(function($) {
+
+  //data-hrefの属性を持つtrを選択しclassにclickableを付加
+  $('tr[data-href]').addClass('clickable')
+
+    //クリックイベント
+    .click(function(e) {
+
+      //e.targetはクリックした要素自体、それがa要素以外であれば
+      if(!$(e.target).is('a')){
+      
+        //その要素の先祖要素で一番近いtrの
+        //data-href属性の値に書かれているURLに遷移する
+        window.location = $(e.target).closest('tr').data('href');}
+  });
+});
+</script>
+
+<!-- <script type="text/javascript" src="/static/js/index.js"></script> -->
+{% endblock %}
+
+{% block main %}
+<div class="user-follow">
+  <p id="nickname">{{user_info["nickname"]}} </p>
+  <p id="user-id">(user_id is {{user_info["id"]}})</p>
+</div>
+
+<!-- <p>フォロー</p>
+{% for following in following_user_info %}
+<a href="{{ url_for('profile', display_user_id = following['id'] ) }}">
+  <div style="border: solid 1px; background-color: #AFEEEE; overflow: hidden; text-overflow:ellipsis; height: 64px;">
+    <img src="/static/css/home2.png" alt="user_icon" >
+    <div style="float: right; width: 200px; height: 64px">
+      <p>{{ following["nickname"]}}</p>
+      <p>user_id is {{ following["id"]}}</p>
+    </div>
+    <div style="height: 2px"></div>
+  </div>
+</a>
+
+{% endfor %}
+
+<p>フォロワー</p>
+{% for followed in followed_user_info %}
+<a href="{{ url_for('profile', display_user_id = followed['id'] ) }}">
+  <div style="border: solid 1px; background-color: #AFEEEE; overflow: hidden; text-overflow:ellipsis; height: 64px;">
+    <img src="/static/css/home2.png" alt="user_icon" >
+    <div style="float: right; width: 200px; height: 64px">
+      <p>{{ followed["nickname"]}}</p>
+      <p>user_id is {{ followed["id"]}}</p>
+    </div>
+    <div style="height: 2px"></div>
+  </div>
+</a>
+{% endfor %} -->
+
+<h1>テーブルのテスト</h1>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>アイコン</th><th>名前</th><th>user_id</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for followed in followed_user_info %}
+    <tr data-href="{{ url_for('profile', display_user_id = followed['id'] ) }}">
+      <td><a href="{{ url_for('profile', display_user_id = followed['id'] ) }}"><img src="/static/css/home2.png" alt="user_icon" ></a></td><td><a href="{{ url_for('profile', display_user_id = followed['id'] ) }}">{{ followed["nickname"]}}</a></td><td>user_id is {{ followed["id"]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

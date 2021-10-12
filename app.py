@@ -365,7 +365,7 @@ def searchuser(selectedartistname):
     for user in userlist:
         user_info.append(db.session.query(users.id, users.username).filter(users.id == int(user)).first())
     print(userlist)     
-    return render_template('search.html',userlist=userlist, user_info=user_info)
+    return render_template('search.html',userlist=userlist, user_info=user_info, user_id=session["user_id"])
 
 
 # Spotifyの認証ページへリダイレクト
@@ -715,6 +715,28 @@ def select_location():
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY   
     return render_template('select_location.html', GOOGLEMAPURL=googlemapURL, Songdatas = songdata, user_id = session["user_id"])
 
+
+@app.route('/profile/follower/<user_id>', methods = ['GET'])
+@login_required
+def display_follower(user_id):
+    user = db.session.query(users).filter(users.id == user_id).first()
+    user_info = dict(id=user.id, nickname=user.nickname)
+    followings = db.session.query(follow).filter(follow.follow_user_id == user_id).all()
+    followeds = db.session.query(follow).filter(follow.followed_user_id == user_id).all()
+
+    following_user_info = []
+    for following in followings:
+        other_user = db.session.query(users).filter(users.id == following.followed_user_id).first()
+        other_user_info = dict(id=other_user.id, nickname=user.nickname)
+        following_user_info.append(other_user_info)
+
+    followed_user_info = []
+    for followed in followeds:
+        other_user = db.session.query(users).filter(users.id == followed.follow_user_id).first()
+        other_user_info = dict(id=other_user.id, nickname=user.nickname)
+        followed_user_info.append(other_user_info)
+    
+    return render_template("follower.html",user_id=session["user_id"], user_info=user_info, following_user_info=following_user_info, followed_user_info=followed_user_info)
 
 # if __name__ == '__main__':
 #     app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)

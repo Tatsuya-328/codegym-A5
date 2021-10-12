@@ -161,4 +161,39 @@ a:link, a:visited, a:hover, a:active {
 }
 .gnav__menu__item a:hover{
   color: #337ab7;
+/* =======
+
+>>>>>>> 33e9f8150e4cdf6a6dcdd4ecaeabbefd8a9016eb */
+}
+
+.user-infomation {
+  margin :10px;
+}
+
+.nickname{
+  font-size: 28px;
+}
+
+.user-follow{
+  margin: 10px;
+}
+#nickname{
+  font-size: 28px;
+  margin: 3px;
+  text-align: center;
+}
+
+#user-id{
+  font-size: 10px;
+  color: gray;
+  text-align: right;
+}
+
+.cant-search{
+  margin: 10px;
+}
+
+#follower p a span{
+  margin-right: 5px;
+  font-family: boid;
 }
