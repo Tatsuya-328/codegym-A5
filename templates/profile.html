@@ -20,11 +20,7 @@
   <!-- <p >ログインユーザーID{{  user_id  }}</p> -->
 
   {% if user_info %}
-    {% if user_info["following"] == "True" %}
-      <button type="button" value="button" id = "cancell" >cancell</button>
-    {% elif user_info["following"] == "False" %}
-      <button type="button" value="button" id = "follow">follow</button>
-    {% elif user_info["following"] == "myself" %}
+    {% if user_info["following"] == "myself" %}
       <div class="nav_area">
         <a class="menu">
             <span class="menu__line menu__line--top"></span>
@@ -40,8 +36,6 @@
         </nav>
         <div class="hero"></div>
       </div>
-    {% else %}
-      <p>error</p>
     {% endif %}
     <h1>{{  user_info["nickname"]  }}</h1>
     <p id = "display_user_id" style="visibility: hidden; height: 0px; margin: 0px;">{{  user_info["id"]  }}</p>
@@ -49,6 +43,11 @@
     <!-- <p>{{  user_info["following"]  }}</p> -->
     <div id="follower">
       <p><a href="{{ url_for('display_follower', user_id = user_info['id'] ) }}"><span>{{ user_info["follow_number"] }}</span>フォロー </a><a href="{{ url_for('display_follower', user_id = user_info['id'] ) }}"><span>{{ user_info["followed_number"] }}</span> フォロワー</a></p>
+      {% if user_info["following"] == "True" %}
+        <button type="button" value="button" id = "cancell" >cancell</button>
+      {% elif user_info["following"] == "False" %}
+        <button type="button" value="button" id = "follow">follow</button>
+      {% endif %}
     </div>
 
 
@@ -58,22 +57,13 @@
     {% else %}
     <form action="/profile/{{user_id}}" method="post">
     {% endif %}
-      <input type="text" name="playlistname" id="playlistname" placeholder="プレイリスト名">
+      <input type="hidden" name="playlistname" id="playlistname" value="プレイリスト名"> 
       <button class="btn btn-primary" type="submit">プレイリスト作成</button>
     </form>
+    <button onclick="location.href='{{ url_for('profile', display_user_id = user_info['id'] ) }}'" class="btn btn-primary">プレイリスト一覧</button>
 
-
-    <!-- {% if user_info["songlists"] %}
-    <ul>
-      {% for songlist in user_info["songlists"] %}
-        <li>{{ songlist }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %} -->
   {% endif %}
   
-    <!-- ログアウト -->
-    <!-- <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li> -->
   <!-- 表示期間切替 -->  
     <!-- bootstrap-datepicker -->
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">

@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Playlist
+{% endblock %}
+
+{% block main %}
+
+  <div class="table-responsive" style="margin-bottom: 50px;">
+    <form action="/delete_playlist" method="post">
+      <div class = "flex flex-row mx-auto">
+        <table class="table table-bordered">
+          <thead>
+          <tr>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in playlists %}
+          <!-- <a href="https://open.spotify.com/playlist/{{i['playlist_uri']}}" target="_blank"> -->
+          <!-- </a> -->
+            <tr>
+              <!-- <td><img src="{{ i['playlist_image'] }}" alt="" width="130" height="130"></td> -->
+              <!-- <td>{{ i["playlist_name"] }}</td> -->
+              <td>     
+                <iframe src="https://open.spotify.com/embed/playlist/{{ i['playlist_uri'] }}" 
+                  width="100%" height="151" frameBorder="0" 
+                  allowtransparency="true" allow="encrypted-media">
+                </iframe>
+              </td>
+              <td>
+                <input type="checkbox" name="deletelists" value="{{ i['playlist_id'] }}" >
+              </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        </table>
+      </div>
+      <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">削除する</button>
+    </form>
+    </div>
+
+{% endblock %}

@@ -41,36 +41,25 @@
   <p id="user-id">(user_id is {{user_info["id"]}})</p>
 </div>
 
-<!-- <p>フォロー</p>
-{% for following in following_user_info %}
-<a href="{{ url_for('profile', display_user_id = following['id'] ) }}">
-  <div style="border: solid 1px; background-color: #AFEEEE; overflow: hidden; text-overflow:ellipsis; height: 64px;">
-    <img src="/static/css/home2.png" alt="user_icon" >
-    <div style="float: right; width: 200px; height: 64px">
-      <p>{{ following["nickname"]}}</p>
-      <p>user_id is {{ following["id"]}}</p>
-    </div>
-    <div style="height: 2px"></div>
-  </div>
-</a>
+<h1>フォロー中</h1>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>アイコン</th><th>名前</th><th>user_id</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for following in following_user_info %}
+    <tr data-href="{{ url_for('profile', display_user_id = following['id'] ) }}">
+      <td><img src="/static/css/home2.png" alt="user_icon" ></td>
+      <td>{{ following["nickname"]}}</td>
+      <td>user_id is {{ following["id"]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
-{% endfor %}
-
-<p>フォロワー</p>
-{% for followed in followed_user_info %}
-<a href="{{ url_for('profile', display_user_id = followed['id'] ) }}">
-  <div style="border: solid 1px; background-color: #AFEEEE; overflow: hidden; text-overflow:ellipsis; height: 64px;">
-    <img src="/static/css/home2.png" alt="user_icon" >
-    <div style="float: right; width: 200px; height: 64px">
-      <p>{{ followed["nickname"]}}</p>
-      <p>user_id is {{ followed["id"]}}</p>
-    </div>
-    <div style="height: 2px"></div>
-  </div>
-</a>
-{% endfor %} -->
-
-<h1>テーブルのテスト</h1>
+<h1>フォロワー</h1>
 <table class="table table-hover">
   <thead>
     <tr>
@@ -80,7 +69,9 @@
   <tbody>
     {% for followed in followed_user_info %}
     <tr data-href="{{ url_for('profile', display_user_id = followed['id'] ) }}">
-      <td><a href="{{ url_for('profile', display_user_id = followed['id'] ) }}"><img src="/static/css/home2.png" alt="user_icon" ></a></td><td><a href="{{ url_for('profile', display_user_id = followed['id'] ) }}">{{ followed["nickname"]}}</a></td><td>user_id is {{ followed["id"]}}</td>
+      <td><img src="/static/css/home2.png" alt="user_icon" ></td>
+      <td>{{ followed["nickname"]}}</td>
+      <td>user_id is {{ followed["id"]}}</td>
     </tr>
     {% endfor %}
   </tbody>
