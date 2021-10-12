@@ -157,6 +157,14 @@ function initMap() {
       var date = document.getElementById("date").value;
       var emotion = document.getElementById("emotion").value;
       var comment = document.getElementById("comment").value;
+      var pin_statuses = document.getElementsByName("pin_status");
+      var pin_status = ""
+      for (var i = 0; i < 2; i++){
+        if(pin_statuses[i].checked == true){
+          pin_status = pin_statuses[i].value
+          // console.log(pin_status)
+        }
+      }
       $.ajax({
         type:'POST',
         url:'/getTrack',
@@ -166,6 +174,7 @@ function initMap() {
           "date":date,
           "emotion":emotion,
           "comment":comment,
+          "pin_status":pin_status,
         },
         dataType: 'text',
       }).done(function(){

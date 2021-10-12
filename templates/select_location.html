@@ -35,6 +35,10 @@ Map
       </select>
       <textarea class="location-comment-form" id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！"></textarea>
       <input class="select-location-date-form" type="date" id="date" name="date" value="2018-07-22" min="2000-01-01" max="2021-12-31" required>
+      <input type="radio" id="public" name="pin_status" value="public" checked>
+      <label for="public">公開</label>
+      <input type="radio" id="private" name="pin_status" value="private">
+      <label for="private">非公開</label>
       <input class="location-submit-button" type="button" value="この場所に曲を追加" id = "adding" >
     </div>
     <div class="col-xl-3"></div>
