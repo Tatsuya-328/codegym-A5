@@ -8,6 +8,7 @@
   <script type="text/javascript">
     var SongData = {{ Songdatas | safe }};
     var UserId = {{ user_id | safe }};
+    var UserInfo = {{ user_info | safe }};
   </script>
 
   <script type="text/javascript" src="/static/js/profile.js"></script>
@@ -30,7 +31,7 @@
     {% elif user_info["following"] == "myself" %}
     <p>
       My profile
-      <a class="nav-link" href="/logout">Log out</a>
+      <button onclick="location.href='/logout'" class="btn btn-primary">logout</button>
     </p>
     {% else %}
     <p>error</p>
@@ -38,11 +39,11 @@
 
     <!-- プレイリスト作成 期間指定かどうかで分岐-->
     {% if nowdisplayfrom %}
-    <form action="/profile/period/{{nowdisplayfrom}}/{{nowdisplayto}}" method="post">
+    <form action="/profile/{{user_id}}/period/{{nowdisplayfrom}}/{{nowdisplayto}}" method="post">
     {% else %}
     <form action="/profile/{{user_id}}" method="post">
     {% endif %}
-      <input type="text" name="playlistname" id="playlistname">
+      <input type="hidden" name="playlistname" id="playlistname" value="プレイリスト名"> 
       <button class="btn btn-primary" type="submit">プレイリスト作成</button>
     </form>
 
@@ -111,7 +112,7 @@
           <!-- <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close
           </button>                       -->
           <button class="btn btn-primary" type="submit"  onClick="period();"> 指定期間表示</button>
-          <button class="btn btn-primary" onclick="location.href='/'">全期間表示</button>
+          <button class="btn btn-primary" onclick="location.href='/profile/{{user_id}}'">全期間表示</button>
         </div>
       
     </div>
