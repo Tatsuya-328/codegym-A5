@@ -42,12 +42,19 @@
     <p>{{  user_info["username"]  }}</p>
     <!-- <p>{{  user_info["following"]  }}</p> -->
     <div id="follower">
-      <p><a href="{{ url_for('display_follower', user_id = user_info['id'] ) }}"><span>{{ user_info["follow_number"] }}</span>フォロー </a><a href="{{ url_for('display_follower', user_id = user_info['id'] ) }}"><span>{{ user_info["followed_number"] }}</span> フォロワー</a></p>
-      {% if user_info["following"] == "True" %}
-        <button type="button" value="button" id = "cancell" >cancell</button>
-      {% elif user_info["following"] == "False" %}
-        <button type="button" value="button" id = "follow">follow</button>
-      {% endif %}
+      <p>
+        <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}">
+          <span>{{ user_info["follow_number"] }}</span>フォロー
+        </a>
+        <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}">
+          <span>{{ user_info["followed_number"] }}</span>フォロワー
+        </a>
+        {% if user_info["following"] == "True" %}
+          <button class="btn btn-danger" type="button" value="button" id = "cancell" >cancell</button>
+        {% elif user_info["following"] == "False" %}
+          <button class="btn btn-success" type="button" value="button" id = "follow">follow</button>
+        {% endif %}
+      </p>
     </div>
 
 
@@ -55,12 +62,12 @@
     {% if nowdisplayfrom %}
     <form action="/profile/{{user_id}}/period/{{nowdisplayfrom}}/{{nowdisplayto}}" method="post">
     {% else %}
-    <form action="/profile/{{user_id}}" method="post">
+    <form action="/profile/{{user_id}}" method="post" style="float: left;">
     {% endif %}
       <input type="hidden" name="playlistname" id="playlistname" value="プレイリスト名"> 
-      <button class="btn btn-primary" type="submit" style="float: left;">プレイリスト作成</button>
+      <button class="btn btn-primary" type="submit">プレイリスト作成</button>
+      <button onclick="location.href='{{ url_for('playlist', display_user_id = user_info['id'] ) }}'" class="btn btn-secondary">プレイリスト一覧</button>
     </form>
-    <button onclick="location.href='{{ url_for('profile', display_user_id = user_info['id'] ) }}'" class="btn btn-primary" style="float: left;">プレイリスト一覧</button>
 
   {% endif %}
   
