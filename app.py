@@ -234,7 +234,7 @@ def profile(display_user_id):
     
     user_info = dict(id=display_user_id, username=username[0], following=following_status, follow_number=follow_number, followed_number=followed_number, songlists=songlists, nickname=nickname[0])
     if request.method == "GET":
-        return render_template('profile.html', user_id=login_user_id ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+        return render_template('profile.html', user_id=login_user_id ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata) 
     if request.method == "POST":
         #makeplaylistにデータ渡す
         playlist_name = request.form['playlistname']
@@ -639,7 +639,7 @@ def profilePeriod(display_user_id,displayfrom, displayto):
     if request.method == "POST":
         #makeplaylistにデータ渡す
         playlist_name = request.form['playlistname']
-        return render_template('makeplaylist.html', data = songdata, name = playlist_name)
+        return render_template('makeplaylist.html', data = songdata, name = playlist_name, user_id=session["user_id"])
 
 
 @app.route('/makeplaylist', methods=['GET','POST'])

@@ -27,8 +27,21 @@ let infoWindow = [];
 function initMap() {
   var map = new google.maps.Map(document.getElementById('map'), {
       zoom: 14,
-      center: {lat: 35.665498, lng: 139.75964}
-  });
+      center: {lat: 35.665498, lng: 139.75964},
+      styles: [{
+        featureType: 'poi',
+        stylers: [
+          { visibility: 'off' }
+        ]
+      },{
+        featureType: 'road',
+        elementType: 'labels',
+        stylers: [
+          { visibility: 'off' }
+        ]
+      },
+      ]
+    });
 
   
   console.log(SongData);

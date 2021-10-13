@@ -58,9 +58,9 @@
     <form action="/profile/{{user_id}}" method="post">
     {% endif %}
       <input type="hidden" name="playlistname" id="playlistname" value="プレイリスト名"> 
-      <button class="btn btn-primary" type="submit">プレイリスト作成</button>
+      <button class="btn btn-primary" type="submit" style="float: left;">プレイリスト作成</button>
     </form>
-    <button onclick="location.href='{{ url_for('profile', display_user_id = user_info['id'] ) }}'" class="btn btn-primary">プレイリスト一覧</button>
+    <button onclick="location.href='{{ url_for('profile', display_user_id = user_info['id'] ) }}'" class="btn btn-primary" style="float: left;">プレイリスト一覧</button>
 
   {% endif %}
   
@@ -92,19 +92,19 @@
         <div class="modal-body">
           
         <div class="row">
-          <div class="col-１２ mt-3">
+          <div class="col-20 mt-3">
       
             <div class="input-daterange " id="datepicker">
               <div class="input-group">
-                <span class="input-group-text">開始日付</span>
+                <span class="input-group-text">開始</span>
             
-              <input class="input-period" type="text" name="from" id="from"  value = "{{nowdisplayfrom}}" autocomplete="off">
-            </div>
+              <input class="input-period" type="text" name="from" id="from"  value = "{{nowdisplayfrom}}" placeholder="クリック選択" autocomplete="off">
+            <!-- </div> -->
 
-              <div class="input-group">
-                <span class="input-group-text">終了日付</span>
+              <!-- <div class="input-group"> -->
+                <span class="input-group-text">終了</span>
               
-              <input class ="input-period" type="text" name="to" id="to" value = "{{nowdisplayto}}" autocomplete="off">
+              <input class ="input-period" type="text" name="to" id="to" value = "{{nowdisplayto}}" placeholder="クリック選択" autocomplete="off">
             </div>
             </div>
       

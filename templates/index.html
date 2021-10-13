@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block main %}
-  <h1>Home</h1>
+  <h1 style="float: left;">Home</h1>
   <!-- 表示期間切替 -->  
     <!-- bootstrap-datepicker -->
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
@@ -23,7 +23,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ja.min.js"></script>
   
     <div class="text-right">
-    <button type="button" class="btn" data-toggle="modal" data-target="#modalForm" style="background: white;">
+    <button type="button" class="btn" data-toggle="modal" data-target="#modalForm" style="background: white; padding-top: 15px;
+    padding-right: 15px;">
       <i class="fas fa-history  fa-2x"></i>
     </button>
     </div>
@@ -48,15 +49,15 @@
       
             <div class="input-daterange " id="datepicker">
               <div class="input-group">
-                <span class="input-group-text">開始日付</span>
+                <span class="input-group-text">開始</span>
             
-              <input class="input-period" type="text" name="from" id="from"  value = "{{nowdisplayfrom}}" autocomplete="off">
-            </div>
+              <input class="input-period" type="text" name="from" id="from"  value = "{{nowdisplayfrom}}" placeholder="クリック選択" autocomplete="off">
+            <!-- </div> -->
 
-              <div class="input-group">
-                <span class="input-group-text">終了日付</span>
+              <!-- <div class="input-group"> -->
+                <span class="input-group-text">終了</span>
               
-              <input class ="input-period" type="text" name="to" id="to" value = "{{nowdisplayto}}" autocomplete="off">
+              <input class ="input-period" type="text" name="to" id="to" value = "{{nowdisplayto}}" placeholder="クリック選択" autocomplete="off">
             </div>
             </div>
       
