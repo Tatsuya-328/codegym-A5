@@ -4,6 +4,27 @@
     search
 {% endblock %}
 
+{% block js %}
+  <script>
+  jQuery(function($) {
+    
+    //data-hrefの属性を持つtrを選択しclassにclickableを付加
+    $('tr[data-href]').addClass('clickable')
+    
+    //クリックイベント
+    .click(function(e) {
+      
+      //e.targetはクリックした要素自体、それがa要素以外であれば
+      if(!$(e.target).is('a')){
+        
+        //その要素の先祖要素で一番近いtrの
+        //data-href属性の値に書かれているURLに遷移する
+        window.location = $(e.target).closest('tr').data('href');}
+      });
+    });
+  </script>
+{% endblock %}
+  
 {% block main %}
 
 {% if artistslist %}
@@ -14,23 +35,24 @@
   <!-- <div class="row"> -->
     <div class="col-xs-2"></div>
     <div class="col-xs-8">
-      <div class="list-group">
-        <!-- <div class="d-grid gap-2 col-6 mx-auto"> -->
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Artist</th>
+            <th>Track</th>
+          </tr>
+        </thead>
+        <tbody>
           {% for i in artist_info %}
-          
-          <a href="{{ url_for('searchuser', selectedartistname = i[0] ) }}" style="height: 64px; margin-bottom: 4px;">
-            <div style="border: solid 1px;  background-color: #AFEEEE; overflow: hidden; text-overflow:ellipsis;">
-              <img src="{{ i[1] }}" alt="">
-              <div style="float: right;">
-                <p style="text-align: center; font-size: 15px; margin-bottom: 4px">{{  i[2]  }}</p>
-                <p style="text-align: center; font-size: 15px; margin-bottom: 4px">{{  i[0]  }}</p>
-              </div>
-            </div>
-          </a>
-          
+          <tr data-href="{{ url_for('searchuser', selectedartistname = i[0] ) }}">
+            <td style="padding: 14px 0 0 0;"><img src="{{  i[1]  }}"></td>
+            <td>{{  i[2]  }}</td>
+            <td>{{  i[0]  }}</td>
+          </tr>
           {% endfor %}
-        <!-- </div> -->
-      </div>
+        </tbody>
+      </table>
     </div>
     <div class="col-xs-2"></div>
   <!-- </div> -->
@@ -44,25 +66,24 @@
     <!-- <div class="row"> -->
       <div class="col-xs-2"></div>
       <div class="col-xs-8">
-        <div class="list-group">
-          <!-- <div class="d-grid gap-2 col-6 mx-auto"> -->
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Nickname</th>
+              <th>User name</th>
+            </tr>
+          </thead>
+          <tbody>
             {% for i in user_info %}
-            <!-- <button class="btn btn-primary search-artist-button" type="button" onclick="search_from_user('{{ i }}')" style="height: 30px; margin-bottom: 2px;">{{ i }}</button> -->
-            <a href="{{ url_for('profile', display_user_id = i[0] ) }}"  style="height: 64px; margin-bottom: 4px ;">
-              <!-- <div style="border: solid 1px; margin-bottom: 2px"> -->
-              <div style="border: solid 1px; background-color: #AFEEEE; overflow: hidden; text-overflow:ellipsis; height: 64px;">
-                <img src="/static/css/home2.png" alt="user_icon" >
-                <div style="float: right; width: 200px; height: 64px">
-                  <p style="text-align: center; font-size: 15px; margin-bottom: 4px"> {{  i[1]  }}</p>
-                  <!-- <p style="text-align: center;">user_id {{  i[0]  }}</p> -->
-                  <!-- <p style="text-align: center;">user_id {{  i  }}></p> -->
-                </div>
-                <div style="height: 2px"></div>
-              </div>
-            </a>
+            <tr data-href="{{ url_for('profile', display_user_id = i[0] ) }}">
+              <td><i class="fas fa-user"></i></td>
+              <td>{{  i[2]  }}</td>
+              <td>{{  i[1]  }}</td>
+            </tr>
             {% endfor %}
-          <!-- </div> -->
-        </div>
+          </tbody>
+        </table>
       </div>
       <div class="col-xs-2"></div>
     <!-- </div> -->

@@ -5,11 +5,14 @@
 {% endblock %}
 
 {% block main %}
+  {% if not playlists %}
 
+  {% else %}
   <div class="table-responsive" style="margin-bottom: 50px;">
+    <h3>{{ display_user[0] }}のプレイリスト</h3>
     <form action="/delete_playlist" method="post">
       <div class = "flex flex-row mx-auto">
-        <table class="table table-bordered">
+        <table class="table table-hover">
           <thead>
           <tr>
             <th></th>
@@ -40,5 +43,7 @@
       <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">削除する</button>
     </form>
     </div>
+  {% endif %}
+
 
 {% endblock %}

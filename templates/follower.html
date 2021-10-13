@@ -41,37 +41,41 @@
   <p id="user-id">(user_id is {{user_info["id"]}})</p>
 </div>
 
-<h1>フォロー中</h1>
+<h3>フォロー中</h3>
 <table class="table table-hover">
   <thead>
     <tr>
-      <th>アイコン</th><th>名前</th><th>user_id</th>
+      <th></th>
+      <th>Nickname</th>
+      <th>User name</th>
     </tr>
   </thead>
   <tbody>
     {% for following in following_user_info %}
     <tr data-href="{{ url_for('profile', display_user_id = following['id'] ) }}">
-      <td><img src="/static/css/home2.png" alt="user_icon" ></td>
+      <td><i class="fas fa-user"></i></td>
       <td>{{ following["nickname"]}}</td>
-      <td>user_id is {{ following["id"]}}</td>
+      <td>{{ following["username"]}}</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 
-<h1>フォロワー</h1>
+<h3>フォロワー</h3>
 <table class="table table-hover">
   <thead>
     <tr>
-      <th>アイコン</th><th>名前</th><th>user_id</th>
+      <th></th>
+      <th>Nickname</th>
+      <th>User name</th>
     </tr>
   </thead>
   <tbody>
     {% for followed in followed_user_info %}
     <tr data-href="{{ url_for('profile', display_user_id = followed['id'] ) }}">
-      <td><img src="/static/css/home2.png" alt="user_icon" ></td>
+      <td><i class="fas fa-user"></i></td>
       <td>{{ followed["nickname"]}}</td>
-      <td>user_id is {{ followed["id"]}}</td>
+      <td>{{ followed["username"]}}</td>
     </tr>
     {% endfor %}
   </tbody>

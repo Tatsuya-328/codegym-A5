@@ -17,6 +17,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
 import config
 from models import users, song_locations, songs, follow, made_playlists, db
+from sqlalchemy import or_
 
 GOOGLE_MAP_API_KEY = config.GOOGLE_MAP_API_KEY
 SPOTIFY_CLIENT_SECRET =config.SPOTIFY_CLIENT_SECRET
@@ -58,11 +59,17 @@ def index():
     songdata = []
     # print(session["user_id"])
     pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+    follow_users = db.session.query(follow).filter(follow.follow_user_id == session["user_id"]).all()
+    for follow_user in follow_users:
+        follow_pin = db.session.query(song_locations).filter(song_locations.user_id == follow_user.id).all()
+        pins.append(follow_pin[0])
     for pin in pins:
-        print(pin.is_private)
+        print(pin)
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        user = db.session.query(users).filter(users.id == pin.user_id).first()
+        print(user.nickname)
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private})
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
         # print(pin.date)
 
     return render_template('index.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
@@ -350,7 +357,7 @@ def searchuser(selectedartistname):
     
     user_info = []
     for user in userlist:
-        user_info.append(db.session.query(users.id, users.username).filter(users.id == int(user)).first())
+        user_info.append(db.session.query(users.id, users.username, users.nickname).filter(users.id == int(user)).first())
     print(userlist)     
     return render_template('search.html',userlist=userlist, user_info=user_info, user_id=session["user_id"])
 
@@ -699,8 +706,10 @@ def playlist(display_user_id):
         # print(sp.playlist(pin.playlist_id)["name"])
         playlists.append({'id':pin.id,'user_id':pin.user_id, 'playlist_id':pin.playlist_id, 'playlist_uri':pin.playlist_uri,
         'playlist_image':pin.playlist_image,'playlist_name':pin.playlist_name})
+    display_user = db.session.query(users.nickname).filter(users.id == display_user_id).first()
+    # print(display_user)
 
-    return render_template('playlist.html', playlists = playlists,user_id = session['user_id']) 
+    return render_template('playlist.html', playlists = playlists,user_id = session['user_id'], display_user = display_user) 
 
 @app.route('/delete_playlist/', methods = ['POST'])
 def deletePlaylist():
@@ -775,24 +784,24 @@ def select_location():
     return render_template('select_location.html', GOOGLEMAPURL=googlemapURL, Songdatas = songdata, user_id = session["user_id"])
 
 
-@app.route('/profile/follower/<user_id>', methods = ['GET'])
+@app.route('/profile/<display_user_id>/follower', methods = ['GET'])
 @login_required
-def display_follower(user_id):
-    user = db.session.query(users).filter(users.id == user_id).first()
-    user_info = dict(id=user.id, nickname=user.nickname)
-    followings = db.session.query(follow).filter(follow.follow_user_id == user_id).all()
-    followeds = db.session.query(follow).filter(follow.followed_user_id == user_id).all()
+def display_follower(display_user_id):
+    user = db.session.query(users).filter(users.id == display_user_id).first()
+    user_info = dict(id=user.id, nickname=user.nickname, username=user.username)
+    followings = db.session.query(follow).filter(follow.follow_user_id == display_user_id).all()
+    followeds = db.session.query(follow).filter(follow.followed_user_id == display_user_id).all()
 
     following_user_info = []
     for following in followings:
         other_user = db.session.query(users).filter(users.id == following.followed_user_id).first()
-        other_user_info = dict(id=other_user.id, nickname=user.nickname)
+        other_user_info = dict(id=other_user.id, nickname=other_user.nickname, username=other_user.username)
         following_user_info.append(other_user_info)
 
     followed_user_info = []
     for followed in followeds:
         other_user = db.session.query(users).filter(users.id == followed.follow_user_id).first()
-        other_user_info = dict(id=other_user.id, nickname=user.nickname)
+        other_user_info = dict(id=other_user.id, nickname=other_user.nickname, username=other_user.username)
         followed_user_info.append(other_user_info)
     
     return render_template("follower.html",user_id=session["user_id"], user_info=user_info, following_user_info=following_user_info, followed_user_info=followed_user_info)

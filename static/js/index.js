@@ -1,6 +1,3 @@
-
-
-
 //  表示期間切り替え
 function period(){
   var url = "/home/period/";
@@ -50,20 +47,25 @@ function initMap() {
     p_node_date.appendChild(text_node_date);
     box_node.appendChild(p_node_date);
 
-    var p_node_artist = document.createElement('p');
+    var div_node_nickname = document.createElement('div');
+    var text_node_nickname = document.createTextNode("Nickname：" + SongData[i]["user_nickname"]);
+    div_node_nickname.appendChild(text_node_nickname);
+    box_node.appendChild(div_node_nickname);
+
+    var div_node_artist = document.createElement('div');
     var text_node_artist = document.createTextNode("Artist：" + SongData[i]["artist"]);
-    p_node_artist.appendChild(text_node_artist);
-    box_node.appendChild(p_node_artist);
+    div_node_artist.appendChild(text_node_artist);
+    box_node.appendChild(div_node_artist);
 
-    var p_node_track = document.createElement('p');
+    var div_node_track = document.createElement('div');
     var text_node_track = document.createTextNode("曲名：" + SongData[i]["track"]);
-    p_node_track.appendChild(text_node_track);
-    box_node.appendChild(p_node_track);
+    div_node_track.appendChild(text_node_track);
+    box_node.appendChild(div_node_track);
 
-    var p_node_emotion = document.createElement('p');
+    var div_node_emotion = document.createElement('div');
     var text_node_emotion = document.createTextNode("感情：" + SongData[i]["emotion"]);
-    p_node_emotion.appendChild(text_node_emotion);
-    box_node.appendChild(p_node_emotion);
+    div_node_emotion.appendChild(text_node_emotion);
+    box_node.appendChild(div_node_emotion);
 
     var p_node_comment = document.createElement('p');
     var text_node_comment = document.createTextNode("コメント：" + SongData[i]["comment"]);
