@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Edit
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+    var Lat = {{ lat | safe }};
+    var Lng = {{ lng | safe }};
+    var SongData = {{ Songdatas | safe }};
+    var UserId = {{ user_id }};
+  </script>
+
+  <script type="text/javascript" src="/static/js/edit_map.js"></script>
+{% endblock %}
+
+{% block main %}
+  <h1>Edit Pin </h1>
+  <!-- <style>
+    #map{
+      height: 400px;
+      width: 800px;
+      margin: 0 auto;
+    }
+  </style> -->
+
+  <div id="map" class="current-location-map"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6">
+        <div class = "edit_form">
+          <!-- <p>
+            アーティスト名：{{Songdatas[0]["artist"]}}
+          </p>
+            <p>
+              曲名：{{Songdatas[0]["track"]}}
+            </p> -->
+                <select class="location-emotion-form" name="emotion" id = "emotion"  required>
+                  {% if Songdatas[0]["emotion"] == "嬉しい" %}
+                  <option value="嬉しい" selected>嬉しい</option>
+                  {% else %}
+                  <option value="嬉しい">嬉しい</option>
+                  {% endif %}
+                  {% if Songdatas[0]["emotion"] == "楽しい" %}
+                  <option value="楽しい" selected>楽しい</option>
+                  {% else %}
+                  <option value="楽しい">楽しい</option>
+                  {% endif %}
+                  {% if Songdatas[0]["emotion"] == "落ち着き" %}
+                  <option value="落ち着き" selected>落ち着き</option>
+                  {% else %}
+                  <option value="落ち着き">落ち着き</option>
+                  {% endif %}
+                  {% if Songdatas[0]["emotion"] == "悲しい" %}
+                  <option value="悲しい" selected>悲しい</option>
+                  {% else %}
+                  <option value="悲しい">悲しい</option>
+                  {% endif %}
+                </select>
+                <input type="date" class="select-location-date-form" id="date" name="date" value = {{ Songdatas[0]["date"] }} min="2000-01-01" max="2021-12-31" required>
+          <textarea class="location-comment-form" id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！">{{Songdatas[0]["comment"]}}</textarea>
+          {% if Songdatas[0]["is_private"] == "False" %}
+            <input type="radio" id="public" name="pin_status" value="public" checked>
+            <label for="public">公開</label>
+            <input type="radio" id="private" name="pin_status" value="private">
+            <label for="private">非公開</label>
+          {% elif Songdatas[0]["is_private"] == "True" %}
+            <input type="radio" id="public" name="pin_status" value="public">
+            <label for="public">公開</label>
+            <input type="radio" id="private" name="pin_status" value="private" checked>
+            <label for="private">非公開</label>
+          {% endif %}
+          <div>
+            <input class="location-submit-button" type="button" value="更新する" id = "update" >
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3"></div>
+    </div>
+  </div>
+
+  <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
+{% endblock %} 

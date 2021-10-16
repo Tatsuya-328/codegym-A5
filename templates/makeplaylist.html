@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  makeplaylist
+{% endblock %}
+
+{% block main %}
+
+  <div class="table-responsive">
+    <form action="/makeplaylist" method="post">
+      <div class = "flex flex-row mx-auto">
+        <table class="table table-bordered">
+          <thead>
+          <tr>
+            <th></th>
+            <th>アーティスト</th>
+            <th>曲名</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in data %}
+            <tr>
+              <td><img src="{{ d['image'] }}"></td>
+              <td>{{ d["artist"] }}</td>
+              <td>{{ d["track"] }}</td>
+              <td>
+                <input type="checkbox" name="urls" value="{{ d['link'] }}" checked>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        </table>
+      </div>
+      <input style="display: block; margin: 10px auto;" class="" name="playlist_name" autocomplete="off" placeholder="プレイリスト名入力" type="type" >
+      <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">作成する</button>
+    </form>
+    </div>
+{% endblock %}
