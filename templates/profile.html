@@ -66,8 +66,9 @@
     {% endif %}
       <input type="hidden" name="playlistname" id="playlistname" value="プレイリスト名"> 
       <button class="btn btn-primary" type="submit">プレイリスト作成</button>
-      <button onclick="location.href='{{ url_for('playlist', display_user_id = user_info['id'] ) }}'" class="btn btn-secondary">プレイリスト一覧</button>
     </form>
+    <!-- 表示のボタンはformの外に出さないとsubmitされちゃう -->
+    <button onclick="location.href='{{ url_for('playlist', display_user_id = user_info['id'] ) }}'" class="btn btn-secondary">プレイリスト一覧</button>
 
   {% endif %}
   

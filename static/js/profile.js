@@ -99,7 +99,7 @@ let infoWindow = [];
 function initMap() {
   // 地図表示
   var map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 14,
+    zoom: 7,
     center: {lat: 35.665498, lng: 139.75964},
     styles: [{
         featureType: 'poi',
