@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  current location
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+    // var SongData = {{ Songdatas | safe }};
+    // var UserId = {{ user_id | safe }};
+    var Lat = {{ lat | safe }};
+    var Lng = {{ lng | safe }};
+  </script>
+
+  <script type="text/javascript" src="/static/js/createMemoryMap.js"></script>
+{% endblock %}
+
+{% block main %}
+  <div id="map" class="current-location-map"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6">
+          <input type="date" class="select-location-date-form" id="date" name="date" min="2000-01-01" max="2021-12-31" required>
+          <input class="location-submit-button" type="button" value="次へ" >
+        </div>
+      </div>
+      <div class="col-xl-3"></div>
+    </div>
+  </div>
+
+
+  <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
+{% endblock %}

@@ -513,6 +513,22 @@ def create_spotify_oauth():
         redirect_uri=url_for('spotify_authorize', _external=True),
         scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
 
+memory_data=[]
+@app.route('/create_memory', methods = ['GET', 'POST'])
+@login_required
+def create_memory():
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+    if request.method == "POST":
+        lat = request.form.get('lat')
+        lng = request.form.get('lng')
+        print(lat)
+        print(lng)
+        memory_data.append({'lat': lat, 'lng': lng})
+        return render_template('create_memory.html', lat=lat, lng=lng)
+    lat = request.args.get('lat')
+    lng = request.args.get('lng')
+    return render_template('create_memory.html', lat=memory_data[0]['lat'], lng=memory_data[0]['lng'], GOOGLEMAPURL=googlemapURL, user_id=session["user_id"])
+
 @app.route('/current_location', methods=['GET'])
 @login_required
 def current_location():
