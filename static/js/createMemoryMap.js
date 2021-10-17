@@ -93,43 +93,5 @@ function initMap() {
     function deletelistener(event){ 
       marker.setMap(null);
     }
-
-    // 位置情報、日付をgetTrackに送る
-    $("#adding").click(function() {
-      // var user_id = {{ user_id }};
-      var lat = event.latLng.lat() ;
-      var lng = event.latLng.lng() ;
-      var date = document.getElementById("date").value;
-      var emotion = document.getElementById("emotion").value;
-      var comment = document.getElementById("comment").value;
-      var pin_statuses = document.getElementsByName("pin_status");
-      var pin_status = ""
-      for (var i = 0; i < 2; i++){
-        if(pin_statuses[i].checked == true){
-          pin_status = pin_statuses[i].value
-          // console.log(pin_status)
-        }
-      }
-      $.ajax({
-        type:'POST',
-        url:'/getTrack',
-        data: {
-          "lat":lat,
-          "lng":lng,
-          "date":date,
-          "emotion":emotion,
-          "comment":comment,
-          "pin_status":pin_status,
-        },
-        dataType: 'text',
-      }).done(function(){
-        console.log("success");
-        url = "/profile/";
-        url += UserId;
-        window.location.href = url;
-      }).fail(function(){
-        console.log('failed');
-      })
-    })
   }
 }
