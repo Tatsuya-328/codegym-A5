@@ -513,8 +513,6 @@ def create_spotify_oauth():
         redirect_uri=url_for('spotify_authorize', _external=True),
         scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
 
-@app.route('/create_')
-
 @app.route('/current_location', methods=['GET'])
 @login_required
 def current_location():
