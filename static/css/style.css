@@ -197,3 +197,7 @@ a:link, a:visited, a:hover, a:active {
   margin-right: 5px;
   font-family: boid;
 }
+
+.panel{
+  padding: 20px;
+}
