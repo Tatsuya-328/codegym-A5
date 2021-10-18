@@ -529,6 +529,22 @@ def create_memory():
     lng = request.args.get('lng')
     return render_template('create_memory.html', lat=memory_data[0]['lat'], lng=memory_data[0]['lng'], GOOGLEMAPURL=googlemapURL, user_id=session["user_id"])
 
+@app.route('/create_memory/about', methods = ['GET', 'POST'])
+@login_required
+def memory_about():
+   
+
+
+
+    return render_template('memory_about.html', user_id=session["user_id"])
+
+# 出来事選択受け渡しのテスト
+@app.route("/test2", methods=['POST'])
+def test2():
+    favs = request.form.getlist("fav")
+    print("favs:", favs) 
+    return "ok"
+
 @app.route('/current_location', methods=['GET'])
 @login_required
 def current_location():

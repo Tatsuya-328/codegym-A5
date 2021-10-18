@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Create Memory
+{% endblock %}
+
+<!-- {% block js %}
+  <script type="text/javascript">
+    // var SongData = {{ Songdatas | safe }};
+    // var UserId = {{ user_id | safe }};
+    var Lat = {{ lat | safe }};
+    var Lng = {{ lng | safe }};
+  </script>
+
+  <script type="text/javascript" src="/static/js/createMemoryMap.js"></script>
+{% endblock %} -->
+
+{% block main %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-3" style="text-align-last: justify;  ">
+        <form action="/test2" method="POST">
+          <div class="col-xl-3">
+            <label><input type="checkbox" name="fav" value="勉強"><p style="text-align: center;">勉強</p></label>
+            <label><input type="checkbox" name="fav" value="運動"><p>運動</p></label>
+            <label><input type="checkbox" name="fav" value="ご飯"><p>ご飯</p></label>
+          </div>
+          <div class="col-xl-3">
+            <label><input type="checkbox" name="fav" value="ドライブ"><p>ドライブ</p></label>
+            <label><input type="checkbox" name="fav" value="旅行"><p>旅行</p></label>
+            <label><input type="checkbox" name="fav" value="散歩"><p>散歩</p></label>
+          </div>
+          <div class="col-xl-3">
+            <label><input type="checkbox" name="fav" value="仕事"><p>仕事</p></label>
+            <label><input type="checkbox" name="fav" value="学校"><p>学校</p></label>
+            <label><input type="checkbox" name="fav" value="恋愛"><p>恋愛</p></label>
+          </div>
+          <div class="col-xl-3">
+            <label><input type="checkbox" name="fav" value="海"><p>海</p></label>
+            <label><input type="checkbox" name="fav" value="山"><p>山</p></label>
+            <label><input type="checkbox" name="fav" value="その他"><p>その他</p></label>
+          </div>
+          <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">次へ</button>
+        </form>
+      </div>
+
+      <div class="col-xl-6">
+      </div>
+      <div class="col-xl-3"></div>
+    </div>
+
+
+  <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
+{% endblock %}
