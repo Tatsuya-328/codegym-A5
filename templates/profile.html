@@ -96,9 +96,9 @@
           <span class="sr-only">Close</span>
         </button>
       </div>
-        <!-- Modal ボディー -->
-        <div class="modal-body">
-          
+
+      <!-- Modal ボディー -->
+      <div class="modal-body">
         <div class="row">
           <div class="col-20 mt-3">
       
@@ -107,26 +107,47 @@
                 <span class="input-group-text">開始</span>
             
               <input class="input-period" type="text" name="from" id="from"  value = "{{nowdisplayfrom}}" placeholder="クリック選択" autocomplete="off">
-            <!-- </div> -->
+              <!-- </div> -->
 
-              <!-- <div class="input-group"> -->
-                <span class="input-group-text">終了</span>
-              
-              <input class ="input-period" type="text" name="to" id="to" value = "{{nowdisplayto}}" placeholder="クリック選択" autocomplete="off">
-            </div>
+                <!-- <div class="input-group"> -->
+                  <span class="input-group-text">終了</span>
+                
+                <input class ="input-period" type="text" name="to" id="to" value = "{{nowdisplayto}}" placeholder="クリック選択" autocomplete="off">
+              </div>
             </div>
       
           </div>
         </div>
       </div>
         
-        <!-- Modal フッター -->
-        <div class="modal-footer">
-          <!-- <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close
-          </button>                       -->
-          <button class="btn btn-primary" type="submit"  onClick="period();"> 指定期間表示</button>
-          <button class="btn btn-primary" onclick="location.href='/profile/{{user_id}}'">全期間表示</button>
+      <!-- Modal フッター -->
+      <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close
+        </button>                       -->
+        <button class="btn btn-primary" type="submit"  onClick="period();"> 指定期間表示</button>
+        <button class="btn btn-primary" onclick="location.href='/profile/{{user_id}}'">全期間表示</button>
+      </div>
+
+      <!-- 感情 -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="Modal">感情を入力</h5>
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-20 mt-3">
+            <div class="input-group">
+              <span class="input-group-text">感情</span>
+          
+              <input type="text" name="emotion" id="emotion"  value = "{{ emotion }}" placeholder="感情を入力" autocomplete="off">
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" type="submit"  onClick="emotion()"> 感情を指定</button>
+      </div>
       
     </div>
   </div>

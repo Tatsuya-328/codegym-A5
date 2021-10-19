@@ -587,7 +587,7 @@ def profilePeriod(display_user_id,displayfrom, displayto):
         return redirect('/spotify-login')    
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     # ユーザの情報
-    user_id = session["user_id"]
+    # user_id = session["user_id"]
     following_status = ""
     login_user_id = session["user_id"]
 
@@ -649,6 +649,70 @@ def profilePeriod(display_user_id,displayfrom, displayto):
         #makeplaylistにデータ渡す
         playlist_name = request.form['playlistname']
         return render_template('makeplaylist.html', data = songdata, name = playlist_name, user_id=session["user_id"])
+
+# プロフィールで感情指定
+@app.route('/profile/<display_user_id>/emotion/<emotion>', methods = ['GET','POST'])
+def profileEmotion(display_user_id,emotion):
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    # していなかったらリダイレクト。
+    if not authorized:
+        return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+    # ユーザの情報
+    following_status = ""
+    login_user_id = session["user_id"]
+
+    # 表示しているユーザーのフォロー情報
+    display_user_id = int(display_user_id) # int型に統一
+    if display_user_id == login_user_id:
+        following_status = "myself"
+    else:
+        following = db.session.query(follow).filter(follow.follow_user_id == login_user_id, follow.followed_user_id == display_user_id).first()
+        if following:
+            following_status = "True"
+        else:
+            following_status = "False"
+    
+    # フォローフォロワー数
+    follow_user = db.session.query(follow).filter(follow.follow_user_id == display_user_id).all()
+    if follow_user:
+        follow_number = len(follow_user)
+    else: 
+        follow_number = 0
+
+    followed_user = db.session.query(follow).filter(follow.followed_user_id == display_user_id).all()
+    if followed_user:
+        followed_number = len(followed_user)
+    else:
+        followed_number = 0
+    nickname = db.session.query(users.nickname).filter(users.id == display_user_id).first()
+    username = db.session.query(users.username).filter(users.id == display_user_id).first()
+    user_info = dict(id=display_user_id, username=username[0], following=following_status, follow_number=follow_number, followed_number=followed_number, nickname=nickname[0])
+    print(user_info)
+    print(nickname)
+
+    pins = []
+    songdata = []
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+
+    if login_user_id != display_user_id:
+        pins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).filter(song_locations.emotion == emotion).filter(song_locations.is_private == "False").all()
+    else:
+        pins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).filter(song_locations.emotion == emotion).all()
+    
+    for pin in pins:
+        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private})
+
+    if request.method == "GET":
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id )
+    
+    if request.method == "POST":
+        #makeplaylistにデータ渡す
+        playlist_name = request.form['playlistname']
+        return render_template('makeplaylist.html', data = songdata, name = playlist_name, user_id=session["user_id"])
+# プロフィールで感情指定
 
 
 @app.route('/makeplaylist', methods=['GET','POST'])

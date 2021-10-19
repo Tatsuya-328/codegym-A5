@@ -90,6 +90,13 @@ function period(){
   location.href = url;
 }
 
+function emotion(){
+  var url = "/profile/" + UserInfo.id + "/emotion/";
+  let emotion = document.getElementById('emotion').value;
+  url += emotion;
+  location.href = url;
+}
+
 // 地図関連
 let map;
 let mainMarker;
