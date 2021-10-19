@@ -95,3 +95,27 @@ function initMap() {
     }
   }
 }
+
+
+// $(document).ready(function () {
+//   $("#get_song").click(function() {
+//     var lat = document.getElementById("lat").value;
+//     var lng = document.getElementById("lng").value;
+//     var date = document.getElementById("date").value;
+//     $.ajax({
+//       type:'POST',
+//       url:'/new_get_track',
+//       data: {
+//         "lat":Lat,
+//         "lng":Lng,
+//         "date":date
+//       },
+//       dataType: 'text',
+//     }).done(function(){
+//       console.log("success");
+//       window.location.href = "/create_memory/emotion";
+//     }).fail(function(){
+//       console.log('failed');
+//     });
+//     });
+// });

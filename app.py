@@ -460,6 +460,47 @@ def getTrack():
             )
             return redirect("/")
 
+@app.route('/new_get_track', methods = ['POST'])
+@login_required
+def new_get_track():
+    #認証しているか確認
+        session['token_info'], authorized = get_token()
+        session.modified = True
+        # していなかったらリダイレクト。
+        if not authorized:
+            return redirect('/spotify-login')    
+        sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+        try:
+            # 連続で取得すると、エラーするため少し時間を置く（今は問題なさそうだからコメントアウト）
+            # time.sleep(3) 
+            current_track_info = get_current_track()
+            
+            # POSTの受け取り
+            lat = request.form.get('lat')
+            lng = request.form.get('lng')
+            date = request.form.get('date')
+            # memory_data = {'lat': lat, 'lng': lng, 'date': date}
+            # get_current_track()で取得したIDを以前取得したものと比較して異なっていたら新しい曲とみなし書き込む。
+            if current_track_info['id'] != session.get('current_id'):
+                exist_song = db.session.query(songs).filter(songs.track_id == current_track_info["id"]).all()
+                if exist_song == []:
+                    print(current_track_info["artists"])
+                    new_song = songs(track_id=current_track_info["id"], track_name=current_track_info["track_name"], artist_name=current_track_info["artists"], track_image=current_track_info["image"], spotify_url=current_track_info["link"])
+                    db.session.add(new_song)
+                    db.session.commit()
+                
+                memory_data[0]["track_id"] = current_track_info["id"]
+
+            session['current_id'] = current_track_info['id']
+            return redirect(url_for('profile', display_user_id=session['user_id']))
+
+        except TypeError as e:
+            print(
+                # エラーの場合原因返す
+                e
+            )
+            return redirect("/")
+
 # 現在再生されている曲情報を取得
 def get_current_track():
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
@@ -532,18 +573,91 @@ def create_memory():
 @app.route('/create_memory/about', methods = ['GET', 'POST'])
 @login_required
 def memory_about():
-   
+    if request.method == 'POST':
+        memory={}
+        lat = request.form.get('lat')
+        lng = request.form.get('lng')
+        date = request.form.get('date')
+        track_id = request.form.get('track_id')
+        emotion = request.form.get('emotion')
 
-
+        memory['lat']=lat
+        memory['lng']=lng
+        memory['date']=date
+        memory['track_id']=track_id
+        memory['emotion']=emotion
+        
+        return render_template('memory_about.html', user_id=session["user_id"], memory = memory)
 
     return render_template('memory_about.html', user_id=session["user_id"])
 
 # 出来事選択受け渡しのテスト
 @app.route("/test2", methods=['POST'])
 def test2():
-    favs = request.form.getlist("fav")
-    print("favs:", favs) 
-    return "ok"
+    if request.method == 'POST':
+        memory={}
+        lat = request.form.get('lat')
+        lng = request.form.get('lng')
+        date = request.form.get('date')
+        track_id = request.form.get('track_id')
+        emotion = request.form.get('emotion')
+        about = request.form.get('about')
+
+        memory['lat']=lat
+        memory['lng']=lng
+        memory['date']=date
+        memory['track_id']=track_id
+        memory['emotion']=emotion
+        memory['about']=about
+
+        print( memory) 
+        return "ok"
+
+@app.route('/create_memory/emotion', methods = ['GET','POST'])
+@login_required
+def create_memory_emotion():
+    if request.method == 'POST':
+        memory={}
+        session['token_info'], authorized = get_token()
+        session.modified = True
+            # していなかったらリダイレクト。
+        if not authorized:
+            return redirect('/spotify-login')    
+        sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+        try:
+            # 連続で取得すると、エラーするため少し時間を置く（今は問題なさそうだからコメントアウト）
+                # time.sleep(3) 
+            current_track_info = get_current_track()
+                
+                # POSTの受け取り
+            lat = request.form.get('lat')
+            lng = request.form.get('lng')
+            date = request.form.get('date')
+            # memory_data = {'lat': lat, 'lng': lng, 'date': date}
+            # get_current_track()で取得したIDを以前取得したものと比較して異なっていたら新しい曲とみなし書き込む。
+            if current_track_info['id'] != session.get('current_id'):
+                exist_song = db.session.query(songs).filter(songs.track_id == current_track_info["id"]).all()
+                if exist_song == []:
+                    print(current_track_info["artists"])
+                    new_song = songs(track_id=current_track_info["id"], track_name=current_track_info["track_name"], artist_name=current_track_info["artists"], track_image=current_track_info["image"], spotify_url=current_track_info["link"])
+                    db.session.add(new_song)
+                    db.session.commit()
+                memory['lat']=lat
+                memory['lng']=lng
+                memory['date']=date
+                memory['track_id']=current_track_info['id']
+                print(memory)
+                return render_template('create_memory_emotion.html', memory=memory, user_id=session['user_id'])
+
+            session['current_id'] = current_track_info['id']
+            return redirect(url_for('profile', display_user_id=session['user_id']))
+
+        except TypeError as e:
+            print(
+                # エラーの場合原因返す
+                e
+            )
+            return redirect("/")
 
 @app.route('/current_location', methods=['GET'])
 @login_required

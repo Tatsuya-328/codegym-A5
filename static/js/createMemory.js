@@ -22,7 +22,6 @@ $(document).ready(function () {
                 "lng":lng,
               },
               dataType: 'text',
-              
             }).done(function(){
               console.log("success");
               window.location.href = "/create_memory";
