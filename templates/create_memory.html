@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  current location
+  create memory
 {% endblock %}
 
 {% block js %}
@@ -16,30 +16,35 @@
 {% endblock %}
 
 {% block main %}
-<div class="container">
-  <div class="row">
-    <div class="col-xl-3"></div>
-    <div class="col-xl-6">
-      <div class="panel">場所と日時を指定してください</div>
-      <input type="date" class="select-location-date-form" id="date" name="date" min="2000-01-01" max="2021-12-31" required>
-    </div>
-    <div class="col-xl-3"></div>
-  </div>
-</div>
-  <div id="map" class="current-location-map"></div>
+<form method="post" action="/create_memory/emotion">
   <div class="container">
     <div class="row">
       <div class="col-xl-3"></div>
       <div class="col-xl-6">
-        <div class="panel">
-          Spotifyで登録したい曲を再生して次へボタンを押してください
-        </div>
-        <a href="/create_memory/emotion" class="location-submit-button btn btn-primary" type="button" value="次へ" style="color: white;">次へ</a>
-        </div>
+        <div class="panel">場所と日時を指定してください</div>
+        <input type="date" class="select-location-date-form" id="date" name="date" min="2000-01-01" max="2021-12-31" required>
+        <input name="lat" value="{{ lat }}" type="hidden">
+        <input name="lng" value="{{ lng }}" type="hidden">
       </div>
       <div class="col-xl-3"></div>
     </div>
   </div>
+    <div id="map" class="current-location-map"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-3"></div>
+        <div class="col-xl-6">
+          <div class="panel">
+            Spotifyで登録したい曲を再生して次へボタンを押してください
+          </div>
+          <button class="location-submit-button btn btn-primary" type="submit" style="color: white;" id="get_song">次へ</button>
+          </div>
+        </div>
+        <div class="col-xl-3"></div>
+      </div>
+    </div>
+</form>
+
 
 
   <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
