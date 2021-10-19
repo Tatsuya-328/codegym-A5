@@ -146,9 +146,53 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-primary" type="submit"  onClick="emotion()"> 感情を指定</button>
+        <button class="btn btn-primary" type="submit"  onClick="emotion();"> 感情を指定</button>
       </div>
-      
+      <!-- 感情 -->
+
+      <!-- アーテイスト -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="Modal">アーテイストを入力</h5>
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-20 mt-3">
+            <div class="input-group">
+              <span class="input-group-text">アーテイスト</span>
+          
+              <input type="text" name="artist" id="artist"  value = "{{ artist }}" placeholder="アーテイストを入力" autocomplete="off">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" type="submit"  onClick="artist();"> アーテイストを指定</button>
+      </div>
+      <!-- アーテイスト -->
+
+      <!-- 曲 -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="Modal">曲を入力</h5>
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-20 mt-3">
+            <div class="input-group">
+              <span class="input-group-text">曲</span>
+          
+              <input type="text" name="song_name" id="song_name"  value = "{{ song_name }}" placeholder="曲を入力" autocomplete="off">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" type="submit"  onClick="song_name();"> 曲を指定</button>
+      </div>
+      <!-- 曲 -->
     </div>
   </div>
 </div>
