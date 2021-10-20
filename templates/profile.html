@@ -58,9 +58,15 @@
     </div>
 
 
-    <!-- プレイリスト作成 期間指定かどうかで分岐-->
+    <!-- プレイリスト作成 なんの絞り込みになっているかでPOST先を分岐-->
     {% if nowdisplayfrom %}
     <form action="/profile/{{user_id}}/period/{{nowdisplayfrom}}/{{nowdisplayto}}" method="post">
+    {% elif emotion %}
+    <form action="/profile/{{user_id}}/emotion/{{emotion}}" method="post">
+    {% elif artist %}
+    <form action="/profile/{{user_id}}/artist/{{artist}}" method="post">
+    {% elif song_name %}
+    <form action="/profile/{{user_id}}/song_name/{{song_name}}" method="post">
     {% else %}
     <form action="/profile/{{user_id}}" method="post" style="float: left;">
     {% endif %}

@@ -670,7 +670,7 @@ def profilePeriod(display_user_id, displayfrom, displayto):
     songdata = profile_info["songdata"]
 
     if request.method == "GET":
-        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id )
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,  nowdisplayfrom=displayfrom, nowdisplayto=displayto, display_user_id=display_user_id )
     
     if request.method == "POST":
         #makeplaylistにデータ渡す
@@ -697,7 +697,7 @@ def profileEmotion(display_user_id,emotion):
     print(songdata)
 
     if request.method == "GET":
-        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id )
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id, emotion = emotion)
     
     if request.method == "POST":
         #makeplaylistにデータ渡す
@@ -723,7 +723,7 @@ def profileArtist(display_user_id,artist):
     songdata = profile_info["songdata"]
 
     if request.method == "GET":
-        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id )
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id, artist=artist )
     
     if request.method == "POST":
         #makeplaylistにデータ渡す
@@ -749,7 +749,7 @@ def profileSong(display_user_id, song_name):
     songdata = profile_info["songdata"]
 
     if request.method == "GET":
-        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id )
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id ,song_name=song_name)
     
     if request.method == "POST":
         #makeplaylistにデータ渡す
