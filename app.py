@@ -694,6 +694,7 @@ def profileEmotion(display_user_id,emotion):
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
+    print(songdata)
 
     if request.method == "GET":
         return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id )
