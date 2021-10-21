@@ -23,13 +23,37 @@
       });
     });
   </script>
+  <!-- userID検索 -->
+  <script type="text/javascript">
+    function jump() {
+    var baseURL = '/search/id/';
+    var sDIR = document.getElementById('tb1').value;
+    location.href = baseURL + sDIR;
+    }
+    </script>
 {% endblock %}
   
 {% block main %}
 
 {% if artistslist %}
+
+  <!-- userID検索 -->
+<div class="col-xs-10" style="padding: 40px 0 40px 0;">
+  <h1 style="font-size: 25px; text-align: center">ユーザー検索</h1>
+
+<div class="container">
+    <div class="col-xs-8">
+        <form action="javascript:jump();">
+          <input id="tb1" type="text" value="" placeholder="Nickname" required>
+          <input class="btn btn-primary" type="submit" value="検索">
+        </form>
+    </div>
+</div>
+</div>
+
+
 <div class="col-xs-10">
-  <h1 style="font-size: 25px; text-align: center">アーティストからユーザー検索</h1>
+  <h1 style="font-size: 25px; text-align: center">アーティストから検索</h1>
 </div>
 <div class="container">
   <!-- <div class="row"> -->
@@ -58,47 +82,73 @@
   <!-- </div> -->
 </div>
 {% else %}
-  {% if userlist %}
-  <div class="col-xs-10">
-    <h1 style="font-size: 25px; text-align: center">ユーザーリスト</h1>
-  </div>
-  <div class="container">
-    <!-- <div class="row"> -->
-      <div class="col-xs-2"></div>
-      <div class="col-xs-8">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Nickname</th>
-              <th>User name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for i in user_info %}
-            <tr data-href="{{ url_for('profile', display_user_id = i[0] ) }}">
-              <td><i class="fas fa-user"></i></td>
-              <td>{{  i[2]  }}</td>
-              <td>{{  i[1]  }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <div class="col-xs-2"></div>
-    <!-- </div> -->
-  </div>
-  {% else %}
-  <div class="col-xs-10">
-    <h1 style="font-size: 25px; text-align: center">アーティストからユーザー検索</h1>
-  </div>
-  <div class="cant-search">
-    <p>アーティストで検索出来ません。</p>
-    <p>なにか投稿してください。</p>
-  </div>
-  
-  {% endif %}
+
+{% if username %}
+<div class="col-xs-10">
+  <h1 style="font-size: 25px; text-align: center">ユーザーリスト</h1>
+</div>
+<div class="container">
+    <div class="col-xs-8">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Nickname</th>
+            <th>User name</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-href="{{url_for('profile', display_user_id = searchId )}}">
+            <td><i class="fas fa-user"></i></td>
+            <td>{{  nickname  }}</td>
+            <td>{{  username  }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+</div>
+{% elif userlist %}
+<div class="col-xs-10">
+  <h1 style="font-size: 25px; text-align: center">ユーザーリスト</h1>
+</div>
+<div class="container">
+  <!-- <div class="row"> -->
+    <div class="col-xs-2"></div>
+    <div class="col-xs-8">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Nickname</th>
+            <th>User name</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in user_info %}
+          <tr data-href="{{ url_for('profile', display_user_id = i[0] ) }}">
+            <td><i class="fas fa-user"></i></td>
+            <td>{{  i[2]  }}</td>
+            <td>{{  i[1]  }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-xs-2"></div>
+  <!-- </div> -->
+</div>
+{% else %}
+<div class="col-xs-10">
+  <h1 style="font-size: 25px; text-align: center">アーティストからユーザー検索</h1>
+</div>
+<div class="cant-search">
+  <p>アーティストで検索出来ません。</p>
+  <p>なにか投稿してください。</p>
+</div>
+
 {% endif %}
+{% endif %}
+
 
 
 

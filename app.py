@@ -364,6 +364,20 @@ def searchuser(selectedartistname):
     return render_template('search.html',userlist=userlist, user_info=user_info, user_id=session["user_id"])
 
 
+@app.route('/search/id/<nickname>', methods = ['GET'])
+@login_required
+def searchId(nickname):
+    # __tablename__ = 'users'
+	# id = db.Column(Integer, primary_key=True) これを含んだURLが飛ばせればよい。
+
+    searchId = db.session.query(users.id).filter(users.nickname == nickname).first()
+    # print(searchId)
+    username = db.session.query(users.username).filter(users.nickname == nickname).first()
+    # nickname = db.session.query(users.nickname).filter(users.id == searchId).first()
+    
+    return render_template('search.html',username=username[0], nickname=nickname,searchId=searchId[0], user_id=session["user_id"])
+
+
 # Spotifyの認証ページへリダイレクト
 @app.route('/spotify-login')
 @login_required
