@@ -20,6 +20,7 @@ from models import users, song_locations, songs, follow, made_playlists, db
 from sqlalchemy import or_
 
 from profile import Profile_info
+from home import Home_info
 
 GOOGLE_MAP_API_KEY = config.GOOGLE_MAP_API_KEY
 SPOTIFY_CLIENT_SECRET =config.SPOTIFY_CLIENT_SECRET
@@ -874,7 +875,7 @@ def homePeriod(displayfrom, displayto):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Profile_info(login_user_id, login_user_id, "period", displayfrom, displayto, None, None, None, GOOGLE_MAP_API_KEY)
+    profile_info = Home_info(login_user_id, "period", displayfrom, displayto, None, None, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
@@ -893,7 +894,7 @@ def homeEmotion(emotion):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Profile_info(login_user_id, login_user_id, "emotion", None, None, emotion, None, None, GOOGLE_MAP_API_KEY)
+    profile_info = Home_info(login_user_id, "emotion", None, None, emotion, None, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
@@ -913,10 +914,11 @@ def homeArtist(artist):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Profile_info(login_user_id, login_user_id, "artist", None, None, None, artist, None, GOOGLE_MAP_API_KEY)
+    profile_info = Home_info(login_user_id, "artist", None, None, None, artist, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
+    print(songdata)
 
     return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,)
 # ホームでアーティスト指定
@@ -933,10 +935,11 @@ def homeSong(song_name):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Profile_info(login_user_id, login_user_id, "song_name", None, None, None, None, song_name, GOOGLE_MAP_API_KEY)
+    profile_info = Home_info(login_user_id, "song_name", None, None, None, None, song_name, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
+    
 
     return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,)
 # ホームでアーティスト曲指定
