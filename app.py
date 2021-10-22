@@ -254,16 +254,30 @@ def profile(display_user_id):
         songlists.append(db.session.query(songs.track_name, songs.artist_name, songs.track_image, songs.spotify_url).filter(songs.track_id == track_id[0]).first())
     
     user_info = dict(id=display_user_id, username=username[0], following=following_status, follow_number=follow_number, followed_number=followed_number, songlists=songlists, nickname=nickname[0])
+    
+    # 自己紹介文取得
+    Introduce = db.session.query(users.introduce).filter(users.id == session['user_id']).all()
+    
     if request.method == "GET":
         #地図とかただ表示させるだけ
-        return render_template('profile.html', user_id=login_user_id ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, latestsongdata=latestsongdata) 
+        return render_template('profile.html', user_id=login_user_id ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, latestsongdata=latestsongdata,  Introduce = Introduce[0][0]) 
     if request.method == "POST":
         #playlist作成ボタン押したときmakeplaylistにデータ渡す
         playlist_name = request.form['playlistname']
         return render_template('makeplaylist.html', data = songdata, name = playlist_name, user_id = session['user_id'])
 
-
-
+# 自己紹介文更新
+@app.route('/setting', methods = ['GET','POST'])
+@login_required
+def setting():
+    if request.method == 'GET':
+        return render_template('setting.html',user_id=session['user_id'])
+    else:
+        text = request.form.get("text")
+        user = users.query.filter_by(id=session['user_id']).first()
+        user.introduce=text
+        db.session.commit()
+        return redirect(url_for('profile', display_user_id=session['user_id']))
 
 @app.route('/follow', methods = ['POST'])
 @login_required
