@@ -12,7 +12,11 @@
     <div class="col-xs-10 panel">
       <h3>{{ display_user[0] }}のプレイリスト</h3>
     </div>
+    {% if display_user_id == user_id  %}
     <form action="/delete_playlist" method="post">
+    {% else %}
+    <form action="/add_playlist" method="post">
+    {% endif %}
       <div class = "flex flex-row mx-auto">
         <table class="table table-hover">
         <tbody>
@@ -28,15 +32,22 @@
                   allowtransparency="true" allow="encrypted-media">
                 </iframe>
               </td>
+              
               <td>
                 <input type="checkbox" name="deletelists" value="{{ i['playlist_id'] }}" >
               </td>
+              
           </tr>
           {% endfor %}
         </tbody>
         </table>
       </div>
+      {% if display_user_id == user_id  %}
       <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">削除する</button>
+      {% else %}
+      <!-- 現在は他のユーザーでもSpotifyアカウントは自分だから動作しないけれど、見栄え上作ってみた -->
+      <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">自分のリストに追加する</button>
+      {% endif %}
     </form>
     </div>
   {% endif %}

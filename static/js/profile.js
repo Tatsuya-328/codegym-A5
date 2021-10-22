@@ -16,6 +16,27 @@ function period(){
   location.href = url;
 }
 
+function emotion(){
+  var url = "/profile/" + UserInfo.id + "/emotion/";
+  let emotion = document.getElementById('emotion').value;
+  url += emotion;
+  location.href = url;
+}
+
+function artist(){
+  var url = "/profile/" + UserInfo.id + "/artist/";
+  let artist = document.getElementById('artist').value;
+  url += artist;
+  location.href = url;
+}
+
+function song_name(){
+  var url = "/profile/" + UserInfo.id + "/song_name/";
+  let song_name = document.getElementById('song_name').value;
+  url += song_name;
+  location.href = url;
+}
+
 // 地図関連
 let map;
 let mainMarker;
