@@ -67,6 +67,8 @@ function initMap() {
     //markerの位置を設定
     //event.latLng.lat()でクリックしたところの緯度を取得
     marker.setPosition(new google.maps.LatLng(event.latLng.lat(), event.latLng.lng()));
+    document.getElementById('lat').value = event.latLng.lat();
+    document.getElementById('lng').value = event.latLng.lng();
     //marker設置
     marker.setMap(map);
     // window表示して、今の楽曲取得して登録ボタンをつける。
@@ -95,27 +97,3 @@ function initMap() {
     }
   }
 }
-
-
-// $(document).ready(function () {
-//   $("#get_song").click(function() {
-//     var lat = document.getElementById("lat").value;
-//     var lng = document.getElementById("lng").value;
-//     var date = document.getElementById("date").value;
-//     $.ajax({
-//       type:'POST',
-//       url:'/new_get_track',
-//       data: {
-//         "lat":Lat,
-//         "lng":Lng,
-//         "date":date
-//       },
-//       dataType: 'text',
-//     }).done(function(){
-//       console.log("success");
-//       window.location.href = "/create_memory/emotion";
-//     }).fail(function(){
-//       console.log('failed');
-//     });
-//     });
-// });

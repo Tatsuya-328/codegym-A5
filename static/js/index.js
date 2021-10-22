@@ -80,6 +80,11 @@ function initMap() {
     div_node_emotion.appendChild(text_node_emotion);
     box_node.appendChild(div_node_emotion);
 
+    var div_node_about = document.createElement('div');
+    var text_node_about = document.createTextNode("ジャンル：" + SongData[i]["about"]);
+    div_node_about.appendChild(text_node_about);
+    box_node.appendChild(div_node_about);
+
     var p_node_comment = document.createElement('p');
     var text_node_comment = document.createTextNode("コメント：" + SongData[i]["comment"]);
     p_node_comment.appendChild(text_node_comment);
