@@ -88,10 +88,21 @@ function initMap() {
     var p_node_spotify = document.createElement("p");
     var a_node_spotify = document.createElement("a");
     a_node_spotify.href = SongData[i]["link"];
+    a_node_spotify.target = "_blank"; //別タブの方がいいかなと思って追記（たつや）
     var text_node_spotify = document.createTextNode("Open Spotify");
     a_node_spotify.appendChild(text_node_spotify);
     p_node_spotify.appendChild(a_node_spotify);
     box_node.appendChild(p_node_spotify);
+
+    // userのProfile別タブで開く
+    var p_node_userlink = document.createElement("p");
+    var a_node_userlink = document.createElement("a");
+    a_node_userlink.href = "profile/" + SongData[i]["user_id"];
+    a_node_userlink.target = "_blank";
+    var text_node_userlink = document.createTextNode("Open User's page");
+    a_node_userlink.appendChild(text_node_userlink);
+    p_node_userlink.appendChild(a_node_userlink);
+    box_node.appendChild(p_node_userlink);
 
     // 自分の作ったピンしか編集ボタンを表示しない
     console.log(UserId)
