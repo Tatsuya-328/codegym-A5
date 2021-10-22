@@ -80,5 +80,5 @@ window.onload = function () {
   var dd = toTwoDigits(day, 2)
   var ymd = yyyy + "-" + mm + "-" + dd;
   
-  document.getElementById("today").value = ymd;
+  document.getElementById("date").value = ymd;
 }
