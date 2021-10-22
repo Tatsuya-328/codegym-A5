@@ -965,7 +965,7 @@ def makeplaylist():
         db.session.commit()    
         
         playlistaa = db.session.query(made_playlists.playlist_uri).filter(made_playlists.user_id == session["user_id"]).all()
-        print("play",playlistaa[0] )
+        # print("play",playlistaa[0] )
 
         return redirect(url_for('playlist', display_user_id=session['user_id']))
 
@@ -988,9 +988,9 @@ def playlist(display_user_id):
         playlists.append({'id':pin.id,'user_id':pin.user_id, 'playlist_id':pin.playlist_id, 'playlist_uri':pin.playlist_uri,
         'playlist_image':pin.playlist_image,'playlist_name':pin.playlist_name})
     display_user = db.session.query(users.nickname).filter(users.id == display_user_id).first()
-    # print(display_user)
-
-    return render_template('playlist.html', playlists = playlists,user_id = session['user_id'], display_user = display_user) 
+    display_user_id = db.session.query(users.id).filter(users.id == display_user_id).first()[0]
+   
+    return render_template('playlist.html', playlists = playlists,user_id = session['user_id'], display_user = display_user, display_user_id=display_user_id) 
 
 @app.route('/delete_playlist/', methods = ['POST'])
 def deletePlaylist():
@@ -1010,6 +1010,39 @@ def deletePlaylist():
             db.session.commit()
         
         return redirect(url_for('playlist', display_user_id=session['user_id']))
+
+
+@app.route('/add_playlist/', methods = ['POST'])
+def addPlaylist():
+    if request.method == 'POST':
+        session['token_info'], authorized = get_token()
+        session.modified = True
+        # していなかったらリダイレクト。
+        if not authorized:
+            return redirect('/spotify-login')    
+        sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+        
+        addlists = request.form.getlist("deletelists")
+        for i in addlists:
+            sp.current_user_follow_playlist(i)
+
+        #プレイリストIDをsessionに保存
+            playlist_id = sp.current_user_playlists()['items'][0]['id']
+            #プレイリストURIをsessionに保存
+            playlist_uri_test = sp.current_user_playlists()['items'][0]['uri']
+            # playlist_uri = playlist_uri_test.removeprefix('spotify:playlist:')
+            playlist_uri = playlist_uri_test.replace('spotify:playlist:', '')
+            session['playlist_uri'] = playlist_uri
+
+            playlist_image = sp.playlist_cover_image(playlist_id)[0]['url']
+            playlist_name =sp.playlist(playlist_id)["name"]
+
+            new_playlist = made_playlists(user_id=session["user_id"],playlist_id = playlist_id ,playlist_uri=playlist_uri,playlist_image=playlist_image,playlist_name=playlist_name)
+            db.session.add(new_playlist)
+            db.session.commit()  
+        
+        return redirect(url_for('playlist', display_user_id=session['user_id']))
+
 
 # HOMEで時期指定
 @app.route('/home/period/<displayfrom>/<displayto>', methods = ['GET'])
