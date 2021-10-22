@@ -28,8 +28,9 @@ class song_locations(db.Model):
   emotion = db.Column(TEXT, unique=False)
   comment = db.Column(TEXT, unique=False)
   is_private = db.Column(TEXT, unique=False)
+  about = db.Column(TEXT, unique=False)
 
-  def __init__(self, user_id=None, track_id=None, longitude=None, latitude=None, date=None, emotion = None, comment = None, is_private= None):
+  def __init__(self, user_id=None, track_id=None, longitude=None, latitude=None, date=None, emotion = None, comment = None, is_private= None, about=None):
     self.user_id = user_id
     self.track_id = track_id
     self.longitude = longitude
@@ -38,6 +39,7 @@ class song_locations(db.Model):
     self.emotion = emotion
     self.comment = comment
     self.is_private = is_private
+    self.about = about
 
 class songs(db.Model):
   __tablename__ = 'songs'

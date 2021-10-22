@@ -82,11 +82,29 @@ a:link, a:visited, a:hover, a:active {
   text-align: center;
 }
 
-/* @media (min-width: 544px){
-.index-map{
+/* edit_map */
+.edit-comment-form{
   width: 100%;
-  height: 75vh;
-}} */
+  height: 10vh;
+  margin-bottom: 15px
+}
+.edit-emotion-form{
+  width: 100%;
+  height: 5vh;
+  margin-bottom: 10px;
+}
+.edit-about-form{
+  width: 100%;
+  height: 5vh;
+  margin-bottom: 10px;
+}
+.edit-date-form{
+  width: 100%;
+  margin: 10px 0;
+}
+.edit-private-form{
+  text-align: center;
+}
 
 .index-map{
   width: 100%;
@@ -161,9 +179,6 @@ a:link, a:visited, a:hover, a:active {
 }
 .gnav__menu__item a:hover{
   color: #337ab7;
-/* =======
-
->>>>>>> 33e9f8150e4cdf6a6dcdd4ecaeabbefd8a9016eb */
 }
 
 .user-infomation {
@@ -199,7 +214,7 @@ a:link, a:visited, a:hover, a:active {
 }
 
 .panel{
-  padding: 20px;
+  padding: 15px;
   text-align: center;
 }
 
@@ -209,4 +224,27 @@ a:link, a:visited, a:hover, a:active {
   width: 100px;
   float: left;
   margin: 15px;
+}
+
+/* create_memory_confirm */
+.panel-memory-data{
+  text-align: center;
+  margin: 15px;
+}
+.display-emotion{
+
+}
+.private-form{
+  text-align: center;
+  margin: 10px
+}
+
+/* search */
+.artist-table{
+  padding-bottom: 40px;
+}
+
+/* makeplaylist */
+.playlist-form{
+  padding-bottom: 60px;
 }

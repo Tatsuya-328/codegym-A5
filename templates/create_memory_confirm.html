@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  create memory
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+    // var SongData = {{ Songdatas | safe }};
+    // var UserId = {{ user_id | safe }};
+    var Memory = {{ memory | safe }};
+    var Lat = {{ lat | safe }};
+    var Lng = {{ lng | safe }};
+  </script>
+
+  <script type="text/javascript" src="/static/js/createMemoryComplete.js"></script>
+{% endblock %}
+
+{% block main %}
+<form method="post" action="/create_memory/complete">
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6">
+        <input name="lat" value="{{ memory['lat'] }}" type="hidden">
+        <input name="lng" value="{{ memory['lng'] }}" type="hidden">
+        <input name="date" value="{{ memory['date'] }}" type="hidden">
+        <input name="track_id" value="{{ memory['track_id'] }}" type="hidden">
+        <input name="emotion" value="{{ memory['emotion'] }}" type="hidden">
+        <input name="about" value="{{ memory['about'] }}" type="hidden">
+      </div>
+      <div class="col-xl-3"></div>
+    </div>
+  </div>
+    <div id="map" class="current-location-map"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-3"></div>
+        <div class="col-xl-6">
+          <div class="panel-memory-data">
+            {{ memory['date'] }}
+            {{ memory['about'] }}
+            {% if memory['emotion'] == "嬉しい" %}
+              <div class="display-emotion">
+                <img src="../static/image/laugh.png" width="50" height="50" >
+                <label for="emotion">嬉しい</label>
+              </div>
+            {% elif memory['emotion'] == "楽しい" %}
+              <div class="display-emotion">
+                <img src="../static/image/hehe.png" width="50" height="50">
+                <label for="emotion">楽しい</label>
+              </div>
+            {% elif memory['emotion'] == "安心" %}
+              <div class="display-emotion">
+                <img src="../static/image/tere.png" width="50" height="50">
+                <label for="emotion">安心</label>
+              </div>
+            {% elif memory['emotion'] == "退屈" %}
+              <div class="display-emotion">
+                <img src="../static/image/jito.png" width="50" height="50">
+                <label for="emotion">退屈</label>
+              </div>
+            {% elif memory['emotion'] == "不安"%}
+              <div class="display-emotion">
+                <img src="../static/image/ase.png" width="50" height="50">
+                <label for="emotion">不安</label>
+              </div>
+            {% elif memory['emotion'] == "イライラ"%}
+              <div class="display-emotion">
+                <img src="../static/image/angry.png" width="50" height="50">
+                <label for="emotion">イライラ</label>
+              </div>
+            {% elif memory['emotion'] == "悲しい" %}
+              <div class="display-emotion">
+                <img src="../static/image/cry.png" width="50" height="50">
+                <label for="emotion">悲しい</label>
+              </div>
+            {% elif memory['emotion'] == "驚き" %}
+              <div class="display-emotion">
+                <img src="../static/image/odoroki.png" width="50" height="50">
+                <label for="emotion">驚き</label>
+              </div>
+            {% endif  %}
+          </div>
+          <textarea class="location-comment-form" name="comment" placeholder="詳しく書いてみてください"></textarea>
+          <div class="private-form">
+            <input type="radio" id="public" name="pin_status" value="public" checked>
+            <label for="public">公開</label>
+            <input type="radio" id="private" name="pin_status" value="private">
+            <label for="private">非公開</label>
+          </div>
+          <button class="location-submit-button btn btn-primary" type="submit" style="color: white;">登録</button>
+          </div>
+        </div>
+        <div class="col-xl-3"></div>
+      </div>
+    </div>
+</form>
+
+
+
+  <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
+{% endblock %}

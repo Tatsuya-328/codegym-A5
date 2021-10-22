@@ -9,16 +9,12 @@
 
   {% else %}
   <div class="table-responsive" style="margin-bottom: 50px;">
-    <h3>{{ display_user[0] }}のプレイリスト</h3>
+    <div class="col-xs-10 panel">
+      <h3>{{ display_user[0] }}のプレイリスト</h3>
+    </div>
     <form action="/delete_playlist" method="post">
       <div class = "flex flex-row mx-auto">
         <table class="table table-hover">
-          <thead>
-          <tr>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
         <tbody>
           {% for i in playlists %}
           <!-- <a href="https://open.spotify.com/playlist/{{i['playlist_uri']}}" target="_blank"> -->
