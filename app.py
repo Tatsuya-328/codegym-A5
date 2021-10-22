@@ -66,15 +66,34 @@ def index():
         for follow_pin in follow_pins:
             pins.append(follow_pin)
     for pin in pins:
-        print(pin)
+        # print(pin)
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         user = db.session.query(users).filter(users.id == pin.user_id).first()
-        print(user.nickname)
+        # print(user.nickname)
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
         # print(pin.date)
 
-    return render_template('index.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+
+    #最新3件の投稿をリスト表示させる
+    latestpins = []
+    latestsongdata = []
+    # latestpins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).limit(3).all()
+
+    for follow_user in follow_users:
+        latestfollow_pins = db.session.query(song_locations).filter(song_locations.user_id == follow_user[0]).order_by(desc(song_locations.id)).limit(3).all()
+        for follow_pin in latestfollow_pins:
+            latestpins.append(follow_pin)
+    for pin in latestpins:
+            # print(pin)
+            song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+            user = db.session.query(users).filter(users.id == pin.user_id).first()
+            # print(user.nickname)
+            latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+            'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
+
+
+    return render_template('index.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata)
 
 
 @app.route("/register", methods=["GET", "POST"])

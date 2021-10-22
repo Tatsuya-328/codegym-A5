@@ -77,10 +77,45 @@
   </div>
 </div>
 
-  <div class="container">
-    
-  
-  </div>
+<div id="map" class="index-map"></div>
+
+  <!-- 最近追加した曲リスト -->
+  <div class="table-responsive">
+    <!-- <form action="/makeplaylist" method="post"> -->
+      <div class = "flex flex-row mx-auto">
+        <table class="table table-bordered">
+          <thead>
+          <tr>
+            <!-- <th>画像入る</th> -->
+            <!-- <th>日付</th> -->
+            <!-- <th>アーティスト</th> -->
+            <!-- <th>曲名</th> -->
+            <!-- <th>感情</th> -->
+            <!-- <th>コメント</th> -->
+            <!-- <th>感情</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in latestsongdata %}
+            <tr>
+              <td><img src="{{ d['image'] }}"></td>
+              <td>{{ d["user_nickname"] }}</td>
+              <td>{{ d["date"] }}</td>
+              <td>{{ d["artist"] }}</td>
+              <td>{{ d["track"] }}</td>
+              <td>{{ d["emotion"] }}</td>
+              <td>{{ d["comment"] }}</td>
+              <!-- <td></td> -->
+            </tr>
+          {% endfor %}
+        </tbody>
+        </table>
+      </div>
+      <!-- <input style="display: block; margin: 10px auto;" class="" name="playlist_name" autocomplete="off" placeholder="プレイリスト名入力" type="type" >
+      <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">作成する</button> -->
+    <!-- </form> -->
+    </div>
+
 
 <script>
 $('.input-daterange').datepicker({
@@ -95,8 +130,5 @@ $('.input-daterange').datepicker({
   }
 });
 </script>
-
-  <div id="map" class="index-map"></div>
-
   <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
 {% endblock %}
