@@ -44,6 +44,11 @@ function initMap() {
     div_node_emotion.appendChild(text_node_emotion);
     box_node.appendChild(div_node_emotion);
 
+    var div_node_about = document.createElement('div');
+    var text_node_about = document.createTextNode("ジャンル：" + SongData[i]["about"]);
+    div_node_about.appendChild(text_node_about);
+    box_node.appendChild(div_node_about);
+
     var p_node_comment = document.createElement('p');
     var text_node_comment = document.createTextNode("コメント：" + SongData[i]["comment"]);
     p_node_comment.appendChild(text_node_comment);
@@ -72,6 +77,7 @@ function initMap() {
     console.log("success")
     var date = document.getElementById("date").value;
     var emotion = document.getElementById("emotion").value;
+    var about = document.getElementById("about").value;
     var comment = document.getElementById("comment").value;
     var pin_statuses = document.getElementsByName("pin_status");
     var pin_status = ""
@@ -87,6 +93,7 @@ function initMap() {
       data: {
         "date":date,
         "emotion":emotion,
+        "about":about,
         "comment":comment,
         "pin_status":pin_status,
       },
