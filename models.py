@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from six import integer_types
 from sqlalchemy import Column, Integer, Float
 from sqlalchemy.sql.sqltypes import DATE, STRINGTYPE, TEXT, DateTime, BOOLEAN
 from sqlalchemy import Column, String, Integer
@@ -6,16 +7,19 @@ from sqlalchemy import Column, String, Integer
 db = SQLAlchemy()
 
 class users(db.Model):
-	__tablename__ = 'users'
-	id = db.Column(Integer, primary_key=True)
-	username = db.Column(TEXT, unique=True)# emailカラム→usernameカラム
-	hash = db.Column(TEXT, unique=False)
-	nickname = db.Column(TEXT, unique=False)# nameカラム→nicknameカラム
+  __tablename__ = 'users'
+  id = db.Column(Integer, primary_key=True)
+  username = db.Column(TEXT, unique=True)# emailカラム→usernameカラム
+  hash = db.Column(TEXT, unique=False)
+  nickname = db.Column(TEXT, unique=False)# nameカラム→nicknameカラム
+  introduce = db.Column(TEXT, unique=False)# nameカラム→nicknameカラム
+  
+  def __init__(self, username=None, hash=None, nickname=None, introduce=None):
+    self.username = username
+    self.hash = hash
+    self.nickname = nickname
+    self.introduce = introduce
 
-	def __init__(self, username=None, hash=None, nickname=None):
-		self.username = username
-		self.hash = hash
-		self.nickname = nickname
 
 class song_locations(db.Model):
   __tablename__ = 'song_locations'

@@ -17,8 +17,6 @@
 {% block main %}
 
 <!-- ユーザー情報 -->
-  <!-- <p >ログインユーザーID{{  user_id  }}</p> -->
-
   {% if user_info %}
     {% if user_info["following"] == "myself" %}
       <div class="nav_area">
@@ -31,44 +29,65 @@
               <ul class="gnav__menu">
                 <li class="gnav__menu__item"><a href="/spotify-login">Spotify Log in</a></li>
                   <li class="gnav__menu__item"><a href="/logout">Log out</a></li>
+                  <li class="gnav__menu__item"><a href="/setting">Setting</a></li>
               </ul>
           </div><!--gnav-wrap-->
         </nav>
         <div class="hero"></div>
       </div>
     {% endif %}
-    <h1>{{  user_info["nickname"]  }}</h1>
+
+    <h1 style="float: left;">{{  user_info["nickname"]  }}</h1>
     <p id = "display_user_id" style="visibility: hidden; height: 0px; margin: 0px;">{{  user_info["id"]  }}</p>
     <p>{{  user_info["username"]  }}</p>
     <!-- <p>{{  user_info["following"]  }}</p> -->
+    
+    
     <div id="follower">
-      <p>
+      <p style="margin-bottom: 0px;">
         <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}">
           <span>{{ user_info["follow_number"] }}</span>フォロー
         </a>
         <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}">
           <span>{{ user_info["followed_number"] }}</span>フォロワー
         </a>
-        {% if user_info["following"] == "True" %}
-          <button class="btn btn-danger" type="button" value="button" id = "cancell" >cancell</button>
-        {% elif user_info["following"] == "False" %}
-          <button class="btn btn-success" type="button" value="button" id = "follow">follow</button>
-        {% endif %}
       </p>
+</div>
+
+  <div>
+      <p>
+        {{Introduce}}
+      </p>
+  </div>
+
+<!-- 他のユーザーのプロフィールならフォローボタン表示 -->
+    {% if user_info["following"] != "myself" %}
+  <div>
+    {% if user_info["following"] == "True" %}
+      <button class="btn btn-danger" type="button" value="button" id = "cancell" style="float: left;" >cancell</button>
+    {% elif user_info["following"] == "False" %}
+      <button class="btn btn-success" type="button" value="button" id = "follow"  style="float: left;" >follow</button>
+      {% endif %}
+  </div>
+
+  <!-- 自分ならプレイリスト作成ボタン表示 -->
+    {% elif user_info["following"] == "myself" %}
+    <div>
+      <!-- プレイリスト作成 期間指定かどうかで分岐-->
+      {% if nowdisplayfrom %}
+      <form action="/profile/{{user_id}}/period/{{nowdisplayfrom}}/{{nowdisplayto}}" method="post">
+      {% else %}
+      <form action="/profile/{{user_id}}" method="post" style="float: left;">
+      {% endif %}
+        <input type="hidden" name="playlistname" id="playlistname" value="プレイリスト名"> 
+        <button class="btn btn-primary" type="submit">プレイリスト作成</button>
+      </form>    
     </div>
-
-
-    <!-- プレイリスト作成 期間指定かどうかで分岐-->
-    {% if nowdisplayfrom %}
-    <form action="/profile/{{user_id}}/period/{{nowdisplayfrom}}/{{nowdisplayto}}" method="post">
-    {% else %}
-    <form action="/profile/{{user_id}}" method="post" style="float: left;">
     {% endif %}
-      <input type="hidden" name="playlistname" id="playlistname" value="プレイリスト名"> 
-      <button class="btn btn-primary" type="submit">プレイリスト作成</button>
-    </form>
-    <!-- 表示のボタンはformの外に出さないとsubmitされちゃう -->
-    <button onclick="location.href='{{ url_for('playlist', display_user_id = user_info['id'] ) }}'" class="btn btn-secondary">プレイリスト一覧</button>
+  
+
+  <!-- プレイリスト表示ボタン -->
+  <button onclick="location.href='{{ url_for('playlist', display_user_id = user_info['id'] ) }}'" class="btn btn-secondary" style="float: left;">プレイリスト一覧</button>
 
   {% endif %}
   
@@ -156,6 +175,41 @@ $('.input-daterange').datepicker({
   <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
 
   
+  <!-- 最近追加した曲リスト -->
+    <div class="table-responsive">
+      <!-- <form action="/makeplaylist" method="post"> -->
+        <div class = "flex flex-row mx-auto">
+          <table class="table table-bordered">
+            <thead>
+            <tr>
+              <!-- <th>画像入る</th> -->
+              <!-- <th>日付</th> -->
+              <!-- <th>アーティスト</th> -->
+              <!-- <th>曲名</th> -->
+              <!-- <th>感情</th> -->
+              <!-- <th>コメント</th> -->
+              <!-- <th>感情</th> -->
+            </tr>
+          </thead>
+          <tbody>
+            {% for d in latestsongdata %}
+              <tr>
+                <td><img src="{{ d['image'] }}"></td>
+                <td>{{ d["date"] }}</td>
+                <td>{{ d["artist"] }}</td>
+                <td>{{ d["track"] }}</td>
+                <td>{{ d["emotion"] }}</td>
+                <td>{{ d["comment"] }}</td>
+                <!-- <td></td> -->
+              </tr>
+            {% endfor %}
+          </tbody>
+          </table>
+        </div>
+        <!-- <input style="display: block; margin: 10px auto;" class="" name="playlist_name" autocomplete="off" placeholder="プレイリスト名入力" type="type" >
+        <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">作成する</button> -->
+      <!-- </form> -->
+      </div>
 
 
 {% endblock %}

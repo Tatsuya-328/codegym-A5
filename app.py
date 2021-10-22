@@ -17,7 +17,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
 import config
 from models import users, song_locations, songs, follow, made_playlists, db
-from sqlalchemy import or_
+from sqlalchemy import or_, desc
 
 GOOGLE_MAP_API_KEY = config.GOOGLE_MAP_API_KEY
 SPOTIFY_CLIENT_SECRET =config.SPOTIFY_CLIENT_SECRET
@@ -66,15 +66,34 @@ def index():
         for follow_pin in follow_pins:
             pins.append(follow_pin)
     for pin in pins:
-        print(pin)
+        # print(pin)
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         user = db.session.query(users).filter(users.id == pin.user_id).first()
-        print(user.nickname)
+        # print(user.nickname)
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
         'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
         # print(pin.date)
 
-    return render_template('index.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+
+    #最新3件の投稿をリスト表示させる
+    latestpins = []
+    latestsongdata = []
+    # latestpins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).limit(3).all()
+
+    for follow_user in follow_users:
+        latestfollow_pins = db.session.query(song_locations).filter(song_locations.user_id == follow_user[0]).order_by(desc(song_locations.id)).limit(3).all()
+        for follow_pin in latestfollow_pins:
+            latestpins.append(follow_pin)
+    for pin in latestpins:
+            # print(pin)
+            song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+            user = db.session.query(users).filter(users.id == pin.user_id).first()
+            # print(user.nickname)
+            latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+            'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
+
+
+    return render_template('index.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -172,7 +191,7 @@ def logout():
 def profile(display_user_id):
     session['token_info'], authorized = get_token()
     session.modified = True
-    # していなかったらリダイレクト。
+    # Spotify認証していなかったらリダイレクト。
     if not authorized:
         return redirect('/spotify-login')    
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
@@ -205,11 +224,26 @@ def profile(display_user_id):
     for pin in pins:
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion,'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private})
-        print(pin.date)
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private})
+        
+    #最新3件の投稿を表示させる
+    latestpins = []
+    latestsongdata = []
+    if login_user_id != display_user_id:
+        latestpins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).filter(song_locations.is_private == "False").order_by(desc(song_locations.id)).limit(3).all()
+        print("diff")
+    elif login_user_id == display_user_id:
+        latestpins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).order_by(desc(song_locations.id)).limit(3).all()
+        print("same")
+    else:
+        print("error")
+    for pin in latestpins:
+        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private})
+        # print("latest",latestsongdata)
 
     following_status = ""
-
     # 表示しているユーザーのフォロー情報
     display_user_id = int(display_user_id) # int型に統一
     if display_user_id == login_user_id:
@@ -220,9 +254,6 @@ def profile(display_user_id):
             following_status = "True"
         else:
             following_status = "False"
-    
-    # print("following: ", end="")
-    # print(following)
 
     # フォローフォロワー数
     follow_user = db.session.query(follow).filter(follow.follow_user_id == display_user_id).all()
@@ -242,15 +273,30 @@ def profile(display_user_id):
         songlists.append(db.session.query(songs.track_name, songs.artist_name, songs.track_image, songs.spotify_url).filter(songs.track_id == track_id[0]).first())
     
     user_info = dict(id=display_user_id, username=username[0], following=following_status, follow_number=follow_number, followed_number=followed_number, songlists=songlists, nickname=nickname[0])
+    
+    # 自己紹介文取得
+    Introduce = db.session.query(users.introduce).filter(users.id == session['user_id']).all()
+    
     if request.method == "GET":
-        return render_template('profile.html', user_id=login_user_id ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata) 
+        #地図とかただ表示させるだけ
+        return render_template('profile.html', user_id=login_user_id ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, latestsongdata=latestsongdata,  Introduce = Introduce[0][0]) 
     if request.method == "POST":
-        #makeplaylistにデータ渡す
+        #playlist作成ボタン押したときmakeplaylistにデータ渡す
         playlist_name = request.form['playlistname']
         return render_template('makeplaylist.html', data = songdata, name = playlist_name, user_id = session['user_id'])
 
-
-
+# 自己紹介文更新
+@app.route('/setting', methods = ['GET','POST'])
+@login_required
+def setting():
+    if request.method == 'GET':
+        return render_template('setting.html',user_id=session['user_id'])
+    else:
+        text = request.form.get("text")
+        user = users.query.filter_by(id=session['user_id']).first()
+        user.introduce=text
+        db.session.commit()
+        return redirect(url_for('profile', display_user_id=session['user_id']))
 
 @app.route('/follow', methods = ['POST'])
 @login_required
@@ -362,6 +408,20 @@ def searchuser(selectedartistname):
         user_info.append(db.session.query(users.id, users.username, users.nickname).filter(users.id == int(user)).first())
     print(userlist)     
     return render_template('search.html',userlist=userlist, user_info=user_info, user_id=session["user_id"])
+
+
+@app.route('/search/id/<nickname>', methods = ['GET'])
+@login_required
+def searchId(nickname):
+    # __tablename__ = 'users'
+	# id = db.Column(Integer, primary_key=True) これを含んだURLが飛ばせればよい。
+
+    searchId = db.session.query(users.id).filter(users.nickname == nickname).first()
+    # print(searchId)
+    username = db.session.query(users.username).filter(users.nickname == nickname).first()
+    # nickname = db.session.query(users.nickname).filter(users.id == searchId).first()
+    
+    return render_template('search.html',username=username[0], nickname=nickname,searchId=searchId[0], user_id=session["user_id"])
 
 
 # Spotifyの認証ページへリダイレクト

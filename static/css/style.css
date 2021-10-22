@@ -108,7 +108,7 @@ a:link, a:visited, a:hover, a:active {
 
 .index-map{
   width: 100%;
-  height: 89vh;
+  height: 45vh;
 }
 
 .input-period{
@@ -118,7 +118,7 @@ a:link, a:visited, a:hover, a:active {
 /* profile */
 .profile-map{
   width: 100%;
-  height: 73vh;
+  height: 30vh;
 }
 
 /*menu*/
