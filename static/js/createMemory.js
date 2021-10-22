@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  $("#location").click(function() {
+  $("#memory").click(function() {
     if( navigator.geolocation )
       {
         // 現在地を取得
@@ -12,21 +12,20 @@ $(document).ready(function () {
             // データの整理
             var lat = data.latitude ;
             var lng = data.longitude ;
-            var emotion = document.getElementById("emotion").value;
-            var comment = document.getElementById("comment").value;
+            // window.location.href = '/create_memory/'+lat+"/"+lng;
+            
             $.ajax({
               type:'POST',
-              url:'/getTrack',
+              url:'/create_memory',
               data: {
                 "lat":lat,
                 "lng":lng,
-                "emotion":emotion,
-                "comment":comment,
               },
               dataType: 'text',
             }).done(function(){
               console.log("success");
-              window.location.href = '/';
+              window.location.href = "/create_memory";
+              // window.location.href = "/create_memory?lat="+ lat +"&lng=" + lng;
             }).fail(function(){
               console.log('failed');
             });
@@ -58,5 +57,5 @@ $(document).ready(function () {
           }
         ) ;
       }
-  });
+    });
 });

@@ -62,7 +62,7 @@ def index():
     follow_users = db.session.query(follow.followed_user_id).filter(follow.follow_user_id == session["user_id"]).all()
     for follow_user in follow_users:
         # print(follow_user)
-        follow_pins = db.session.query(song_locations).filter(song_locations.user_id == follow_user[0]).all()
+        follow_pins = db.session.query(song_locations).filter(song_locations.user_id == follow_user[0]).filter(song_locations.is_private == "False").all()
         for follow_pin in follow_pins:
             pins.append(follow_pin)
     for pin in pins:
@@ -71,7 +71,7 @@ def index():
         user = db.session.query(users).filter(users.id == pin.user_id).first()
         print(user.nickname)
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
         # print(pin.date)
 
     return render_template('index.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
@@ -205,7 +205,7 @@ def profile(display_user_id):
     for pin in pins:
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private})
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion,'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private})
         print(pin.date)
 
     following_status = ""
@@ -513,20 +513,127 @@ def create_spotify_oauth():
         redirect_uri=url_for('spotify_authorize', _external=True),
         scope="user-library-read, playlist-modify-public, playlist-modify-private, user-library-modify, playlist-read-private, user-library-read, user-read-recently-played, user-read-playback-state")
 
-@app.route('/current_location', methods=['GET'])
+memory_data=[]
+@app.route('/create_memory', methods = ['GET', 'POST'])
 @login_required
-def current_location():
+def create_memory():
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
-    songdata=[]
-    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
-    
-    for pin in pins:
-        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-        songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private})
-        print(pin.date)
-    return render_template('current_location.html', user_id=session["user_id"], GOOGLEMAPURL=googlemapURL ,Songdatas=songdata)
+    if request.method == "POST":
+        lat = request.form.get('lat')
+        lng = request.form.get('lng')
+        print(lat)
+        print(lng)
+        memory_data.append({'lat': lat, 'lng': lng})
+        return render_template('create_memory.html', lat=lat, lng=lng)
+    lat = request.args.get('lat')
+    lng = request.args.get('lng')
+    return render_template('create_memory.html', lat=memory_data[0]['lat'], lng=memory_data[0]['lng'], GOOGLEMAPURL=googlemapURL, user_id=session["user_id"])
 
+
+@app.route('/create_memory/emotion', methods = ['POST'])
+@login_required
+def create_memory_emotion():
+    memory={}
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    if not authorized:
+        return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+    try:
+        current_track_info = get_current_track()
+        # POSTの受け取り
+        lat = request.form.get('lat')
+        lng = request.form.get('lng')
+        date = request.form.get('date')
+        # get_current_track()で取得したIDを以前取得したものと比較して異なっていたら新しい曲とみなし書き込む。
+        if current_track_info['id'] != session['current_id']:
+            exist_song = db.session.query(songs).filter(songs.track_id == current_track_info["id"]).all()
+            if exist_song == []:
+                print(current_track_info["artists"])
+                new_song = songs(track_id=current_track_info["id"], track_name=current_track_info["track_name"], artist_name=current_track_info["artists"], track_image=current_track_info["image"], spotify_url=current_track_info["link"])
+                db.session.add(new_song)
+                db.session.commit()
+        else:
+            # 同じ曲の時
+            return redirect('/')
+        memory['lat']=lat
+        memory['lng']=lng
+        memory['date']=date
+        memory['track_id']=current_track_info['id']
+        print(memory)
+        session['current_id'] = current_track_info['id']
+        return render_template('create_memory_emotion.html', memory=memory, user_id=session['user_id'])
+    except TypeError as e:
+        print(
+            # エラーの場合原因返す
+            e
+        )
+    return redirect("/")
+
+@app.route('/create_memory/about', methods = ['POST'])
+@login_required
+def memory_about():
+    memory={}
+    lat = request.form.get('lat')
+    lng = request.form.get('lng')
+    date = request.form.get('date')
+    track_id = request.form.get('track_id')
+    emotion = request.form.get('emotion')
+
+    memory['lat']=lat
+    memory['lng']=lng
+    memory['date']=date
+    memory['track_id']=track_id
+    memory['emotion']=emotion
+    
+    return render_template('create_memory_about.html', user_id=session["user_id"], memory = memory)
+
+
+@app.route("/create_memory/confirm", methods=['POST'])
+@login_required
+def create_memory_confirm():
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+    memory={}
+    lat = request.form.get('lat')
+    lng = request.form.get('lng')
+    date = request.form.get('date')
+    track_id = request.form.get('track_id')
+    emotion = request.form.get('emotion')
+    about = request.form.get('about')
+
+    memory['lat']=lat
+    memory['lng']=lng
+    memory['date']=date
+    memory['track_id']=track_id
+    memory['emotion']=emotion
+    memory['about']=about
+
+    print( memory) 
+    return render_template('create_memory_confirm.html', memory=memory, user_id=session["user_id"],GOOGLEMAPURL=googlemapURL,lat=memory['lat'], lng=memory['lng'])
+
+@app.route("/create_memory/complete", methods=['POST'])
+@login_required
+def create_memory_complete():
+    lat = request.form.get('lat')
+    lng = request.form.get('lng')
+    date_str = request.form.get('date')
+    Datetime = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+    date = Datetime.date()
+    track_id = request.form.get('track_id')
+    emotion = request.form.get('emotion')
+    about = request.form.get('about')
+    comment = request.form.get('comment')
+    pin_status = request.form.get('pin_status')
+    is_private = ""
+    if pin_status == "private":
+        is_private = "True"
+    elif pin_status == "public":
+        is_private = "False"
+
+    new_song_location = song_locations(user_id=session["user_id"], track_id=track_id, longitude=lng, latitude=lat, date=date, emotion=emotion, comment=comment,about=about, is_private=is_private)
+    db.session.add(new_song_location)
+    db.session.commit()
+    return redirect("/")
 
 
 @app.route('/map/<song_location_id>/edit', methods=['GET','POST'])
@@ -538,7 +645,7 @@ def edit_map(song_location_id):
     if not song_location or  song_location.user_id != session["user_id"]:
         return redirect('/')
     song = db.session.query(songs).filter(songs.track_id == song_location.track_id).first()
-    songdata.append({'id':song_location.id,'user_id':song_location.user_id, 'lat':song_location.latitude, 'lng':song_location.longitude, 'date':song_location.date.strftime("%Y-%m-%d"),'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'emotion':song_location.emotion, 'comment':song_location.comment, 'is_private':song_location.is_private})
+    songdata.append({'id':song_location.id,'user_id':song_location.user_id, 'lat':song_location.latitude, 'lng':song_location.longitude, 'date':song_location.date.strftime("%Y-%m-%d"),'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'emotion':song_location.emotion, 'comment':song_location.comment,'about':song_location.about, 'is_private':song_location.is_private})
     if request.method == "POST":
         if request.form.get('date'): 
             date_str = request.form.get('date')
@@ -555,6 +662,7 @@ def edit_map(song_location_id):
         song_location.date = date
         song_location.emotion = request.form.get('emotion')
         song_location.comment = request.form.get('comment')
+        song_location.about = request.form.get('about')
         pin_status = request.form.get('pin_status')
         is_private = ""
         if pin_status == "private":
@@ -635,7 +743,7 @@ def profilePeriod(display_user_id,displayfrom, displayto):
     for pin in pins:
         # print(pin)
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-        songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private})
+        songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about,'comment':pin.comment, 'is_private':pin.is_private})
 
     if request.method == "GET":
         # playlistlink = db.session.query(made_playlists.playlist_uri).filter(made_playlists.user_id == user_id).all()
@@ -762,29 +870,9 @@ def homePeriod(displayfrom, displayto):
         # print(pin)
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private})
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about,'comment':pin.comment, 'is_private':pin.is_private})
 
     return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto)
-
-
-@app.route('/select_location', methods = ['GET'])
-@login_required
-def select_location():
-    session['token_info'], authorized = get_token()
-    session.modified = True
-    # していなかったらリダイレクト。
-    if not authorized:
-        return redirect('/spotify-login')
-    songdata = []
-    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
-    for pin in pins:
-        song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-        songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private})
-    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
-    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY   
-    return render_template('select_location.html', GOOGLEMAPURL=googlemapURL, Songdatas = songdata, user_id = session["user_id"])
-
 
 @app.route('/profile/<display_user_id>/follower', methods = ['GET'])
 @login_required
