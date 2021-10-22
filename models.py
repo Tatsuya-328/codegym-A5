@@ -87,3 +87,40 @@ class made_playlists(db.Model):
     self.playlist_uri = playlist_uri
     self.playlist_image = playlist_image
     self.playlist_name = playlist_name
+
+
+class Group(db.Model):
+  __tablename__ = 'UserGroup'
+  id = db.Column(Integer, primary_key=True)
+  name = db.Column(TEXT, unique=False)
+  introduction = db.Column(TEXT, unique=False)
+
+  def __init__(self, name=None, introduction=None):
+    self.name = name
+    self.introduction = introduction
+    
+class UserGroup(db.Model):
+  __tablename__ = 'UserGroup'
+  id = db.Column(Integer, primary_key=True)
+  group_id = db.Column(Integer)
+  owner_id = db.Column(Integer)
+  invited_id = db.Column(Integer)
+
+  def __init__(self, group_id=None, owner_id = None, invited_id = None):
+    self.group_id = group_id
+    self.owner_id = owner_id
+    self.invited_id = invited_id
+
+
+class request(db.Model):
+  __tablename__ = 'UserGroup'
+  id = db.Column(Integer, primary_key=True)
+  group_id = db.Column(Integer)
+  owner_id = db.Column(Integer)
+  invited_id = db.Column(Integer)
+
+  def __init__(self, group_id=None, owner_id = None, invited_id = None):
+    self.group_id = group_id
+    self.owner_id = owner_id
+    self.invited_id = invited_id
+
