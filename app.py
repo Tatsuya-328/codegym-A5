@@ -1241,7 +1241,8 @@ def create_group_table():
     login_user_id = session["user_id"]
     group_name = request.form.get("group_name")
     # add_user_ids = request.form.get("add_users")
-    add_user_ids = []
+    
+    add_user_ids = []##ここにチェックボックスで追加したユーザーを配列つくる。
     
     
     new_group = Group(name = group_name, introduction = "")

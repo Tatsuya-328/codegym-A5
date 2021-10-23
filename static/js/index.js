@@ -56,11 +56,15 @@ function initMap() {
         stylers: [
           { visibility: 'off' }
         ]
-      },
-      ]
+      }],
+      mapTypeControl: false,
+      panControl: false,
+      zoomControl: false,
+      scaleControl: false,
+      streetViewControl: false,
+      fullscreenControl:false,
     });
 
-  
   console.log(SongData);
 
   // 複数ピンを立てる

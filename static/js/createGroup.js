@@ -4,6 +4,9 @@ $(document).ready(function () {
     console.log("create_table")
     // add_users = document.getElementById("add_users").textContent
     add_users = ""
+// チェックボックスいれたのを上の空なのを入れる。
+// グループ名も送りたい。
+
     // 追加するユーザーのリストを取得して送りたい。選択形式
     $.ajax({
         type:'POST',
