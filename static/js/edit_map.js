@@ -10,7 +10,25 @@ function initMap() {
   // 地図表示
   var map = new google.maps.Map(document.getElementById('map'), {
       zoom: 14,
-      center: {lat: Lat, lng: Lng}
+      center: {lat: Lat, lng: Lng},
+      styles: [{
+        featureType: 'poi',
+        stylers: [
+          { visibility: 'off' }
+        ]
+      },{
+        featureType: 'road',
+        elementType: 'labels',
+        stylers: [
+          { visibility: 'off' }
+        ]
+      },],
+      mapTypeControl: false,
+      panControl: false,
+      zoomControl: false,
+      scaleControl: false,
+      streetViewControl: false,
+      fullscreenControl:false,
   });
 
   // 編集するピン

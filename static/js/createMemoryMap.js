@@ -21,8 +21,13 @@ function initMap() {
       stylers: [
         { visibility: 'off' }
       ]
-    },
-    ]
+    },],
+    mapTypeControl: false,
+    panControl: false,
+    zoomControl: false,
+    scaleControl: false,
+    streetViewControl: false,
+    fullscreenControl:false,
   });
 
   var marker = new google.maps.Marker();
