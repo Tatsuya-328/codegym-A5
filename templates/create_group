@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  groups
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+  var user_info = {{ user_info | safe }};
+  var groups = {{ groups | safe }};
+  var following_user_info = {{following_user_info |safe }};
+</script>
+
+<!-- <script>
+  jQuery(function($) {
+
+  //data-hrefの属性を持つtrを選択しclassにclickableを付加
+  $('tr[data-href]').addClass('clickable')
+
+    //クリックイベント
+    .click(function(e) {
+
+      //e.targetはクリックした要素自体、それがa要素以外であれば
+      if(!$(e.target).is('a')){
+      
+        //その要素の先祖要素で一番近いtrの
+        //data-href属性の値に書かれているURLに遷移する
+        window.location = $(e.target).closest('tr').data('href');}
+  });
+});
+</script> -->
+
+{% endblock %}
+
+{% block main %}
+<h1>groups</h1>
+<p>{{ groups }}</p>
+<!-- <div class="user-follow">
+  <p id="nickname">{{user_info["nickname"]}} </p>
+  <p id="user-id">(user_id is {{user_info["id"]}})</p>
+</div> -->
+
+<div class="col-xs-10" style="padding: 40px 0 40px 0;">
+  <h1 style="font-size: 25px; text-align: center">グループ作成</h1>
+
+<div class="container">
+    <div class="col-xs-8">
+        <form action="javascript:jump();">
+          <input id="make-group" type="text" value="" placeholder="Group name" required>
+          <input class="btn btn-primary" type="submit" value="グループ作成">
+        </form>
+    </div>
+</div>
+</div>
+
+
+<h3>追加するユーザー</h3>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Nickname</th>
+      <th>User name</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for following in following_user_info %}
+    <tr data-href="{{ url_for('profile', display_user_id = following['id'] ) }}">
+      <td><i class="fas fa-user"></i></td>
+      <td>{{ following["nickname"]}}</td>
+      <td>{{ following["username"]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

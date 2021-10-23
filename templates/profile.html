@@ -263,7 +263,10 @@ $('.input-daterange').datepicker({
           <tbody>
             {% for d in latestsongdata %}
               <tr>
-                <td><img src="{{ d['image'] }}"></td>
+                <!-- <td><img src="{{ d['image'] }}"></td> -->
+                <td><iframe src="https://open.spotify.com/embed/track/{{ d['id'] }}" width="10%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></td>
+                <!-- <td><iframe src="https://open.spotify.com/embed/track/{{ d['id'] }}" width="10%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></td> -->
+              
                 <td>{{ d["date"] }}</td>
                 <td>{{ d["artist"] }}</td>
                 <td>{{ d["track"] }}</td>

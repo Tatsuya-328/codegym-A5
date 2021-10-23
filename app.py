@@ -16,7 +16,7 @@ from helpers import login_required, register_check, login_check
 from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
 import config
-from models import users, song_locations, songs, follow, made_playlists, db
+from models import users, song_locations, songs, follow, made_playlists, Group, UserGroup, requests, db
 from sqlalchemy import or_, desc
 
 from profile import Profile_info
@@ -74,8 +74,7 @@ def index():
         user = db.session.query(users).filter(users.id == pin.user_id).first()
         # print(user.nickname)
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
-        # print(pin.date)
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname, 'track_id':pin.track_id})
 
     #最新3件の投稿をリスト表示させる
     latestpins = []
@@ -92,7 +91,7 @@ def index():
             user = db.session.query(users).filter(users.id == pin.user_id).first()
             # print(user.nickname)
             latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-            'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
+            'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname ,'track_id':pin.track_id})
 
 
     return render_template('index.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata)
@@ -176,6 +175,7 @@ def login():
     # User reached route via GET (as by clicking a link or via redirect)
     else :
         return render_template("login.html")
+
 
 @app.route("/logout")
 def logout():
@@ -1083,9 +1083,16 @@ def homePeriod(displayfrom, displayto):
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
+    latestsongdata = profile_info["latestsongdata"]
+
+        #最新3件の投稿をリスト表示させる
+
+    # latestpins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).limit(3).all()
+
+
     
 
-    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto)
+    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto, latestsongdata=latestsongdata)
 
 # ホームで感情指定
 @app.route('/home/emotion/<emotion>', methods = ['GET'])
@@ -1191,6 +1198,41 @@ def display_follower(display_user_id):
     
     return render_template("follower.html",user_id=session["user_id"], user_info=user_info, following_user_info=following_user_info, followed_user_info=followed_user_info)
 
+
+@app.route('/groups', methods = ['GET'])
+@login_required
+def groups():
+    login_user_id=session["user_id"]
+    user = db.session.query(users).filter(users.id == login_user_id).first()
+    user_info = dict(id=user.id, nickname=user.nickname, username=user.username)
+    owner_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.owner_id == login_user_id).all()
+    invited_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.invited_id == login_user_id).all()
+    groups = []
+    for owner_group_id in owner_group_ids:
+        owner_group = db.session.query(Group).filter(Group.id == owner_group_id).first()
+        groups.append(owner_group)
+    for invited_group_id in invited_group_ids:
+        invited_group = db.session.query(Group).filter(Group.id == invited_group_id).first()
+        groups.append(invited_group)
+    groups.append("グループ")
+    return render_template("groups.html", groups=groups, user_info=user_info)
+
+
+@app.route('/create_group', methods = ['GET'])
+@login_required
+def create_group():
+    login_user_id=session["user_id"]
+    user = db.session.query(users).filter(users.id == login_user_id).first()
+    user_info = dict(id=user.id, nickname=user.nickname, username=user.username)
+    followings = db.session.query(follow).filter(follow.follow_user_id == login_user_id).all()
+
+    following_user_info = []
+    for following in followings:
+        other_user = db.session.query(users).filter(users.id == following.followed_user_id).first()
+        other_user_info = dict(id=other_user.id, nickname=other_user.nickname, username=other_user.username)
+        following_user_info.append(other_user_info)
+    
+    return render_template("create_group.html", user_info=user_info, following_user_info=following_user_info)
 # if __name__ == '__main__':
 #     app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
     

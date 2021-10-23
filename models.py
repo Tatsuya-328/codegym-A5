@@ -90,7 +90,7 @@ class made_playlists(db.Model):
 
 
 class Group(db.Model):
-  __tablename__ = 'UserGroup'
+  __tablename__ = 'Group'
   id = db.Column(Integer, primary_key=True)
   name = db.Column(TEXT, unique=False)
   introduction = db.Column(TEXT, unique=False)
@@ -112,8 +112,8 @@ class UserGroup(db.Model):
     self.invited_id = invited_id
 
 
-class request(db.Model):
-  __tablename__ = 'UserGroup'
+class requests(db.Model):
+  __tablename__ = 'requests'
   id = db.Column(Integer, primary_key=True)
   group_id = db.Column(Integer)
   owner_id = db.Column(Integer)
