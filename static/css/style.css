@@ -231,9 +231,6 @@ a:link, a:visited, a:hover, a:active {
   text-align: center;
   margin: 15px;
 }
-.display-emotion{
-
-}
 .private-form{
   text-align: center;
   margin: 10px
@@ -247,4 +244,112 @@ a:link, a:visited, a:hover, a:active {
 /* makeplaylist */
 .playlist-form{
   padding-bottom: 60px;
+}
+
+/* index */
+.index-track-box{
+  padding: 15px;
+  border-radius: 20px;
+  margin: 10px;
+  background-color: rgb(183, 182, 182);
+  color: white;
+  display: flex;
+}
+.index-spotify-track{
+  /* display: inline-block; */
+  float: left;
+}
+.index-latest-track-table{
+  padding-bottom: 45px;
+}
+.index-display-emotion{
+  display: inline-block;
+}
+.index-display-about{
+  display: inline-block;
+  margin-left: 10px;
+}
+.index-songlocation-info{
+  display: inline-block;
+  margin-left: 10px;
+}
+.index-panel-latest-track{
+  text-align: center;
+  margin: 10px;
+}
+.index-map{
+  position: fixed;
+}
+.panel-user-name{
+  float: left;
+  width: 22%;
+  overflow: hidden;
+  height: 20px;
+  margin-right: 5px;
+}
+.panel-track-name{
+  float: left;
+  width: 50%;
+  height: 30px;
+  overflow: hidden;
+  margin-right: 5px;
+  font-weight: 600;
+  font-size: 15px;
+}
+.panel-artist-name{
+  float: left;
+  width: 20%;
+  height: 20px;
+  overflow: hidden;
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+/* profile */
+.profile-track-box{
+  padding: 15px;
+  border-radius: 20px;
+  margin: 10px;
+  background-color: rgb(183, 182, 182);
+  color: white;
+  height: 100px;
+}
+.profile-spotify-track{
+  /* display: inline-block; */
+  float: left;
+}
+.profile-latest-track-table{
+  padding-bottom: 45px;
+}
+.profile-display-emotion{
+  display: inline-block;
+}
+.profile-display-about{
+  display: inline-block;
+  margin-left: 10px;
+}
+.profile-songlocation-info{
+  display: inline-block;
+  margin-left: 10px;
+}
+.profile-panel-latest-track{
+  text-align: center;
+  margin: 10px;
+}
+.profile-panel-track-name{
+  float: left;
+  width: 55%;
+  height: 30px;
+  overflow: hidden;
+  margin-right: 5px;
+  font-weight: 600;
+  font-size: 15px;
+}
+.profile-panel-artist-name{
+  float: left;
+  width: 35%;
+  height: 20px;
+  overflow: hidden;
+  margin-right: 5px;
+  font-size: 12px;
 }

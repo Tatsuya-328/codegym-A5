@@ -245,40 +245,78 @@ $('.input-daterange').datepicker({
 
   
   <!-- 最近追加した曲リスト -->
-    <div class="table-responsive">
-      <!-- <form action="/makeplaylist" method="post"> -->
-        <div class = "flex flex-row mx-auto">
-          <table class="table table-bordered">
-            <thead>
-            <tr>
-              <!-- <th>画像入る</th> -->
-              <!-- <th>日付</th> -->
-              <!-- <th>アーティスト</th> -->
-              <!-- <th>曲名</th> -->
-              <!-- <th>感情</th> -->
-              <!-- <th>コメント</th> -->
-              <!-- <th>感情</th> -->
-            </tr>
-          </thead>
-          <tbody>
-            {% for d in latestsongdata %}
-              <tr>
-                <td><img src="{{ d['image'] }}"></td>
-                <td>{{ d["date"] }}</td>
-                <td>{{ d["artist"] }}</td>
-                <td>{{ d["track"] }}</td>
-                <td>{{ d["emotion"] }}</td>
-                <td>{{ d["comment"] }}</td>
-                <!-- <td></td> -->
-              </tr>
-            {% endfor %}
-          </tbody>
-          </table>
-        </div>
-        <!-- <input style="display: block; margin: 10px auto;" class="" name="playlist_name" autocomplete="off" placeholder="プレイリスト名入力" type="type" >
-        <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">作成する</button> -->
-      <!-- </form> -->
+  <div class="table-responsive profile-latest-track-table">
+    <!-- <form action="/makeplaylist" method="post"> -->
+    <div class="profile-panel-latest-track">最近の投稿</div>
+      <div class = "flex flex-row mx-auto">
+        {% for d in latestsongdata %}
+            <div class="profile-track-box" >
+              <div class="profile-spotify-track">
+                <iframe src="https://open.spotify.com/embed/track/{{ d['track_id'] }}" width="75" height="75" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+              </div>
+
+              <div class="profile-songlocation-info">
+                <div class="profile-panel-track-name">
+                  <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d["track"] }}</p>
+                </div>
+                <div class="profile-panel-artist-name">
+                  <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d["artist"] }}</p>
+                </div>
+                <p style="margin: 0;">{{ d["user_nickname"] }}</p>
+              {% if d['emotion'] == "嬉しい" %}
+                <div class="profile-display-emotion">
+                  <img src="../static/image/laugh.png" width="50" height="50" >
+                  <label for="emotion">嬉しい</label>
+                </div>
+              {% elif d['emotion'] == "楽しい" %}
+                <div class="profile-display-emotion">
+                  <img src="../static/image/hehe.png" width="50" height="50">
+                  <label for="emotion">楽しい</label>
+                </div>
+              {% elif d['emotion'] == "安心" %}
+                <div class="profile-display-emotion">
+                  <img src="../static/image/tere.png" width="50" height="50">
+                  <label for="emotion">安心</label>
+                </div>
+              {% elif d['emotion'] == "退屈" %}
+                <div class="profile-display-emotion">
+                  <img src="../static/image/jito.png" width="50" height="50">
+                  <label for="emotion">退屈</label>
+                </div>
+              {% elif d['emotion'] == "不安"%}
+                <div class="profile-display-emotion">
+                  <img src="../static/image/ase.png" width="50" height="50">
+                  <label for="emotion">不安</label>
+                </div>
+              {% elif d['emotion'] == "イライラ"%}
+                <div class="profile-display-emotion">
+                  <img src="../static/image/angry.png" width="50" height="50">
+                  <label for="emotion">イライラ</label>
+                </div>
+              {% elif d['emotion'] == "悲しい" %}
+                <div class="profile-display-emotion">
+                  <img src="../static/image/cry.png" width="50" height="50">
+                  <label for="emotion">悲しい</label>
+                </div>
+              {% elif d['emotion'] == "驚き" %}
+                <div class="profile-display-emotion">
+                  <img src="../static/image/odoroki.png" width="50" height="50">
+                  <label for="emotion">驚き</label>
+                </div>
+              {% endif  %}
+              <div class="profile-display-about">
+                {{ d["about"] }}
+                <a href="" style="margin-left: 10px;">詳細</a>
+              </div>
+              <!-- {% if d["comment"] %}
+                {{ d["comment"] }}
+              {% else %}
+                ---
+              {% endif %} -->
+              </div>
+              <!-- <td></td> -->
+            </div>
+          {% endfor %}
       </div>
-
-
+    </div>
 {% endblock %}
