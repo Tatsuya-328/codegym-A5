@@ -28,14 +28,16 @@ def Home_info(login_user_id, status, displayfrom, displayto, emotion, artist, so
 
     
     if status == "emotion":
+        # 地図用
         pins.extend(db.session.query(song_locations).filter(song_locations.user_id == login_user_id).filter(song_locations.emotion == emotion).all())
         for user in follow_user:
             pins.extend(db.session.query(song_locations).filter(song_locations.user_id == user.followed_user_id).filter(song_locations.emotion == emotion).filter(song_locations.is_private == "False").all())
 
+        #リスト用 
         for f_user in follow_user:
-            latestfollow_pins = db.session.query(song_locations).filter(song_locations.user_id == f_user.followed_user_id).filter(song_locations.emotion == emotion).order_by(desc(song_locations.id)).limit(3).all()
-        for follow_pin in latestfollow_pins:
-            latestpins.append(follow_pin)
+            latestpins.extend(db.session.query(song_locations).filter(song_locations.user_id == f_user.followed_user_id).filter(song_locations.emotion == emotion).order_by(desc(song_locations.id)).limit(3).all())
+        # for follow_pin in latestfollow_pins:
+        #     latestpins.append(follow_pin)
             # latestfollow_pins = db.session.query(song_locations).filter(song_locations.user_id == f_user.followed_user_id).filter(song_locations.emotion == emotion).order_by(desc(song_locations.id)).limit(3).all()
         # for follow_pin in latestfollow_pins:
         #     latestpins.append(follow_pin)
@@ -46,13 +48,18 @@ def Home_info(login_user_id, status, displayfrom, displayto, emotion, artist, so
         for user in follow_user:
             pins.extend(db.session.query(song_locations).filter(song_locations.user_id == user.followed_user_id).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).filter(song_locations.is_private == "False").all())
 
+        # リスト用
         for f_user in follow_user:
-            latestfollow_pins = db.session.query(song_locations).filter(song_locations.user_id == f_user.followed_user_id).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).order_by(desc(song_locations.id)).limit(3).all()
-        for follow_pin in latestfollow_pins:
-            latestpins.append(follow_pin)
+            latestpins.extend(db.session.query(song_locations).filter(song_locations.user_id == f_user.followed_user_id).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).order_by(desc(song_locations.id)).limit(3).all())
+
+        # for f_user in follow_user:
+        #     latestfollow_pins = db.session.query(song_locations).filter(song_locations.user_id == f_user.followed_user_id).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).order_by(desc(song_locations.id)).limit(3).all()
+        # for follow_pin in latestfollow_pins:
+        #     latestpins.append(follow_pin)
 
 
     if status == "artist":
+        # 地図用
         my_subpins = db.session.query(song_locations).filter(song_locations.user_id == login_user_id).all()
         for my_subpin in my_subpins:
                 song = db.session.query(songs).filter(songs.track_id == my_subpin.track_id).filter(songs.artist_name == artist).first()
@@ -65,13 +72,15 @@ def Home_info(login_user_id, status, displayfrom, displayto, emotion, artist, so
                 song = db.session.query(songs).filter(songs.track_id == subpin.track_id).filter(songs.artist_name == artist).first()
                 if song:
                     pins.append(subpin)
-    
 
-        for f_user in follow_user:
-            latestfollow_pins = db.session.query(song_locations).filter(song_locations.user_id == f_user.followed_user_id).filter(songs.artist_name == artist).limit(3).all()
-        for follow_pin in latestfollow_pins:
-            latestpins.append(follow_pin)
-
+        # 直近追加されたリスト用
+        # 一回あきらめて地図と同じ内容表示させるだけにしました
+        for user in follow_user:
+            subpins = db.session.query(song_locations).filter(song_locations.user_id == user.followed_user_id).filter(song_locations.is_private == "False").all()
+            for subpin in subpins:
+                song = db.session.query(songs).filter(songs.track_id == subpin.track_id).filter(songs.artist_name == artist).first()
+                if song:
+                    latestpins.append(subpin)
 
     if status == "song_name":
         my_subpins = db.session.query(song_locations).filter(song_locations.user_id == login_user_id).all()
@@ -80,19 +89,21 @@ def Home_info(login_user_id, status, displayfrom, displayto, emotion, artist, so
                 if song:
                     pins.append(my_subpin)
 
-        for f_user in follow_user:
-            latestfollow_pins = db.session.query(song_locations).filter(song_locations.user_id == f_user.followed_user_id).filter(songs.artist_name == artist).limit(3).all()
-        for follow_pin in latestfollow_pins:
-            latestpins.append(follow_pin)
-
-
         for user in follow_user:
             subpins = db.session.query(song_locations).filter(song_locations.user_id == user.followed_user_id).filter(song_locations.is_private == "False").all()
             for subpin in subpins:
                 song = db.session.query(songs).filter(songs.track_id == subpin.track_id).filter(songs.track_name == song_name).first()
                 if song:
                     pins.append(subpin)
-    
+
+        # 直近追加されたリスト用
+        # 一回あきらめて地図と同じ内容表示させるだけにしました    
+        for user in follow_user:
+            subpins = db.session.query(song_locations).filter(song_locations.user_id == user.followed_user_id).filter(song_locations.is_private == "False").all()
+            for subpin in subpins:
+                song = db.session.query(songs).filter(songs.track_id == subpin.track_id).filter(songs.track_name == song_name).first()
+                if song:
+                    latestpins.append(subpin)
     
     for pin in pins:
         user_nicname = db.session.query(users.nickname).filter(users.id == pin.user_id).first()
