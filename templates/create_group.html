@@ -1,15 +1,16 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  groups
+  create_groups
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript">
   var user_info = {{ user_info | safe }};
-  var groups = {{ groups | safe }};
   var following_user_info = {{following_user_info |safe }};
 </script>
+
+<script type="text/javascript" src="/static/js/createGroup.js"></script>
 
 <!-- <script>
   jQuery(function($) {
@@ -73,5 +74,7 @@
     {% endfor %}
   </tbody>
 </table>
+
+<button id="create_group_table">作成する</button>
 
 {% endblock %}

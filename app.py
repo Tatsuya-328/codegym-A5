@@ -1215,7 +1215,7 @@ def groups():
         invited_group = db.session.query(Group).filter(Group.id == invited_group_id).first()
         groups.append(invited_group)
     groups.append("グループ")
-    return render_template("groups.html", groups=groups, user_info=user_info)
+    return render_template("groups.html", user_id=session["user_id"], user_info=user_info, groups=groups)
 
 
 @app.route('/create_group', methods = ['GET'])
@@ -1232,7 +1232,37 @@ def create_group():
         other_user_info = dict(id=other_user.id, nickname=other_user.nickname, username=other_user.username)
         following_user_info.append(other_user_info)
     
-    return render_template("create_group.html", user_info=user_info, following_user_info=following_user_info)
+    return render_template("create_group.html", user_id=session["user_id"], user_info=user_info, following_user_info=following_user_info)
+
+@app.route('/create_group_table', methods = ['POST'])
+@login_required
+# profile->follow->home
+def create_group_table():
+    login_user_id = session["user_id"]
+    group_name = request.form.get("group_name")
+    # add_user_ids = request.form.get("add_users")
+    add_user_ids = []
+    
+    
+    new_group = Group(name = group_name, introduction = "")
+    db.session.add(new_group)
+    db.session.commit()
+
+    new_group_id = 1
+
+    for add_user_id in add_user_ids:
+        new_user_group = UserGroup(group_id = new_group_id, owner_id = login_user_id, invited_id = add_user_id)
+        db.session.add(new_user_group)
+        db.session.commit()
+    
+    rows = db.session.query(UserGroup).all()
+    for row in rows:
+        print(row.group_id)
+        print(row.owner_id, end="->")
+        print(row.invited_id)
+    
+    return redirect("/")
+
 # if __name__ == '__main__':
 #     app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
     
