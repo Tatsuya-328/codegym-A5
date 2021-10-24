@@ -114,7 +114,7 @@ def Home_info(login_user_id, status, displayfrom, displayto, emotion, artist, so
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         user = db.session.query(users).filter(users.id == pin.user_id).first()
         latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname ,'track_id':pin.track_id})
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname ,'track_id':pin.track_id, 'about':pin.about })
 
     # profile_infomation = dict(songdata=songdata, googlemapURL=googlemapURL, user_info=user_info)
     # return profile_infomation

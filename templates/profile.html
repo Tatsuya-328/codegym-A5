@@ -36,60 +36,55 @@
         <div class="hero"></div>
       </div>
     {% endif %}
-
-    <h1 style="float: left;">{{  user_info["nickname"]  }}</h1>
-    <p id = "display_user_id" style="visibility: hidden; height: 0px; margin: 0px;">{{  user_info["id"]  }}</p>
-    <p>{{  user_info["username"]  }}</p>
-    <!-- <p>{{  user_info["following"]  }}</p> -->
-    
-    
-    <div id="follower">
-      <p style="margin-bottom: 0px;">
-        <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}">
-          <span>{{ user_info["follow_number"] }}</span>フォロー
-        </a>
-        <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}">
-          <span>{{ user_info["followed_number"] }}</span>フォロワー
-        </a>
-      </p>
-</div>
-
-  <div>
-      <p>
+    <div class="profile-info">
+      <div class="profile-nickname">
+        <h1 style="float: left;">{{  user_info["nickname"]  }}</h1>
+        <p id = "display_user_id" style="visibility: hidden; height: 0px; margin: 0px;">{{  user_info["id"]  }}</p>
+      </div>
+      <div class="profile-follower">
+        <p style="margin-bottom: 0px;">
+          <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}">
+            <span>{{ user_info["follow_number"] }}</span>フォロー
+          </a>
+          <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}">
+            <span>{{ user_info["followed_number"] }}</span>フォロワー
+          </a>
+        </p>
+      </div>
+      <div class="profile-intro">
         {{Introduce}}
-      </p>
-  </div>
+      </div>
+    </div>
 
 <!-- 他のユーザーのプロフィールならフォローボタン表示 -->
     {% if user_info["following"] != "myself" %}
-  <div>
-    {% if user_info["following"] == "True" %}
-      <button class="btn btn-danger" type="button" value="button" id = "cancell" style="float: left;" >cancell</button>
-    {% elif user_info["following"] == "False" %}
-      <button class="btn btn-success" type="button" value="button" id = "follow"  style="float: left;" >follow</button>
+    <div>
+      {% if user_info["following"] == "True" %}
+        <button class="btn btn-danger" type="button" value="button" id = "cancell" style="float: left;" >cancell</button>
+      {% elif user_info["following"] == "False" %}
+        <button class="btn btn-success" type="button" value="button" id = "follow"  style="float: left;" >follow</button>
       {% endif %}
-  </div>
+    </div>
 
-  {% else %}
-    <!-- プレイリスト作成 なんの絞り込みになっているかでPOST先を分岐-->
-    
-    {% if nowdisplayfrom %}
-    <form action="/profile/{{user_id}}/period/{{nowdisplayfrom}}/{{nowdisplayto}}" method="post">
-    {% elif emotion %}
-    <form action="/profile/{{user_id}}/emotion/{{emotion}}" method="post">
-    {% elif artist %}
-    <form action="/profile/{{user_id}}/artist/{{artist}}" method="post">
-    {% elif song_name %}
-    <form action="/profile/{{user_id}}/song_name/{{song_name}}" method="post">
     {% else %}
-    <form action="/profile/{{user_id}}" method="post" style="float: left;">
+    <!-- プレイリスト作成 なんの絞り込みになっているかでPOST先を分岐-->
+      {% if nowdisplayfrom %}
+        <form class="profile-form-search" action="/profile/{{user_id}}/period/{{nowdisplayfrom}}/{{nowdisplayto}}" method="post">
+      {% elif emotion %}
+        <form class="profile-form-search" action="/profile/{{user_id}}/emotion/{{emotion}}" method="post">
+      {% elif artist %}
+        <form class="profile-form-search" action="/profile/{{user_id}}/artist/{{artist}}" method="post">
+      {% elif song_name %}
+        <form class="profile-form-search" action="/profile/{{user_id}}/song_name/{{song_name}}" method="post">
+      {% else %}
+        <form class="profile-form-search" action="/profile/{{user_id}}" method="post" style="float: left;">
+      {% endif %}
+        <input type="hidden" name="playlistname" id="playlistname" value="プレイリスト名"> 
+        <button class="btn btn-primary" type="submit">プレイリスト作成</button>
     {% endif %}
-    <input type="hidden" name="playlistname" id="playlistname" value="プレイリスト名"> 
-    <button class="btn btn-primary" type="submit">プレイリスト作成</button>
-    </form>
-    {% endif %}
-  <!-- プレイリスト表示ボタン -->
-  <button onclick="location.href='{{ url_for('playlist', display_user_id = user_info['id'] ) }}'" class="btn btn-secondary" style="float: left;">プレイリスト一覧</button>
+        <!-- プレイリスト表示ボタン -->
+      <button onclick="location.href='{{ url_for('playlist', display_user_id = user_info['id'] ) }}'" class="btn btn-secondary" style="float: left; margin-right: 5px;">プレイリスト一覧</button>
+      </form>
 
 
   {% endif %}
@@ -102,7 +97,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ja.min.js"></script>
   
     <div class="text-right">
-    <button type="button" class="btn" data-toggle="modal" data-target="#modalForm" style="background: white;">
+    <button type="button" class="btn" data-toggle="modal" data-target="#modalForm" style="background: white; padding: 0; margin-bottom: 15px;">
       <i class="fas fa-history  fa-2x"></i>
     </button>
     </div>
@@ -239,7 +234,23 @@ $('.input-daterange').datepicker({
 });
 </script>
     <!--MAP表示  -->
-
+    {% if status == "period" %}
+      <div class="profile-panel-search">
+        期間 {{ nowdisplayfrom }} 〜 {{ nowdisplayto }}
+      </div>
+    {% elif status == "emotion"%}
+      <div class="profile-panel-search">
+        感情指定  {{ emotion }}
+      </div>
+    {% elif status == "artist_name"%}
+      <div class="profile-panel-search">
+        アーティスト {{ artist }}
+      </div>
+    {% elif status == "track_name"%}
+      <div class="profile-panel-search">
+        曲名 {{ song_name }}
+      </div>
+    {% endif %}
   <div id="map" class="profile-map"></div>
   <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
 
@@ -247,7 +258,10 @@ $('.input-daterange').datepicker({
   <!-- 最近追加した曲リスト -->
   <div class="table-responsive profile-latest-track-table">
     <!-- <form action="/makeplaylist" method="post"> -->
-    <div class="profile-panel-latest-track">最近の投稿</div>
+    
+    <div class="profile-panel-latest-track">
+      最近の投稿
+    </div>
       <div class = "flex flex-row mx-auto">
         {% for d in latestsongdata %}
             <div class="profile-track-box" >
@@ -265,43 +279,35 @@ $('.input-daterange').datepicker({
                 <p style="margin: 0;">{{ d["user_nickname"] }}</p>
               {% if d['emotion'] == "嬉しい" %}
                 <div class="profile-display-emotion">
-                  <img src="../static/image/laugh.png" width="50" height="50" >
-                  <label for="emotion">嬉しい</label>
+                  <img src="/static/image/laugh.png" width="50" height="50" >
                 </div>
               {% elif d['emotion'] == "楽しい" %}
                 <div class="profile-display-emotion">
-                  <img src="../static/image/hehe.png" width="50" height="50">
-                  <label for="emotion">楽しい</label>
+                  <img src="/static/image/hehe.png" width="50" height="50">
                 </div>
               {% elif d['emotion'] == "安心" %}
                 <div class="profile-display-emotion">
-                  <img src="../static/image/tere.png" width="50" height="50">
-                  <label for="emotion">安心</label>
+                  <img src="/static/image/tere.png" width="50" height="50">
                 </div>
               {% elif d['emotion'] == "退屈" %}
                 <div class="profile-display-emotion">
-                  <img src="../static/image/jito.png" width="50" height="50">
-                  <label for="emotion">退屈</label>
+                  <img src="/static/image/jito.png" width="50" height="50">
                 </div>
               {% elif d['emotion'] == "不安"%}
                 <div class="profile-display-emotion">
-                  <img src="../static/image/ase.png" width="50" height="50">
-                  <label for="emotion">不安</label>
+                  <img src="/static/image/ase.png" width="50" height="50">
                 </div>
               {% elif d['emotion'] == "イライラ"%}
                 <div class="profile-display-emotion">
-                  <img src="../static/image/angry.png" width="50" height="50">
-                  <label for="emotion">イライラ</label>
+                  <img src="/static/image/angry.png" width="50" height="50">
                 </div>
               {% elif d['emotion'] == "悲しい" %}
                 <div class="profile-display-emotion">
-                  <img src="../static/image/cry.png" width="50" height="50">
-                  <label for="emotion">悲しい</label>
+                  <img src="/static/image/cry.png" width="50" height="50">
                 </div>
               {% elif d['emotion'] == "驚き" %}
                 <div class="profile-display-emotion">
-                  <img src="../static/image/odoroki.png" width="50" height="50">
-                  <label for="emotion">驚き</label>
+                  <img src="/static/image/odoroki.png" width="50" height="50">
                 </div>
               {% endif  %}
               <div class="profile-display-about">

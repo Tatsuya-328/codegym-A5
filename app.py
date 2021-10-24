@@ -93,7 +93,7 @@ def index():
             latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
             'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
 
-
+    print(latestsongdata)
     return render_template('index.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata)
 
 
@@ -841,8 +841,16 @@ def profilePeriod(display_user_id, displayfrom, displayto):
     songdata = profile_info["songdata"]
     latestsongdata = profile_info["latestsongdata"]
 
+    # 自己紹介文取得
+    if db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0] != None:
+        Introduce = db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0]
+    else:
+        Introduce ="Settingで自己紹介入力してください"
+    
+    status = "period"
+
     if request.method == "GET":
-        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,  nowdisplayfrom=displayfrom, nowdisplayto=displayto, display_user_id=display_user_id, latestsongdata = latestsongdata )
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,  nowdisplayfrom=displayfrom, nowdisplayto=displayto, display_user_id=display_user_id, latestsongdata = latestsongdata, Introduce=Introduce, status = status)
     
     if request.method == "POST":
         #makeplaylistにデータ渡す
@@ -867,9 +875,16 @@ def profileEmotion(display_user_id,emotion):
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
     latestsongdata = profile_info["latestsongdata"]
+    # 自己紹介文取得
+    if db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0] != None:
+        Introduce = db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0]
+    else:
+        Introduce ="Settingで自己紹介入力してください"
+
+    status = "emotion"
 
     if request.method == "GET":
-        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id, emotion = emotion, latestsongdata = latestsongdata )
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id, emotion = emotion, latestsongdata = latestsongdata, Introduce = Introduce, status = status)
     
     if request.method == "POST":
         #makeplaylistにデータ渡す
@@ -894,15 +909,21 @@ def profileArtist(display_user_id,artist):
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
     latestsongdata = profile_info["latestsongdata"]
+    # 自己紹介文取得
+    if db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0] != None:
+        Introduce = db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0]
+    else:
+        Introduce ="Settingで自己紹介入力してください"
+
+    status = "artist_name"
 
     if request.method == "GET":
-        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id, artist=artist , latestsongdata = latestsongdata )
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id, artist=artist , latestsongdata = latestsongdata, Introduce = Introduce, status = status)
     
     if request.method == "POST":
         #makeplaylistにデータ渡す
         playlist_name = request.form['playlistname']
-        return render_template('makeplaylist.html', data = songdata, name = playlist_name, user_id=session["user_id"])
-# プロフィールでアーティスト指定
+        return render_template('makeplaylist.html', data = songdata, name = playlist_name, user_id=session["user_id"], status = status)
 
 # プロフィールで曲指定
 @app.route('/profile/<display_user_id>/song_name/<song_name>', methods = ['GET','POST'])
@@ -922,8 +943,16 @@ def profileSong(display_user_id, song_name):
     songdata = profile_info["songdata"]
     latestsongdata = profile_info["latestsongdata"]
 
+    # 自己紹介文取得
+    if db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0] != None:
+        Introduce = db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0]
+    else:
+        Introduce ="Settingで自己紹介入力してください"
+
+    status = "track_name"
+
     if request.method == "GET":
-        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id ,song_name=song_name, latestsongdata = latestsongdata )
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id ,song_name=song_name, latestsongdata = latestsongdata, Introduce = Introduce, status = status)
     
     if request.method == "POST":
         #makeplaylistにデータ渡す
@@ -1089,12 +1118,9 @@ def homePeriod(displayfrom, displayto):
 
         #最新3件の投稿をリスト表示させる
 
-    # latestpins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).limit(3).all()
+    status = "period"
 
-
-    
-
-    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto, latestsongdata=latestsongdata)
+    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto, latestsongdata=latestsongdata, status = status)
 
 # ホームで感情指定
 @app.route('/home/emotion/<emotion>', methods = ['GET'])
@@ -1113,8 +1139,11 @@ def homeEmotion(emotion):
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
     latestsongdata = profile_info["latestsongdata"]
+    print(latestsongdata)
 
-    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata)
+    status= "emotion"
+
+    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata, status=status, emotion=emotion)
 # ホームで感情指定
 
 # ホームでアーティスト指定
@@ -1135,7 +1164,9 @@ def homeArtist(artist):
     songdata = profile_info["songdata"]
     latestsongdata = profile_info["latestsongdata"]
 
-    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata)
+    status="artist_name"
+
+    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata, status=status, artist=artist)
 # ホームでアーティスト指定
 
 # ホームで曲指定
@@ -1156,7 +1187,9 @@ def homeSong(song_name):
     songdata = profile_info["songdata"]
     latestsongdata = profile_info["latestsongdata"]
 
-    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata)
+    status="song_name"
+
+    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata, status = status, song_name=song_name)
 # ホームでアーティスト曲指定
 
 @app.route('/select_location', methods = ['GET'])
