@@ -46,26 +46,26 @@ let infoWindow = [];
 function initMap() {
   // 地図表示
   var map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 7,
-    center: {lat: 35.665498, lng: 139.75964},
+    zoom: 4,
+    center: {lat: 37.065498, lng: 139.75964},
     styles: [{
-        featureType: 'poi',
-        stylers: [
-          { visibility: 'off' }
-        ]
-      },{
-        featureType: 'road',
-        elementType: 'labels',
-        stylers: [
-          { visibility: 'off' }
-        ]
-      },],
-      mapTypeControl: false,
-      panControl: false,
-      zoomControl: false,
-      scaleControl: false,
-      streetViewControl: false,
-      fullscreenControl:false,
+      featureType: 'poi',
+      stylers: [
+        { visibility: 'off' }
+      ]
+    },{
+      featureType: 'road',
+      elementType: 'labels',
+      stylers: [
+        { visibility: 'off' }
+      ]
+    },],
+    mapTypeControl: false,
+    panControl: false,
+    zoomControl: false,
+    scaleControl: false,
+    streetViewControl: false,
+    fullscreenControl:false,
   });
 
   // 複数ピンを立てる

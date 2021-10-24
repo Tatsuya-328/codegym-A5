@@ -15,19 +15,20 @@
 {% endblock %}
 
 {% block main %}
-  <h1 style="float: left;">Home</h1>
+  <!-- <h1 style="float: left;">Home</h1> -->
   <!-- 表示期間切替 -->  
     <!-- bootstrap-datepicker -->
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ja.min.js"></script>
   
-    <div class="text-right">
+    <!-- 前に使ってたマップの外の絞り込みボタン -->
+    <!-- <div class="text-right">
     <button type="button" class="btn" data-toggle="modal" data-target="#modalForm" style="background: white; padding-top: 15px;
     padding-right: 15px;">
       <i class="fas fa-history  fa-2x"></i>
     </button>
-    </div>
+    </div> -->
 
 <!-- Modal の中身 -->
 <div class="modal fade" id="modalForm" role="dialog">
@@ -143,12 +144,33 @@
   </div>
 </div>
 
+{% if status == "period" %}
+  <div class="profile-panel-search">
+    期間 {{ nowdisplayfrom }} 〜 {{ nowdisplayto }}
+  </div>
+{% elif status == "emotion"%}
+  <div class="profile-panel-search">
+    感情指定  {{ emotion }}
+  </div>
+{% elif status == "artist_name"%}
+  <div class="profile-panel-search">
+    アーティスト {{ artist }}
+  </div>
+{% elif status == "track_name"%}
+  <div class="profile-panel-search">
+    曲名 {{ song_name }}
+  </div>
+{% endif %}
+
 <div id="map" class="index-map fixed-top"></div>
 
   <!-- 最近追加した曲リスト -->
   <div class="table-responsive index-latest-track-table">
     <!-- <form action="/makeplaylist" method="post"> -->
-    <div class="index-panel-latest-track">最近の投稿</div>
+    <div class="index-panel-latest-track">
+      {{ if  }}
+      最近の投稿
+    </div>
       <div class = "flex flex-row mx-auto">
         {% for d in latestsongdata %}
             <div class="index-track-box" >
@@ -167,43 +189,35 @@
                 </div>
               {% if d['emotion'] == "嬉しい" %}
                 <div class="index-display-emotion">
-                  <img src="../static/image/laugh.png" width="50" height="50" >
-                  <label for="emotion">嬉しい</label>
+                  <img src="/static/image/laugh.png" width="50" height="50" >
                 </div>
               {% elif d['emotion'] == "楽しい" %}
                 <div class="index-display-emotion">
-                  <img src="../static/image/hehe.png" width="50" height="50">
-                  <label for="emotion">楽しい</label>
+                  <img src="/static/image/hehe.png" width="50" height="50">
                 </div>
               {% elif d['emotion'] == "安心" %}
                 <div class="index-display-emotion">
-                  <img src="../static/image/tere.png" width="50" height="50">
-                  <label for="emotion">安心</label>
+                  <img src="/static/image/tere.png" width="50" height="50">
                 </div>
               {% elif d['emotion'] == "退屈" %}
                 <div class="index-display-emotion">
-                  <img src="../static/image/jito.png" width="50" height="50">
-                  <label for="emotion">退屈</label>
+                  <img src="/static/image/jito.png" width="50" height="50">
                 </div>
               {% elif d['emotion'] == "不安"%}
                 <div class="index-display-emotion">
-                  <img src="../static/image/ase.png" width="50" height="50">
-                  <label for="emotion">不安</label>
+                  <img src="/static/image/ase.png" width="50" height="50">
                 </div>
               {% elif d['emotion'] == "イライラ"%}
                 <div class="index-display-emotion">
-                  <img src="../static/image/angry.png" width="50" height="50">
-                  <label for="emotion">イライラ</label>
+                  <img src="/static/image/angry.png" width="50" height="50">
                 </div>
               {% elif d['emotion'] == "悲しい" %}
                 <div class="index-display-emotion">
-                  <img src="../static/image/cry.png" width="50" height="50">
-                  <label for="emotion">悲しい</label>
+                  <img src="/static/image/cry.png" width="50" height="50">
                 </div>
               {% elif d['emotion'] == "驚き" %}
                 <div class="index-display-emotion">
-                  <img src="../static/image/odoroki.png" width="50" height="50">
-                  <label for="emotion">驚き</label>
+                  <img src="/static/image/odoroki.png" width="50" height="50">
                 </div>
               {% endif  %}
               <div class="index-display-about">

@@ -38,11 +38,6 @@
 {% block main %}
 <h1>groups</h1>
 
-<!-- <div class="user-follow">
-  <p id="nickname">{{user_info["nickname"]}} </p>
-  <p id="user-id">(user_id is {{user_info["id"]}})</p>
-</div> -->
-
 <h3>グループ一覧</h3>
 <!-- <p>{{ groups['name'] }}</p> -->
 <table class="table table-hover">
@@ -78,6 +73,20 @@
       <td><i class="fas fa-user"></i></td>
       <td>{{ d["id"]}}</td>
       <td>{{ d["name"]}}</td>
+      <td>
+        <form action="/groups" method="post">
+          <input type="hidden" name ="group_id"value='{{ d["id"]}}'>
+          <input type="hidden" name ="owner_id"value='{{ d["owner_id"]}}'>
+          <button type='submit' name='auth' value="yes" >参加</button>
+        </form>
+      </td>
+      <td>
+        <form action="/groups" method="post">
+          <input type="hidden" name ="group_id"value='{{ d["id"]}}'>
+          <input type="hidden" name ="owner_id"value='{{ d["owner_id"]}}'>
+          <button type='submit' name='auth' value="no" >拒否</button>
+        </form>
+      </td>
 
     </tr>
     {% endfor %}

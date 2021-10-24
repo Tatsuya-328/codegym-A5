@@ -7,7 +7,6 @@
 {% block js %}
 <script type="text/javascript">
   var group_info = {{ group_info | safe }};
-  var groub_members_info = {{groub_members_info |safe }};
 </script>
 
 <script type="text/javascript" src="/static/js/createGroup.js"></script>
@@ -25,7 +24,7 @@
     <!-- <form action="/makeplaylist" method="post"> -->
     <div class="index-panel-latest-track">最近の投稿</div>
       <div class = "flex flex-row mx-auto">
-        {% for d in latestsongdata %}
+        {% for d in track_lists %}
             <div class="index-track-box" >
               <!-- <div class="index-spotify-track"> -->
                 <iframe src="https://open.spotify.com/embed/track/{{ d['track_id'] }}" width="75" height="75" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>

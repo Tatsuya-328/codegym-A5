@@ -120,7 +120,20 @@ a:link, a:visited, a:hover, a:active {
   width: 100%;
   height: 30vh;
 }
+.profile-nickname{
+  display: block;
+}
+.profile-follower{
+  display: block;
+  margin-top: 60px;
+}
+.profile-intro{
+  display: block;
 
+}
+.profile-form-search{
+  float: left;
+}
 /*menu*/
 .menu{
   height: 12px;
@@ -252,7 +265,8 @@ a:link, a:visited, a:hover, a:active {
   border-radius: 20px;
   margin: 10px;
   background-color: rgb(183, 182, 182);
-  color: white;
+  /* background-color: rgb(63, 212, 152); */
+  /* color: white; */
   display: flex;
 }
 .index-spotify-track{
@@ -263,11 +277,13 @@ a:link, a:visited, a:hover, a:active {
   padding-bottom: 45px;
 }
 .index-display-emotion{
-  display: inline-block;
+  /* display: inline-block; */
+  float: left;
 }
 .index-display-about{
   display: inline-block;
   margin-left: 10px;
+  margin-top: 15px;
 }
 .index-songlocation-info{
   display: inline-block;
@@ -275,7 +291,12 @@ a:link, a:visited, a:hover, a:active {
 }
 .index-panel-latest-track{
   text-align: center;
-  margin: 10px;
+  margin: 10px auto;
+  padding: 10px;
+  background-color: rgb(253, 198, 97);
+  width: 80%;
+  border-radius: 10px;
+  font-weight: bold;
 }
 .index-map{
   position: fixed;
@@ -290,10 +311,10 @@ a:link, a:visited, a:hover, a:active {
 .panel-track-name{
   float: left;
   width: 50%;
-  height: 30px;
+  height: 20px;
   overflow: hidden;
   margin-right: 5px;
-  font-weight: 600;
+  font-weight: bold;
   font-size: 15px;
 }
 .panel-artist-name{
@@ -306,12 +327,16 @@ a:link, a:visited, a:hover, a:active {
 }
 
 /* profile */
+.profile-info{
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
 .profile-track-box{
   padding: 15px;
   border-radius: 20px;
   margin: 10px;
   background-color: rgb(183, 182, 182);
-  color: white;
+  /* color: white; */
   height: 100px;
 }
 .profile-spotify-track{
@@ -331,18 +356,33 @@ a:link, a:visited, a:hover, a:active {
 .profile-songlocation-info{
   display: inline-block;
   margin-left: 10px;
+  width: 73%;
 }
 .profile-panel-latest-track{
   text-align: center;
-  margin: 10px;
+  margin: 10px auto;
+  padding: 10px;
+  background-color: rgb(253, 198, 97);
+  width: 80%;
+  border-radius: 10px;
+  font-weight: bold;
+}
+.profile-panel-search{
+  text-align: center;
+  margin: 0px auto 10px auto;
+  padding: 10px;
+  background-color: rgb(75, 251, 181);
+  width: 80%;
+  border-radius: 10px;
+  font-weight: bold;
 }
 .profile-panel-track-name{
   float: left;
   width: 55%;
-  height: 30px;
+  height: 20px;
   overflow: hidden;
   margin-right: 5px;
-  font-weight: 600;
+  font-weight: bold;
   font-size: 15px;
 }
 .profile-panel-artist-name{
@@ -352,4 +392,40 @@ a:link, a:visited, a:hover, a:active {
   overflow: hidden;
   margin-right: 5px;
   font-size: 12px;
+}
+.profile-form-search{
+  margin-left: 20px;
+}
+
+/* jikkenn */
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+.content{
+  margin: 0 auto;
+  padding: 40px;
+}
+.modal{
+  display: none;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+.modal__bg{
+  background: rgba(0,0,0,0.8);
+  height: 100vh;
+  position: absolute;
+  width: 100%;
+}
+.modal__content{
+  background: #fff;
+  left: 50%;
+  padding: 40px;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  width: 60%;
 }

@@ -56,7 +56,7 @@ function initMap() {
         stylers: [
           { visibility: 'off' }
         ]
-      }],
+      },],
       mapTypeControl: false,
       panControl: false,
       zoomControl: false,
@@ -64,8 +64,29 @@ function initMap() {
       streetViewControl: false,
       fullscreenControl:false,
     });
-
+// 絞り込みボタン設定
+    var ingressButtonDiv = document.createElement("div");
+    var ingressButton = new ingressControl(ingressButtonDiv, map);
+    
+    ingressButtonDiv.index = 1;
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(ingressButtonDiv);
+ 
   console.log(SongData);
+
+  // 絞り込みボタン設置
+  function ingressControl(buttonDiv, map) {
+    var buttonUI = document.createElement("div");
+    buttonUI.innerHTML = "<i class='fas fa-history  fa-4x'></i>";
+    buttonDiv.style.padding = "15px";
+    buttonDiv.appendChild(buttonUI);
+  
+    google.maps.event.addDomListener(buttonUI, "click", function() {
+      // optionで開く設定。
+      var options ={"show":true}
+      $('#modalForm').modal(options);
+    });
+  }
+
 
   // 複数ピンを立てる
   for (var i = 0; i < SongData.length; i++) {
