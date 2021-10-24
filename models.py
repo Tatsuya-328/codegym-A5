@@ -92,10 +92,12 @@ class made_playlists(db.Model):
 class Group(db.Model):
   __tablename__ = 'Group'
   id = db.Column(Integer, primary_key=True)
+  owner_id = db.Column(Integer)
   name = db.Column(TEXT, unique=False)
   introduction = db.Column(TEXT, unique=False)
 
-  def __init__(self, name=None, introduction=None):
+  def __init__(self, owner_id=None, name=None, introduction=None):
+    self.owner_id = owner_id
     self.name = name
     self.introduction = introduction
     

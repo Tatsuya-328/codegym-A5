@@ -1249,6 +1249,7 @@ def groups():
         auth = request.form.get("auth")
         owner_id = request.form.get("owner_id")
         group_id = request.form.get("group_id")
+        print("auth",auth, "owner", owner_id, "group", group_id)
 
         # auth = "yes"
         if auth == "yes":
@@ -1256,7 +1257,8 @@ def groups():
             db.session.add(new_user_group)
             db.session.commit()
 # リクエストを消す
-        delete_request = db.session.query(requests).filter_by(group_id = group_id).first()
+        # delete_request = db.session.query(requests).filter(requests.group_id == group_id).filter(requests.owner_id == owner_id,).filter(requests.invited_id == login_user_id).first()
+        delete_request = db.session.query(requests).filter(requests.group_id == group_id).first()
         print("delete",delete_request)
         db.session.delete(delete_request)
         db.session.commit()
@@ -1264,30 +1266,32 @@ def groups():
     user = db.session.query(users).filter(users.id == login_user_id).first()
     user_info = dict(id=user.id, nickname=user.nickname, username=user.username)
 
-    owner_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.owner_id == login_user_id).all()
+    # owner_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.owner_id == login_user_id).all()
+    owner_group_ids = db.session.query(Group.id).filter(Group.owner_id == login_user_id).all()
     invited_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.invited_id == login_user_id).all()
     requests_group_ids = db.session.query(requests.group_id).filter(requests.invited_id == login_user_id).all()
     requests_owner_group_ids = db.session.query(requests.group_id).filter(requests.owner_id == login_user_id).all()
-    
+    print("owner", owner_group_ids)
     groups = []
     requests_groups = []
 #グループ一覧（自分が作ったやつ） 
     for owner_group_id in owner_group_ids:
         owner_group = db.session.query(Group).filter(Group.id == owner_group_id[0]).first()
         # print('Oid',owner_group.id,'Oname',owner_group.name)
-        groups.append(dict(id=owner_group.id, name=owner_group.name,))
+        groups.append(dict(id=owner_group.id, name=owner_group.name, owner_id=owner_group.owner_id))
 #グループ一覧（自分が招待されて参加済みのやつ） 
     for invited_group_id in invited_group_ids:
         invited_group = db.session.query(Group).filter(Group.id == invited_group_id[0]).first()
         # print('Iid',invited_group.id)
-        groups.append(dict(id=invited_group.id, name=invited_group.name,))
+        groups.append(dict(id=invited_group.id, name=invited_group.name, owner_id=invited_group.owner_id))
         # groups.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname, track_id=track_id))
+
 # グループ一覧（自分が作ってまだ参加してない人いてrequestテーブルにあるやつ）
-    for requests_group_id in requests_owner_group_ids:
-        requests_group = db.session.query(Group).filter(Group.id == requests_group_id[0]).first()
-        # requests_group_owner = db.session.query(UserGroup.owner_id).filter(UserGroup.group_id == requests_group_id[0]).first()
-        # print('Rid',requests_group.id)
-        groups.append(dict(id=requests_group.id, name=requests_group.name))
+    # for requests_group_id in requests_owner_group_ids:
+    #     requests_group = db.session.query(Group).filter(Group.id == requests_group_id[0]).first()
+    #     # requests_group_owner = db.session.query(UserGroup.owner_id).filter(UserGroup.group_id == requests_group_id[0]).first()
+    #     # print('Rid',requests_group.id)
+    #     groups.append(dict(id=requests_group.id, name=requests_group.name))
 # 招待一覧
     for requests_group_id in requests_group_ids:
         requests_group = db.session.query(Group).filter(Group.id == requests_group_id[0]).first()
@@ -1321,21 +1325,23 @@ def create_group_table():
     login_user_id = session["user_id"]
     group_name = request.form.get("group_name")
     add_user_ids = request.form.get("add_users")
+    print("add_user_id", add_user_ids)
     # add_user_ids = []##ここにチェックボックスで追加したユーザーを配列つくる。
     
     
-    new_group = Group(name = group_name, introduction = "")
+    new_group = Group(owner_id=login_user_id, name = group_name, introduction = "")
     db.session.add(new_group)
     db.session.commit()
 
     new_group_id = db.session.query(func.max(Group.id).label('max'))
     print("newgroup")
-    print(new_group_id)
+    print(new_group_id[0]['max'])
 
     for add_user_id in add_user_ids:
-        new_user_group = requests(group_id = new_group_id, owner_id = login_user_id, invited_id = add_user_id)
+        new_user_group = requests(group_id = new_group_id[0]['max'], owner_id = login_user_id, invited_id = add_user_id)
         db.session.add(new_user_group)
         db.session.commit()
+        print("group_id = ", new_group_id[0]['max'], "owner_id = ", login_user_id, "invited_id = ", add_user_id)
     
     # 作ったグループ確認
     rows = db.session.query(requests).all()
