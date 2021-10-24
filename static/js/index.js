@@ -44,7 +44,7 @@ let infoWindow = [];
 function initMap() {
   var map = new google.maps.Map(document.getElementById('map'), {
       zoom: 5,
-      center: {lat: 35.665498, lng: 139.75964},
+      center: {lat: 37.665498, lng: 137.75964},
       styles: 
       // mapサイト引用ここから
       [ {
@@ -356,6 +356,7 @@ function initMap() {
     var buttonUI = document.createElement("div");
     buttonUI.innerHTML = "<i class='fas fa-history  fa-4x'></i>"; //ここでアイコン指定
     buttonDiv.style.padding = "15px";
+    buttonDiv.style.color = "rgb(183, 182, 182)";
     buttonDiv.appendChild(buttonUI);
   
     google.maps.event.addDomListener(buttonUI, "click", function() {

@@ -43,10 +43,10 @@
       </div>
       <div class="profile-follower">
         <p style="margin-bottom: 0px;">
-          <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}">
+          <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}" style="color: rgb(183, 182, 182);">
             <span>{{ user_info["follow_number"] }}</span>フォロー
           </a>
-          <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}">
+          <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}" style="color: rgb(183, 182, 182);">
             <span>{{ user_info["followed_number"] }}</span>フォロワー
           </a>
         </p>

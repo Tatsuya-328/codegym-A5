@@ -144,33 +144,32 @@
   </div>
 </div>
 
-{% if status == "period" %}
-  <div class="profile-panel-search">
-    期間 {{ nowdisplayfrom }} 〜 {{ nowdisplayto }}
-  </div>
-{% elif status == "emotion"%}
-  <div class="profile-panel-search">
-    感情指定  {{ emotion }}
-  </div>
-{% elif status == "artist_name"%}
-  <div class="profile-panel-search">
-    アーティスト {{ artist }}
-  </div>
-{% elif status == "track_name"%}
-  <div class="profile-panel-search">
-    曲名 {{ song_name }}
-  </div>
-{% endif %}
 
 <div id="map" class="index-map fixed-top"></div>
 
-  <!-- 最近追加した曲リスト -->
-  <div class="table-responsive index-latest-track-table">
-    <!-- <form action="/makeplaylist" method="post"> -->
-    <div class="index-panel-latest-track">
-      {{ if  }}
+<!-- 最近追加した曲リスト -->
+<div class="table-responsive index-latest-track-table">
+  <!-- <form action="/makeplaylist" method="post"> -->
+    <!-- <div class="index-panel-latest-track">
       最近の投稿
-    </div>
+    </div> -->
+    {% if status == "period" %}
+      <div class="profile-panel-search">
+        期間 {{ nowdisplayfrom }} 〜 {{ nowdisplayto }}
+      </div>
+    {% elif status == "emotion"%}
+      <div class="profile-panel-search">
+        感情指定  {{ emotion }}
+      </div>
+    {% elif status == "artist_name"%}
+      <div class="profile-panel-search">
+        アーティスト {{ artist }}
+      </div>
+    {% elif status == "track_name"%}
+      <div class="profile-panel-search">
+        曲名 {{ song_name }}
+      </div>
+    {% endif %}
       <div class = "flex flex-row mx-auto">
         {% for d in latestsongdata %}
             <div class="index-track-box" >
