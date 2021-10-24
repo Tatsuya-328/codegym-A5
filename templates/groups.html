@@ -11,6 +11,7 @@
   // var following_user_info = {{following_user_info |safe }}
   // var followed_user_info = {{followed_user_info |safe }}
   var groups = {{ groups | safe }}
+  var requests_groups = {{ requests_groups | safe }}
 </script>
 
 <script>
@@ -64,24 +65,24 @@
 </table>
 
 <h3>招待一覧</h3>
-<!-- <table class="table table-hover">
+<table class="table table-hover">
   <thead>
     <tr>
       <th></th>
-      <th>Nickname</th>
-      <th>User name</th>
+      <th>グループid</th>
+      <th>グループ名</th>
     </tr>
   </thead>
   <tbody>
-    {% for followed in followed_user_info %}
-    <tr data-href="{{ url_for('profile', display_user_id = followed['id'] ) }}">
+    {% for d in requests_groups %}
       <td><i class="fas fa-user"></i></td>
-      <td>{{ followed["nickname"]}}</td>
-      <td>{{ followed["username"]}}</td>
+      <td>{{ d["id"]}}</td>
+      <td>{{ d["name"]}}</td>
+
     </tr>
     {% endfor %}
   </tbody>
-</table> -->
+</table>
 <a href="/create_group">新規作成</a>
 
 {% endblock %}

@@ -1203,15 +1203,35 @@ def display_follower(display_user_id):
     return render_template("follower.html",user_id=session["user_id"], user_info=user_info, following_user_info=following_user_info, followed_user_info=followed_user_info)
 
 
-@app.route('/groups', methods = ['GET'])
+@app.route('/groups', methods = ['GET', 'POST'])
 @login_required
 def groups():
     login_user_id=session["user_id"]
+    if request.method == "POST":
+        # 許可するかどうか、owner_id, group_idを受け取る。
+        # auth = request.form.get("auth")
+        # owner_id = request.form.get("owner_id")
+        # group_id = request.form.get("group_id")
+        group_id = 1
+        owner_id = 1
+        auth = "yes"
+        if auth == "yes":
+            new_user_group = UserGroup(group_id = group_id, owner_id = owner_id, invited_id = login_user_id)
+            db.session.add(new_user_group)
+            db.session.commit()
+        # リクエストを消す
+        delete_request = db.session.query(requests).filter_by(requests.invited_id == login_user_id, requests.owner_id == owner_id).first()
+        db.session.delete(delete_request)
+        db.session.commit()
+    
     user = db.session.query(users).filter(users.id == login_user_id).first()
     user_info = dict(id=user.id, nickname=user.nickname, username=user.username)
+
     owner_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.owner_id == login_user_id).all()
     invited_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.invited_id == login_user_id).all()
+    requests_group_ids = db.session.query(requests.group_id).filter(requests.invited_id == login_user_id).all()
     groups = []
+    requests_groups = []
     for owner_group_id in owner_group_ids:
         owner_group = db.session.query(Group).filter(Group.id == owner_group_id[0]).first()
         print('Oid',owner_group.id,'Oname',owner_group.name)
@@ -1221,8 +1241,12 @@ def groups():
         print('Iid',invited_group.id)
         groups.append(dict(id=invited_group.id, name=invited_group.name,))
         # groups.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname, track_id=track_id))
+    for requests_group_id in requests_group_ids:
+        requests_group = db.session.query(Group).filter(Group.id == requests_group_id[0]).first()
+        print('Iid',requests_group.id)
+        requests_groups.append(dict(id=requests_group.id, name=requests_group.name,))
 
-    return render_template("groups.html", user_id=session["user_id"], user_info=user_info, groups=groups)
+    return render_template("groups.html", user_id=session["user_id"], user_info=user_info, groups=groups, requests_groups=requests_groups)
 
 
 @app.route('/create_group', methods = ['GET'])
@@ -1260,12 +1284,12 @@ def create_group_table():
     print(new_group_id)
 
     for add_user_id in add_user_ids:
-        new_user_group = UserGroup(group_id = new_group_id, owner_id = login_user_id, invited_id = add_user_id)
+        new_user_group = requests(group_id = new_group_id, owner_id = login_user_id, invited_id = add_user_id)
         db.session.add(new_user_group)
         db.session.commit()
     
     # 作ったグループ確認
-    rows = db.session.query(UserGroup).all()
+    rows = db.session.query(requests).all()
     for row in rows:
         print("Groupid",row.group_id)
         print("Groupuser",row.owner_id, end="->")
