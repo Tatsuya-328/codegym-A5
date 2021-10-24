@@ -1206,16 +1206,19 @@ def groups():
     login_user_id=session["user_id"]
     user = db.session.query(users).filter(users.id == login_user_id).first()
     user_info = dict(id=user.id, nickname=user.nickname, username=user.username)
-    owner_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.owner_id == login_user_id).all()
-    invited_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.invited_id == login_user_id).all()
+    owner_group_ids = db.session.query(UserGroup.id).filter(UserGroup.owner_id == login_user_id).all()
+    invited_group_ids = db.session.query(UserGroup.id).filter(UserGroup.invited_id == login_user_id).all()
     groups = []
     for owner_group_id in owner_group_ids:
-        owner_group = db.session.query(Group).filter(Group.id == owner_group_id).first()
-        groups.append(owner_group)
+        owner_group = db.session.query(Group).filter(Group.id == owner_group_id[0]).first()
+        print('Oid',owner_group.name,'Oname',owner_group.name)
+        groups.append(dict(id=owner_group.id, name=owner_group.name,))
     for invited_group_id in invited_group_ids:
-        invited_group = db.session.query(Group).filter(Group.id == invited_group_id).first()
-        groups.append(invited_group)
-    groups.append("グループ")
+        invited_group = db.session.query(Group).filter(Group.id == invited_group_id[0]).first()
+        print('Iid',invited_group.id)
+        groups.append(dict(id=invited_group.id, name=invited_group.name,))
+        # groups.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname, track_id=track_id))
+
     return render_template("groups.html", user_id=session["user_id"], user_info=user_info, groups=groups)
 
 
@@ -1241,9 +1244,8 @@ def create_group():
 def create_group_table():
     login_user_id = session["user_id"]
     group_name = request.form.get("group_name")
-    # add_user_ids = request.form.get("add_users")
-    
-    add_user_ids = []##ここにチェックボックスで追加したユーザーを配列つくる。
+    add_user_ids = request.form.get("add_users")
+    # add_user_ids = []##ここにチェックボックスで追加したユーザーを配列つくる。
     
     
     new_group = Group(name = group_name, introduction = "")
@@ -1260,9 +1262,9 @@ def create_group_table():
     # 作ったグループ確認
     rows = db.session.query(UserGroup).all()
     for row in rows:
-        print(row.group_id)
-        print(row.owner_id, end="->")
-        print(row.invited_id)
+        print("Groupid",row.group_id)
+        print("Groupuser",row.owner_id, end="->")
+        print("Groupinvited",row.invited_id)
     
     return redirect("/")
 
@@ -1276,16 +1278,21 @@ def group_info(group_id):
     # メンバーの情報
     group_members = db.session.query(UserGroup).filter(UserGroup.group_id == group_id).all()
     groub_members_info = []
+    track_id =[]
     for group_member in group_members:
         user_info = db.session.query(users).filter(users.id == group_member.invited_id).first()
         # 曲を選ぶ
         user_pins = db.session.query(song_locations).filter(song_locations.user_id == user_info.id).all()
         # データベースの行を削除したら正しく数字とり出せるかは疑問
-        random_num = random.randint(len(user_pins))
-        track_id = user_pins[random_num - 1].track_id
+        # random_num = random.randint(len(user_pins))
+        # track_id = user_pins[random_num - 1].track_id
+
+        # 曲全部取り出してみる
+        # for track in user_pins:
+        #     track_id = user_pins[track].track_id[0]
 
         groub_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname, track_id=track_id))
-    return render_template("group_info", group_info=group_info, groub_members_info=groub_members_info)
+    return render_template("group_info.html", group_info=group_info, groub_members_info=groub_members_info)
 
 
 @app.route('/groups/<group_id>/members', methods = ['GET'])

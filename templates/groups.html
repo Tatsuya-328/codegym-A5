@@ -36,31 +36,32 @@
 
 {% block main %}
 <h1>groups</h1>
-<p>{{ groups }}</p>
+
 <!-- <div class="user-follow">
   <p id="nickname">{{user_info["nickname"]}} </p>
   <p id="user-id">(user_id is {{user_info["id"]}})</p>
 </div> -->
 
 <h3>グループ一覧</h3>
-<!-- <table class="table table-hover">
+<!-- <p>{{ groups['name'] }}</p> -->
+<table class="table table-hover">
   <thead>
     <tr>
       <th></th>
-      <th>Nickname</th>
-      <th>User name</th>
+      <th>グループid</th>
+      <th>グループ名</th>
     </tr>
   </thead>
   <tbody>
-    {% for following in following_user_info %}
-    <tr data-href="{{ url_for('profile', display_user_id = following['id'] ) }}">
+    {% for d in groups %}
       <td><i class="fas fa-user"></i></td>
-      <td>{{ following["nickname"]}}</td>
-      <td>{{ following["username"]}}</td>
+      <td>{{ d["id"]}}</td>
+      <td>{{ d["name"]}}</td>
+
     </tr>
     {% endfor %}
   </tbody>
-</table> -->
+</table>
 
 <h3>招待一覧</h3>
 <!-- <table class="table table-hover">

@@ -44,37 +44,38 @@
 <div class="col-xs-10" style="padding: 40px 0 40px 0;">
   <h1 style="font-size: 25px; text-align: center">グループ作成</h1>
 
-<div class="container">
-    <div class="col-xs-8">
-        <form action="javascript:jump();">
-          <input id="make-group" type="text" value="" placeholder="Group name" required>
-          <input class="btn btn-primary" type="submit" value="グループ作成">
-        </form>
-    </div>
-</div>
-</div>
-
-
 <h3>追加するユーザー</h3>
-<table class="table table-hover">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Nickname</th>
-      <th>User name</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for following in following_user_info %}
-    <tr data-href="{{ url_for('profile', display_user_id = following['id'] ) }}">
-      <td><i class="fas fa-user"></i></td>
-      <td>{{ following["nickname"]}}</td>
-      <td>{{ following["username"]}}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="table-responsive playlist-form">
+  <form action="/create_group_table" method="post">
+    <div class = "flex flex-row mx-auto">
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+          <th></th>
+          <th>Nickname</th>
+          <th>User name</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
 
-<button id="create_group_table">作成する</button>
+            {% for following in following_user_info %}
+            <tr data-href="{{ url_for('profile', display_user_id = following['id'] ) }}">
+              <td><i class="fas fa-user"></i></td>
+              <td>{{ following["nickname"]}}</td>
+              <td>{{ following["username"]}}</td>
+              <td>
+                <input type="checkbox" name="add_users" value="{{following['id'] }}" checked>
+              </td>
+            </tr>
+            {% endfor %}
+      </tbody>
+      </table>
+    </div>
+    <input style="display: block; margin: 10px auto;" class="" name="group_name" autocomplete="off" placeholder="グループ名入力" type="type" >
+    <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">作成する</button>
+  </form>
+</div>
+
 
 {% endblock %}
