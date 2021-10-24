@@ -21,6 +21,7 @@ from sqlalchemy import or_, desc
 
 from profile import Profile_info
 from home import Home_info
+import random
 
 GOOGLE_MAP_API_KEY = config.GOOGLE_MAP_API_KEY
 SPOTIFY_CLIENT_SECRET =config.SPOTIFY_CLIENT_SECRET
@@ -1255,6 +1256,7 @@ def create_group_table():
         db.session.add(new_user_group)
         db.session.commit()
     
+    # 作ったグループ確認
     rows = db.session.query(UserGroup).all()
     for row in rows:
         print(row.group_id)
@@ -1262,6 +1264,42 @@ def create_group_table():
         print(row.invited_id)
     
     return redirect("/")
+
+
+@app.route('/groups/<group_id>', methods = ['GET'])
+@login_required
+def group_info(group_id):
+    # グループの情報
+    group = db.session.query(Group).filter(Group.id == group_id).first()
+    group_info = dict(id=group.id, name=group.name, introduction=group.introduction )
+    # メンバーの情報
+    group_members = db.session.query(UserGroup).filter(UserGroup.group_id == group_id).all()
+    groub_members_info = []
+    for group_member in group_members:
+        user_info = db.session.query(users).filter(users.id == group_member.invited_id).first()
+        # 曲を選ぶ
+        user_pins = db.session.query(song_locations).filter(song_locations.user_id == user_info.id).all()
+        # データベースの行を削除したら正しく数字とり出せるかは疑問
+        random_num = random.randint(len(user_pins))
+        track_id = user_pins[random_num - 1].track_id
+
+        groub_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname, track_id=track_id))
+    return render_template("group_info", group_info=group_info, groub_members_info=groub_members_info)
+
+
+@app.route('/groups/<group_id>/members', methods = ['GET'])
+@login_required
+def group_members(group_id):
+    group = db.session.query(Group).filter(Group.id == group_id).first()
+    group_info = dict(id=group.id, name=group.name, introduction=group.introduction )
+
+    group_members = db.session.query(UserGroup).filter(UserGroup.group_id == group_id).all()
+    groub_members_info = []
+    for group_member in group_members:
+        user_info = db.session.query(users).filter(users.id == group_member.invited_id).first()
+        groub_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
+    return render_template("group_members", group_info=group_info, groub_members_info=groub_members_info)
+
 
 # if __name__ == '__main__':
 #     app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
