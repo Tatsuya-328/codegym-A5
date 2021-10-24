@@ -4,6 +4,8 @@
   grouplist
 {% endblock %}
 
+
+
 {% block js %}
 <script type="text/javascript">
   var group_info = {{ group_info | safe }};
@@ -11,6 +13,31 @@
 </script>
 
 <script type="text/javascript" src="/static/js/createGroup.js"></script>
+<script type="text/javascript">
+  // var user_info = {{ user_info | safe }};
+  // var following_user_info = {{following_user_info |safe }}
+  // var followed_user_info = {{followed_user_info |safe }}
+  var groups = {{ groups | safe }}
+</script>
+
+<script>
+  jQuery(function($) {
+
+  //data-hrefの属性を持つtrを選択しclassにclickableを付加
+  $('tr[data-href]').addClass('clickable')
+
+    //クリックイベント
+    .click(function(e) {
+
+      //e.targetはクリックした要素自体、それがa要素以外であれば
+      if(!$(e.target).is('a')){
+      
+        //その要素の先祖要素で一番近いtrの
+        //data-href属性の値に書かれているURLに遷移する
+        window.location = $(e.target).closest('tr').data('href');}
+  });
+});
+</script>
 
 {% endblock %}
 
@@ -41,7 +68,4 @@
     {% endfor %}
   </tbody>
 </table>
-
-<button id="create_group_table">作成する</button>
-
 {% endblock %}
