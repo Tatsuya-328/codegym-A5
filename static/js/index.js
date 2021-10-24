@@ -45,7 +45,9 @@ function initMap() {
   var map = new google.maps.Map(document.getElementById('map'), {
       zoom: 5,
       center: {lat: 35.665498, lng: 139.75964},
-      styles: [ {
+      styles: 
+      // mapサイト引用ここから
+      [ {
             "featureType": "all",
             "elementType": "labels.text.fill",
             "stylers": [
@@ -329,15 +331,16 @@ function initMap() {
                     "lightness": 17
                 }
             ]
-        },],
+        },]
+        // mapのサイト引用ここまで
+        
+        ,
         mapTypeControl: false,
         panControl: false,
         zoomControl: false,
         scaleControl: false,
         streetViewControl: false,
         fullscreenControl:false,
-
-
     });
 // 絞り込みボタン設定
     var ingressButtonDiv = document.createElement("div");
@@ -351,7 +354,7 @@ function initMap() {
   // 絞り込みボタン設置
   function ingressControl(buttonDiv, map) {
     var buttonUI = document.createElement("div");
-    buttonUI.innerHTML = "<i class='fas fa-history  fa-4x'></i>";
+    buttonUI.innerHTML = "<i class='fas fa-history  fa-4x'></i>"; //ここでアイコン指定
     buttonDiv.style.padding = "15px";
     buttonDiv.appendChild(buttonUI);
   
