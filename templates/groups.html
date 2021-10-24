@@ -54,10 +54,10 @@
   </thead>
   <tbody>
     {% for d in groups %}
+    <tr data-href="{{ url_for('groups', group_id = d['id'] ) }}">
       <td><i class="fas fa-user"></i></td>
       <td>{{ d["id"]}}</td>
       <td>{{ d["name"]}}</td>
-
     </tr>
     {% endfor %}
   </tbody>

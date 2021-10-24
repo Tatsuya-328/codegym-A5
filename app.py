@@ -23,6 +23,8 @@ from profile import Profile_info
 from home import Home_info
 import random
 
+from sqlalchemy.sql import func
+
 GOOGLE_MAP_API_KEY = config.GOOGLE_MAP_API_KEY
 SPOTIFY_CLIENT_SECRET =config.SPOTIFY_CLIENT_SECRET
 SPOTIFY_CLIENT_ID = config.SPOTIFY_CLIENT_ID
@@ -1206,12 +1208,12 @@ def groups():
     login_user_id=session["user_id"]
     user = db.session.query(users).filter(users.id == login_user_id).first()
     user_info = dict(id=user.id, nickname=user.nickname, username=user.username)
-    owner_group_ids = db.session.query(UserGroup.id).filter(UserGroup.owner_id == login_user_id).all()
-    invited_group_ids = db.session.query(UserGroup.id).filter(UserGroup.invited_id == login_user_id).all()
+    owner_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.owner_id == login_user_id).all()
+    invited_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.invited_id == login_user_id).all()
     groups = []
     for owner_group_id in owner_group_ids:
         owner_group = db.session.query(Group).filter(Group.id == owner_group_id[0]).first()
-        print('Oid',owner_group.name,'Oname',owner_group.name)
+        print('Oid',owner_group.id,'Oname',owner_group.name)
         groups.append(dict(id=owner_group.id, name=owner_group.name,))
     for invited_group_id in invited_group_ids:
         invited_group = db.session.query(Group).filter(Group.id == invited_group_id[0]).first()
@@ -1252,7 +1254,9 @@ def create_group_table():
     db.session.add(new_group)
     db.session.commit()
 
-    new_group_id = 1
+    new_group_id = db.session.query(func.max(Group.id).label('max'))
+    print("newgroup")
+    print(new_group_id)
 
     for add_user_id in add_user_ids:
         new_user_group = UserGroup(group_id = new_group_id, owner_id = login_user_id, invited_id = add_user_id)

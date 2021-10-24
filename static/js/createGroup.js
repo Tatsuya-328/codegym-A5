@@ -1,9 +1,9 @@
-$(document).ready(function () {
-  // フォロー
-  $("#create_group_table").click(function() {
-    console.log("create_table")
-    // add_users = document.getElementById("add_users").textContent
-    add_users = ""
+// $(document).ready(function () {
+//   // フォロー
+//   $("#create_group_table").click(function() {
+//     console.log("create_table")
+//     // add_users = document.getElementById("add_users").textContent
+//     add_users = ""
 // チェックボックスいれたのを上の空なのを入れる。
 // グループ名も送りたい。
 
