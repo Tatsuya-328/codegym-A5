@@ -17,24 +17,10 @@
 {% block main %}
 <h1>group</h1>
 <p>{{ group_info }}</p>
-<!-- <div class="user-follow">
-  <p id="nickname">{{user_info["nickname"]}} </p>
-  <p id="user-id">(user_id is {{user_info["id"]}})</p>
-</div> -->
-
-<div class="col-xs-10" style="padding: 40px 0 40px 0;">
-  <h1 style="font-size: 25px; text-align: center">グループ作成</h1>
-
-<div class="container">
-    <div class="col-xs-8">
-        <form action="javascript:jump();">
-          <input id="make-group" type="text" value="" placeholder="Group name" required>
-          <input class="btn btn-primary" type="submit" value="グループ作成">
-        </form>
-    </div>
+<div>
+  <p id="name">{{group_info["name"]}} </p>
+  <p id="group-id">{{group_info["id"]}}</p>
 </div>
-</div>
-
 
 <h3>メンバー</h3>
 <table class="table table-hover">

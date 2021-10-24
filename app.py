@@ -18,6 +18,7 @@ from pprint import pprint
 import config
 from models import users, song_locations, songs, follow, made_playlists, Group, UserGroup, requests, db
 from sqlalchemy import or_, desc
+from sqlalchemy.sql import func
 
 from profile import Profile_info
 from home import Home_info
@@ -1206,8 +1207,8 @@ def groups():
     login_user_id=session["user_id"]
     user = db.session.query(users).filter(users.id == login_user_id).first()
     user_info = dict(id=user.id, nickname=user.nickname, username=user.username)
-    owner_group_ids = db.session.query(UserGroup.id).filter(UserGroup.owner_id == login_user_id).all()
-    invited_group_ids = db.session.query(UserGroup.id).filter(UserGroup.invited_id == login_user_id).all()
+    owner_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.owner_id == login_user_id).all()
+    invited_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.invited_id == login_user_id).all()
     groups = []
     for owner_group_id in owner_group_ids:
         owner_group = db.session.query(Group).filter(Group.id == owner_group_id[0]).first()
@@ -1252,7 +1253,9 @@ def create_group_table():
     db.session.add(new_group)
     db.session.commit()
 
-    new_group_id = 1
+    new_group_id = db.session.query(func.max(Group.id).label('max'))
+    print("newgroup")
+    print(new_group_id)
 
     for add_user_id in add_user_ids:
         new_user_group = UserGroup(group_id = new_group_id, owner_id = login_user_id, invited_id = add_user_id)
@@ -1306,7 +1309,7 @@ def group_members(group_id):
     for group_member in group_members:
         user_info = db.session.query(users).filter(users.id == group_member.invited_id).first()
         groub_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
-    return render_template("group_members", group_info=group_info, groub_members_info=groub_members_info)
+    return render_template("group_members.html", group_info=group_info, groub_members_info=groub_members_info)
 
 
 # if __name__ == '__main__':
