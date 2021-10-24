@@ -396,3 +396,23 @@ a:link, a:visited, a:hover, a:active {
 .profile-form-search{
   margin-left: 20px;
 }
+
+/* show_songlocation */
+.show-songlocation-info{
+  margin: 10px;
+  padding: 20px;
+  background-color: rgb(183, 182, 182);
+  border-radius: 15px;
+}
+.show-songlocation-display-emotion{
+  text-align: center;
+}
+.emotion-name{
+  font-weight: bold;
+}
+.show-songlocation-comment{
+  margin: 5px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: rgb(196, 196, 196);
+}
