@@ -13,7 +13,7 @@
   var groups = {{ groups | safe }}
 </script>
 
-<!-- <script>
+<script>
   jQuery(function($) {
 
   //data-hrefの属性を持つtrを選択しclassにclickableを付加
@@ -30,7 +30,7 @@
         window.location = $(e.target).closest('tr').data('href');}
   });
 });
-</script> -->
+</script>
 
 {% endblock %}
 
@@ -54,7 +54,7 @@
   </thead>
   <tbody>
     {% for d in groups %}
-    <tr data-href="{{ url_for('groups', group_id = d['id'] ) }}">
+    <tr data-href="{{ url_for('group_info', group_id = d['id'] ) }}">
       <td><i class="fas fa-user"></i></td>
       <td>{{ d["id"]}}</td>
       <td>{{ d["name"]}}</td>

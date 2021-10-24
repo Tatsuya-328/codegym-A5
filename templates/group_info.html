@@ -15,10 +15,12 @@
 {% endblock %}
 
 {% block main %}
-<h1>group</h1>
-<p>{{group_info["name"]}}</p>
 
-<h3>ユーザリスト</h3>
+<h1>{{group_info["name"]}}</h1>
+
+<a href="{{group_info['id']}}/members">メンバー</a>
+
+<h3>曲リスト</h3>
 <table class="table table-hover">
   <thead>
     <tr>

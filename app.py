@@ -1293,11 +1293,11 @@ def group_info(group_id):
         # track_id = user_pins[random_num - 1].track_id
 
         # 曲全部取り出してみる
-        # for track in user_pins:
-        #     track_id = user_pins[track].track_id[0]
+        for track in user_pins:
+            track_id = user_pins[track].track_id[0]
 
         groub_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname, track_id=track_id))
-    return render_template("group_info.html", group_info=group_info, groub_members_info=groub_members_info)
+    return render_template("group_info.html",user_id=session['user_id'], group_info=group_info, groub_members_info=groub_members_info)
 
 
 @app.route('/groups/<group_id>/members', methods = ['GET'])
@@ -1311,7 +1311,7 @@ def group_members(group_id):
     for group_member in group_members:
         user_info = db.session.query(users).filter(users.id == group_member.invited_id).first()
         groub_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
-    return render_template("group_members.html", group_info=group_info, groub_members_info=groub_members_info)
+    return render_template("group_members.html", group_info=group_info, groub_members_info=groub_members_info,user_id=session['user_id'])
 
 
 # if __name__ == '__main__':
