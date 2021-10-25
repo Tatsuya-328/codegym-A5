@@ -1250,6 +1250,7 @@ def groups():
         owner_id = request.form.get("owner_id")
         group_id = request.form.get("group_id")
         print("auth",auth, "owner", owner_id, "group", group_id)
+# ここのowneridがタプルになる
 
         # auth = "yes"
         if auth == "yes":
@@ -1295,9 +1296,10 @@ def groups():
 # 招待一覧
     for requests_group_id in requests_group_ids:
         requests_group = db.session.query(Group).filter(Group.id == requests_group_id[0]).first()
-        requests_group_owner = db.session.query(UserGroup.owner_id).filter(UserGroup.group_id == requests_group_id[0]).first()
-        # print('Rid',requests_group.id)
-        requests_groups.append(dict(id=requests_group.id, name=requests_group.name, owner_id=requests_group_owner))
+        # requests_group_owner = db.session.query(Group.owner_id).filter(UserGroup.id == requests_group_id[0]).first()
+        print('一覧ownerid',requests_group.owner_id)
+
+        requests_groups.append(dict(id=requests_group.id, name=requests_group.name, owner_id=requests_group.owner_id))
 
     return render_template("groups.html", user_id=session["user_id"], user_info=user_info, groups=groups, requests_groups=requests_groups)
 
@@ -1364,24 +1366,35 @@ def group_info(group_id):
     tracks =[]
     track_lists=[]
 
-    group_members = db.session.query(UserGroup.invited_id).filter(UserGroup.group_id == group_id).all()[0]
-    group_owner = db.session.query(UserGroup.owner_id).filter(UserGroup.group_id == group_id).all()[0][0]
-    
-    owner_pins = db.session.query(song_locations).filter(song_locations.user_id == group_owner).all()
-    random_num = random.randint(0,len(owner_pins)-1)
-    # print("rando",random_num,"len",len(owner_pins)-1)
-    tracks.append(owner_pins[random_num])
-    # for pin in owner_pins:
-    #     tracks.append(pin)
-        
-    for group_member in group_members:
-        user_pins = db.session.query(song_locations).filter(song_locations.user_id == group_member).all()
-        random_num = random.randint(0,len(user_pins)-1)
-        print("rando",random_num,"len",len(user_pins)-1)
-        tracks.append(user_pins[random_num])
-        # for pin in user_pins:
+    try: #まだ招待メンバー一人でも参加済みのとき
+        group_members = db.session.query(UserGroup.invited_id).filter(UserGroup.group_id == group_id).all()[0]
+        group_owner = db.session.query(Group.owner_id).filter(Group.id == group_id).all()[0][0]
+        owner_pins = db.session.query(song_locations).filter(song_locations.user_id == group_owner).all()
+        random_num = random.randint(0,len(owner_pins)-1)
+        # print("rando",random_num,"len",len(owner_pins)-1)
+        tracks.append(owner_pins[random_num])
+        # for pin in owner_pins:
         #     tracks.append(pin)
             
+        for group_member in group_members:
+            user_pins = db.session.query(song_locations).filter(song_locations.user_id == group_member).all()
+            random_num = random.randint(0,len(user_pins)-1)
+            print("rando",random_num,"len",len(user_pins)-1)
+            tracks.append(user_pins[random_num])
+            # for pin in user_pins:
+            #     tracks.append(pin)
+                
+    except:#まだ招待メンバー一人も参加していないとき
+        group_owner = db.session.query(Group.owner_id).filter(Group.id == group_id).all()[0][0]
+    
+        owner_pins = db.session.query(song_locations).filter(song_locations.user_id == group_owner).all()
+        random_num = random.randint(0,len(owner_pins)-1)
+        # print("rando",random_num,"len",len(owner_pins)-1)
+        tracks.append(owner_pins[random_num])
+        # for pin in owner_pins:
+        #     tracks.append(pin)
+
+    #try,exept 共通処理 
     for track in tracks:
             # print(pin)
             song = db.session.query(songs).filter(songs.track_id == track.track_id).first()
@@ -1397,16 +1410,21 @@ def group_info(group_id):
 @login_required
 def group_members(group_id):
     group = db.session.query(Group).filter(Group.id == group_id).first()
-    group_info = dict(id=group.id, name=group.name, introduction=group.introduction )
+    group_info = dict(id=group.id, name=group.name, introduction=group.introduction)
 
     group_members = db.session.query(UserGroup).filter(UserGroup.group_id == group_id).all()
     groub_members_info = []
+
+#オーナ情報取り出し 
+    owner_user_info = db.session.query(users).filter(users.id == group.owner_id).first()
+    groub_members_info.append(dict(id=owner_user_info.id, username=owner_user_info.username, nickname=owner_user_info.nickname))
+# メンバー情報取り出し
     for group_member in group_members:
-        # print("i",group_member.invited_id,"o",group_member.owner_id)
+        print("i",group_member.invited_id,"o",group_member.owner_id)
         user_info = db.session.query(users).filter(users.id == group_member.invited_id).first()
         groub_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
-        user_info = db.session.query(users).filter(users.id == group_member.owner_id).first()
-        groub_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
+        # user_info = db.session.query(users).filter(users.id == group_member.owner_id).first()
+        # groub_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
         
     return render_template("group_members.html", group_info=group_info, groub_members_info=groub_members_info,user_id=session['user_id'])
 

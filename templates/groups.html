@@ -70,9 +70,12 @@
   </thead>
   <tbody>
     {% for d in requests_groups %}
+    <tr data-href="{{ url_for('group_info', group_id = d['id'] ) }}">
       <td><i class="fas fa-user"></i></td>
       <td>{{ d["id"]}}</td>
       <td>{{ d["name"]}}</td>
+      <td>オーナ{{ d["owner_id"]}}</td>
+
       <td>
         <form action="/groups" method="post">
           <input type="hidden" name ="group_id"value='{{ d["id"]}}'>
@@ -89,6 +92,7 @@
       </td>
 
     </tr>
+  </tr>
     {% endfor %}
   </tbody>
 </table>
