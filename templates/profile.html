@@ -312,7 +312,7 @@ $('.input-daterange').datepicker({
               {% endif  %}
               <div class="profile-display-about">
                 {{ d["about"] }}
-                <a href="" style="margin-left: 10px;">詳細</a>
+                <a href="{{ url_for('show_song_location', songlocation_id = d['id'] ) }}" style="margin-left: 10px;">詳細</a>
               </div>
               <!-- {% if d["comment"] %}
                 {{ d["comment"] }}
