@@ -1370,29 +1370,32 @@ def group_info(group_id):
         group_members = db.session.query(UserGroup.invited_id).filter(UserGroup.group_id == group_id).all()[0]
         group_owner = db.session.query(Group.owner_id).filter(Group.id == group_id).all()[0][0]
         owner_pins = db.session.query(song_locations).filter(song_locations.user_id == group_owner).all()
-        random_num = random.randint(0,len(owner_pins)-1)
-        # print("rando",random_num,"len",len(owner_pins)-1)
-        tracks.append(owner_pins[random_num])
-        # for pin in owner_pins:
-        #     tracks.append(pin)
+        if owner_pins:
+            random_num = random.randint(0,len(owner_pins)-1)
+            # print("rando",random_num,"len",len(owner_pins)-1)
+            tracks.append(owner_pins[random_num])
+            # for pin in owner_pins:
+            #     tracks.append(pin)
             
         for group_member in group_members:
             user_pins = db.session.query(song_locations).filter(song_locations.user_id == group_member).all()
-            random_num = random.randint(0,len(user_pins)-1)
-            print("rando",random_num,"len",len(user_pins)-1)
-            tracks.append(user_pins[random_num])
-            # for pin in user_pins:
-            #     tracks.append(pin)
+            if user_pins:
+                random_num = random.randint(0,len(user_pins)-1)
+                print("rando",random_num,"len",len(user_pins)-1)
+                tracks.append(user_pins[random_num])
+                # for pin in user_pins:
+                #     tracks.append(pin)
                 
     except:#まだ招待メンバー一人も参加していないとき
         group_owner = db.session.query(Group.owner_id).filter(Group.id == group_id).all()[0][0]
     
         owner_pins = db.session.query(song_locations).filter(song_locations.user_id == group_owner).all()
-        random_num = random.randint(0,len(owner_pins)-1)
-        # print("rando",random_num,"len",len(owner_pins)-1)
-        tracks.append(owner_pins[random_num])
-        # for pin in owner_pins:
-        #     tracks.append(pin)
+        if owner_pins:
+            random_num = random.randint(0,len(owner_pins)-1)
+            # print("rando",random_num,"len",len(owner_pins)-1)
+            tracks.append(owner_pins[random_num])
+            # for pin in owner_pins:
+            #     tracks.append(pin)
 
     #try,exept 共通処理 
     for track in tracks:
