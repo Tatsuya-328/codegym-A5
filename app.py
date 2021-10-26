@@ -1,4 +1,5 @@
 import os
+from re import S
 import sqlite3
 
 from flask.wrappers import Request
@@ -1245,11 +1246,8 @@ def create_group_table():
     login_user_id = session["user_id"]
     group_name = request.form.get("group_name")
     add_user_ids = request.form.getlist("add_users")
-    # 複数にならない
     print("add_user_id", add_user_ids)
-    # add_user_ids = []##ここにチェックボックスで追加したユーザーを配列つくる。
-    
-    
+
     new_group = Group(owner_id=login_user_id, name = group_name, introduction = "")
     db.session.add(new_group)
     db.session.commit()
@@ -1271,8 +1269,7 @@ def create_group_table():
         print("Groupuser",row.owner_id, end="->")
         print("Groupinvited",row.invited_id)
     
-    return redirect("/")
-
+    return redirect("/groups")
 
 @app.route('/groups/<group_id>', methods = ['GET'])
 @login_required
@@ -1284,8 +1281,8 @@ def group_info(group_id):
     tracks =[]
     track_lists=[]
 
-    try: #まだ招待メンバー一人でも参加済みのとき
-        group_members = db.session.query(UserGroup.invited_id).filter(UserGroup.group_id == group_id).all()[0]
+    try: #招待メンバー一人でも参加済みのとき
+        group_members = db.session.query(UserGroup.invited_id).filter(UserGroup.group_id == group_id).all()
         group_owner = db.session.query(Group.owner_id).filter(Group.id == group_id).all()[0][0]
         owner_pins = db.session.query(song_locations).filter(song_locations.user_id == group_owner).all()
         random_num = random.randint(0,len(owner_pins)-1)
@@ -1295,7 +1292,8 @@ def group_info(group_id):
         #     tracks.append(pin)
             
         for group_member in group_members:
-            user_pins = db.session.query(song_locations).filter(song_locations.user_id == group_member).all()
+            print("member",group_member.invited_id)
+            user_pins = db.session.query(song_locations).filter(song_locations.user_id == group_member.invited_id).all()
             random_num = random.randint(0,len(user_pins)-1)
             print("rando",random_num,"len",len(user_pins)-1)
             tracks.append(user_pins[random_num])
@@ -1328,23 +1326,86 @@ def group_info(group_id):
 @login_required
 def group_members(group_id):
     group = db.session.query(Group).filter(Group.id == group_id).first()
-    group_info = dict(id=group.id, name=group.name, introduction=group.introduction)
+    group_info = dict(owner_id = group.owner_id,id=group.id, name=group.name, introduction=group.introduction)
 
     group_members = db.session.query(UserGroup).filter(UserGroup.group_id == group_id).all()
-    groub_members_info = []
+    group_members_info = []
 
 #オーナ情報取り出し 
     owner_user_info = db.session.query(users).filter(users.id == group.owner_id).first()
-    groub_members_info.append(dict(id=owner_user_info.id, username=owner_user_info.username, nickname=owner_user_info.nickname))
+    group_members_info.append(dict(id=owner_user_info.id, username=owner_user_info.username, nickname=owner_user_info.nickname))
 # メンバー情報取り出し
     for group_member in group_members:
         print("i",group_member.invited_id,"o",group_member.owner_id)
         user_info = db.session.query(users).filter(users.id == group_member.invited_id).first()
-        groub_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
-        # user_info = db.session.query(users).filter(users.id == group_member.owner_id).first()
-        # groub_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
+        group_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
+# 招待中メンバー取り出し
+    requesting_members  = db.session.query(requests).filter(requests.group_id == group_id).all()
+    requesting_members_info = []
+    for requesting_member in requesting_members:
+        print("i",requesting_member.invited_id,"o",requesting_member.owner_id)
+        user_info = db.session.query(users).filter(users.id == requesting_member.invited_id).first()
+        requesting_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
+    
+#新たに追加するために、メンバーではなく、招待中でもない、フォロー取り出し 
+    login_user_id=session["user_id"]
+    user = db.session.query(users).filter(users.id == login_user_id).first()
+    user_info = dict(id=user.id, nickname=user.nickname, username=user.username)
+    followings = db.session.query(follow).filter(follow.follow_user_id == login_user_id).all()
+    following_user_info = []
+    #全てのフォロー取得 
+    for following in followings:
+        other_user = db.session.query(users).filter(users.id == following.followed_user_id).first()
+        print('user',other_user.id)
+        other_user_info = dict(id=other_user.id, nickname=other_user.nickname, username=other_user.username)
+        following_user_info.append(other_user_info)
+    # メンバーと一致するもの削除
+    for k in following_user_info:
+        if k:
+            for group_member in group_members_info:
+                if k:
+                    print("member",group_member['id'] ,"k",k['id'])
+                    if k['id'] == group_member['id']:
+                        k.clear()  #空で返すことになるからjinjaでif文つけてる
         
-    return render_template("group_members.html", group_info=group_info, groub_members_info=groub_members_info,user_id=session['user_id'])
+    # 招待と一致するもの削除 
+    for k in following_user_info:
+        if k: #上で空にした行の時にエラーになる
+            print('followid',k['id'])
+            for requesting_member in requesting_members_info:
+                if requesting_member:
+                    try:
+                        print("request",requesting_member['id'] ,"k",k['id'])
+                        if k['id'] == requesting_member['id']:
+                            try:  
+                                k.clear() #空で返すことになるからjinjaでif文つけてる
+                            except TypeError as e:
+                                print(e)
+                    except TypeError as e:
+                        print(e)
+    for k in following_user_info:
+        # 追加できるユーザーが一人でも残っていたらrenderに入れて渡す
+        if k:
+            print('finaluser',k["id"])
+            return render_template("group_members.html", group_info=group_info, group_members_info=group_members_info,user_id=session['user_id'], requesting_members_info=requesting_members_info,following_user_info=following_user_info)
+        else:
+            print('残り無し')
+    return render_template("group_members.html", group_info=group_info, group_members_info=group_members_info,user_id=session['user_id'], requesting_members_info=requesting_members_info)
+
+@app.route('/add_group_user', methods = ['POST'])
+@login_required
+def add_member_table():
+    add_user_ids = request.form.getlist("add_users")
+    group_id = request.form.get("group_id")
+    owner_id = request.form.get("owner_id")
+
+    for add_user_id in add_user_ids:
+        new_user_group = requests(group_id = group_id, owner_id = owner_id, invited_id = add_user_id)
+        db.session.add(new_user_group)
+        db.session.commit()
+
+    return redirect(url_for('group_members', group_id=group_id))
+
 
 
 # if __name__ == '__main__':

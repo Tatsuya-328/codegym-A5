@@ -14,15 +14,16 @@
 {% endblock %}
 
 {% block main %}
-
-<h1>{{group_info["name"]}}</h1>
-
-<a href="{{group_info['id']}}/members">メンバー</a>
+<div class="col-xs-10" style="padding: 40px 0 40px 0;">
+  <h1 style="font-size: 25px; text-align: center">{{group_info["name"]}}</h1>
+<div style="text-align: center">
+  <a href="{{group_info['id']}}/members">メンバーを見る</a>
+</div>
 
    <!-- 最近追加した曲リスト -->
    <div class="table-responsive index-latest-track-table">
     <!-- <form action="/makeplaylist" method="post"> -->
-    <div class="index-panel-latest-track">最近の投稿</div>
+    <!-- <div class="index-panel-latest-track">最近の投稿</div> -->
       <div class = "flex flex-row mx-auto">
         {% for d in track_lists %}
             <div class="index-track-box" >
@@ -98,5 +99,5 @@
       <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">作成する</button> -->
     <!-- </form> -->
     </div>
-
+  </div>
 {% endblock %}
