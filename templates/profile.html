@@ -156,8 +156,17 @@
           <div class="col-20 mt-3">
             <div class="input-group">
               <span class="input-group-text">感情</span>
-          
-              <input type="text" name="emotion" id="emotion"  value = "{{ emotion }}" placeholder="感情を入力" autocomplete="off">
+              <select class="select-emotion-form" name="emotion" id = "emotion">
+                <option value="none">感情を選んでください</option>
+                <option value="嬉しい">嬉しい</option>
+                <option value="楽しい">楽しい</option>
+                <option value="安心">安心</option>
+                <option value="退屈">退屈</option>
+                <option value="不安">不安</option>
+                <option value="イライラ">イライラ</option>
+                <option value="悲しい">悲しい</option>
+                <option value="驚き">驚き</option>
+              </select>
             </div>
           </div>
         </div>
@@ -167,6 +176,40 @@
         <button class="btn btn-primary" type="submit"  onClick="emotion();"> 感情を指定</button>
       </div>
       <!-- 感情 -->
+
+      <!-- 出来事 -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="Modal">ジャンルを選択</h5>
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-20 mt-3">
+            <div class="input-group">
+              <span class="input-group-text">ジャンル</span>
+              <select class="edit-about-form" name="about" id = "about">
+                  <option value="none">ジャンルを選んでください</option>
+                  <option value="勉強">勉強</option>
+                  <option value="運動">運動</option>
+                  <option value="ご飯">ご飯</option>
+                  <option value="ドライブ">ドライブ</option>
+                  <option value="旅行">旅行</option>
+                  <option value="散歩">散歩</option>
+                  <option value="仕事">仕事</option>
+                  <option value="学校">学校</option>
+                  <option value="恋愛">恋愛</option>
+                  <option value="海">海</option>
+                  <option value="山">山</option>
+                  <option value="その他">その他</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" type="submit"  onClick="about();">ジャンルを指定</button>
+      </div>
 
       <!-- アーテイスト -->
       <div class="modal-header">

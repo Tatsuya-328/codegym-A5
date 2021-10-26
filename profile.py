@@ -1,7 +1,7 @@
 from models import users, song_locations, songs, follow, made_playlists, db
 from sqlalchemy import or_
 
-def Profile_info(login_user_id, display_user_id, status, displayfrom, displayto, emotion, artist, song_name, GOOGLE_MAP_API_KEY):
+def Profile_info(login_user_id, display_user_id, status, displayfrom, displayto, emotion, about, artist,song_name, GOOGLE_MAP_API_KEY):
     # ユーザの情報
     following_status = ""
 
@@ -49,6 +49,16 @@ def Profile_info(login_user_id, display_user_id, status, displayfrom, displayto,
           pins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).filter(song_locations.emotion == emotion).all()
           # リスト用
           latestpins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).filter(song_locations.emotion == emotion).all()
+
+    if status == "about":
+      if login_user_id != display_user_id:
+          pins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).filter(song_locations.about == about).filter(song_locations.is_private == "False").all()
+        # リスト用
+          latestpins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).filter(song_locations.about == about).filter(song_locations.is_private == "False").all()          
+      else:
+          pins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).filter(song_locations.about == about).all()
+          # リスト用
+          latestpins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).filter(song_locations.about == about).all()
 
     if status == "period":
       if login_user_id != display_user_id:

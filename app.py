@@ -804,7 +804,7 @@ def profileEmotion(display_user_id,emotion):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Profile_info(login_user_id, display_user_id, "emotion", None, None, emotion, None, None, GOOGLE_MAP_API_KEY)
+    profile_info = Profile_info(login_user_id, display_user_id, "emotion", None, None, emotion, None, None, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
@@ -824,7 +824,40 @@ def profileEmotion(display_user_id,emotion):
         #makeplaylistにデータ渡す
         playlist_name = request.form['playlistname']
         return render_template('makeplaylist.html', data = songdata, name = playlist_name, user_id=session["user_id"])
-# プロフィールで感情指定
+
+# プロフィールでジャンル指定
+@app.route('/profile/<display_user_id>/about/<about>', methods = ['GET','POST'])
+def profileAbout(display_user_id,about):
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    # していなかったらリダイレクト。
+    if not authorized:
+        return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+    # ユーザの情報
+    login_user_id = session["user_id"]
+
+    profile_info = Profile_info(login_user_id, display_user_id, "about", None, None, None, about, None, None, GOOGLE_MAP_API_KEY)
+    user_info = profile_info["user_info"]
+    googlemapURL = profile_info["googlemapURL"]
+    songdata = profile_info["songdata"]
+    latestsongdata = profile_info["latestsongdata"]
+    # 自己紹介文取得
+    if db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0] != None:
+        Introduce = db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0]
+    else:
+        Introduce ="Settingで自己紹介入力してください"
+
+    status = "emotion"
+
+    if request.method == "GET":
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id, about = about, latestsongdata = latestsongdata, Introduce = Introduce, status = status)
+    
+    if request.method == "POST":
+        #makeplaylistにデータ渡す
+        playlist_name = request.form['playlistname']
+        return render_template('makeplaylist.html', data = songdata, name = playlist_name, user_id=session["user_id"])
+
 
 # プロフィールでアーティスト指定
 @app.route('/profile/<display_user_id>/artist/<artist>', methods = ['GET','POST'])
@@ -838,7 +871,7 @@ def profileArtist(display_user_id,artist):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Profile_info(login_user_id, display_user_id, "artist", None, None, None, artist, None, GOOGLE_MAP_API_KEY)
+    profile_info = Profile_info(login_user_id, display_user_id, "artist", None, None, None, None, artist, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
@@ -871,7 +904,7 @@ def profileSong(display_user_id, song_name):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Profile_info(login_user_id, display_user_id, "song_name", None, None, None, None, song_name, GOOGLE_MAP_API_KEY)
+    profile_info = Profile_info(login_user_id, display_user_id, "song_name", None, None, None, None, None, song_name, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]

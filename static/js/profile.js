@@ -17,12 +17,28 @@ function period(){
 }
 
 function emotion(){
-  var url = "/profile/" + UserInfo.id + "/emotion/";
+  var url = "/profile/" + UserInfo.id;
   let emotion = document.getElementById('emotion').value;
-  url += emotion;
-  location.href = url;
+  if (emotion == "none"){
+    location.href = url;
+  }else{
+    url += "/emotion/";
+    url += emotion;
+    location.href = url;
+  }
 }
 
+function about(){
+  var url = "/profile/" + UserInfo.id;
+  let about = document.getElementById('about').value;
+  if (about == "none"){
+    location.href = url;
+  }else{
+    url += "/about/";
+    url += about;
+    location.href = url;
+  }
+}
 function artist(){
   var url = "/profile/" + UserInfo.id + "/artist/";
   let artist = document.getElementById('artist').value;
