@@ -233,7 +233,7 @@
               <!-- <td></td> -->
               <form action="/like" method="post">
                 <input type="hidden" name ="user_id"value='{{ d["user_id"]}}'>
-                <button type='submit' name='auth' value="yes" >いいね</button>
+                <button type='submit' name='like_or_cancell' value="like" >いいね</button>
               </form>
             </div>
           {% endfor %}

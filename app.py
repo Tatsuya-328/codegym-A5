@@ -1443,7 +1443,8 @@ def notification():
     pins = db.session.query(song_locations).filter(song_locations.user_id==login_user_id).all()
     pin_ids = []
     for pin in pins:
-        pin_ids.apppend(pin.id[0])
+        # print(pin.id)
+        pin_ids.append(pin.id)
     print(pin_ids)
     likelist = []
     for pin_id in pin_ids:
@@ -1497,7 +1498,7 @@ def like():
                 print(row.user_id, end="->")
                 print(row.song_location_id)
         else:
-            print("error")
+            print("like error")
             return redirect("/")
         
         return redirect("/")
