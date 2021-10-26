@@ -76,7 +76,7 @@
 
               <!-- 感情 -->
       <div class="modal-header">
-        <h5 class="modal-title" id="Modal">感情を入力</h5>
+        <h5 class="modal-title" id="Modal">感情を選択</h5>
       </div>
 
       <div class="modal-body">
@@ -84,8 +84,17 @@
           <div class="col-20 mt-3">
             <div class="input-group">
               <span class="input-group-text">感情</span>
-          
-              <input type="text" name="emotion" id="emotion"  value = "{{ emotion }}" placeholder="感情を入力" autocomplete="off">
+              <select class="select-emotion-form" name="emotion" id = "emotion"  required>
+                <option value="none">感情を選んでください</option>
+                <option value="嬉しい">嬉しい</option>
+                <option value="楽しい">楽しい</option>
+                <option value="安心">安心</option>
+                <option value="退屈">退屈</option>
+                <option value="不安">不安</option>
+                <option value="イライラ">イライラ</option>
+                <option value="悲しい">悲しい</option>
+                <option value="驚き">驚き</option>
+              </select>
             </div>
           </div>
         </div>
@@ -93,6 +102,40 @@
 
       <div class="modal-footer">
         <button class="btn btn-primary" type="submit"  onClick="emotion();"> 感情を指定</button>
+      </div>
+
+      <!-- 出来事 -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="Modal">出来事を選択</h5>
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-20 mt-3">
+            <div class="input-group">
+              <span class="input-group-text">感情</span>
+              <select class="edit-about-form" name="about" id = "about"  required>
+                  <option value="none">ジャンルを選んでください</option>
+                  <option value="勉強">勉強</option>
+                  <option value="運動">運動</option>
+                  <option value="ご飯">ご飯</option>
+                  <option value="ドライブ">ドライブ</option>
+                  <option value="旅行">旅行</option>
+                  <option value="散歩">散歩</option>
+                  <option value="仕事">仕事</option>
+                  <option value="学校">学校</option>
+                  <option value="恋愛">恋愛</option>
+                  <option value="海">海</option>
+                  <option value="山">山</option>
+                  <option value="その他">その他</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" type="submit"  onClick="about();"> 感情を指定</button>
       </div>
       <!-- 感情 -->
 
@@ -144,33 +187,36 @@
   </div>
 </div>
 
-{% if status == "period" %}
-  <div class="profile-panel-search">
-    期間 {{ nowdisplayfrom }} 〜 {{ nowdisplayto }}
-  </div>
-{% elif status == "emotion"%}
-  <div class="profile-panel-search">
-    感情指定  {{ emotion }}
-  </div>
-{% elif status == "artist_name"%}
-  <div class="profile-panel-search">
-    アーティスト {{ artist }}
-  </div>
-{% elif status == "track_name"%}
-  <div class="profile-panel-search">
-    曲名 {{ song_name }}
-  </div>
-{% endif %}
 
 <div id="map" class="index-map fixed-top"></div>
 
-  <!-- 最近追加した曲リスト -->
-  <div class="table-responsive index-latest-track-table">
-    <!-- <form action="/makeplaylist" method="post"> -->
-    <div class="index-panel-latest-track">
-      {{ if  }}
+<!-- 最近追加した曲リスト -->
+<div class="table-responsive index-latest-track-table">
+  <!-- <form action="/makeplaylist" method="post"> -->
+    <!-- <div class="index-panel-latest-track">
       最近の投稿
-    </div>
+    </div> -->
+    {% if status == "period" %}
+      <div class="profile-panel-search">
+        期間 {{ nowdisplayfrom }} 〜 {{ nowdisplayto }}
+      </div>
+    {% elif status == "emotion"%}
+      <div class="profile-panel-search">
+        感情指定  {{ emotion }}
+      </div>
+    {% elif status == "about"%}
+      <div class="profile-panel-search">
+        ジャンル指定  {{ about }}
+      </div>
+    {% elif status == "artist_name"%}
+      <div class="profile-panel-search">
+        アーティスト {{ artist }}
+      </div>
+    {% elif status == "track_name"%}
+      <div class="profile-panel-search">
+        曲名 {{ song_name }}
+      </div>
+    {% endif %}
       <div class = "flex flex-row mx-auto">
         {% for d in latestsongdata %}
             <div class="index-track-box" >

@@ -7,12 +7,14 @@ ul {
   list-style: none;
 }
 
-
 img {
 	max-width: 100%;
 	height: auto;
 }
-
+.main{
+  background-color: rgb(42, 42, 42);
+  height: 100vh;
+}
 
 /* @media (max-width: 544px) */
 /* .col-xs-10 {
@@ -108,7 +110,7 @@ a:link, a:visited, a:hover, a:active {
 
 .index-map{
   width: 100%;
-  height: 65vh;
+  height: 50vh;
 }
 
 .input-period{
@@ -229,6 +231,7 @@ a:link, a:visited, a:hover, a:active {
 .panel{
   padding: 15px;
   text-align: center;
+  color: rgb(183, 182, 182);
 }
 
 /* create_memory_emotion */
@@ -237,16 +240,19 @@ a:link, a:visited, a:hover, a:active {
   width: 100px;
   float: left;
   margin: 15px;
+  color: rgb(183, 182, 182);
 }
 
 /* create_memory_confirm */
 .panel-memory-data{
   text-align: center;
   margin: 15px;
+  color: rgb(182,182,182);
 }
 .private-form{
   text-align: center;
-  margin: 10px
+  margin: 10px;
+  color: rgb(182,182,182);
 }
 
 /* search */
@@ -275,6 +281,7 @@ a:link, a:visited, a:hover, a:active {
 }
 .index-latest-track-table{
   padding-bottom: 45px;
+  background-color: rgb(42, 42, 42);
 }
 .index-display-emotion{
   /* display: inline-block; */
@@ -330,6 +337,7 @@ a:link, a:visited, a:hover, a:active {
 .profile-info{
   margin-left: 20px;
   margin-bottom: 20px;
+  color: rgb(183, 182, 182);
 }
 .profile-track-box{
   padding: 15px;
@@ -369,9 +377,9 @@ a:link, a:visited, a:hover, a:active {
 }
 .profile-panel-search{
   text-align: center;
-  margin: 0px auto 10px auto;
+  margin: 10px auto 10px auto;
   padding: 10px;
-  background-color: rgb(75, 251, 181);
+  background-color: rgb(183, 182, 182);
   width: 80%;
   border-radius: 10px;
   font-weight: bold;
@@ -415,4 +423,10 @@ a:link, a:visited, a:hover, a:active {
   padding: 10px;
   border-radius: 10px;
   background-color: rgb(196, 196, 196);
+}
+
+
+/* layout */
+footer{
+  background-color: rgb(44, 44, 44);
 }
