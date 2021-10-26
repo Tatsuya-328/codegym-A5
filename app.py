@@ -1033,7 +1033,7 @@ def homePeriod(displayfrom, displayto):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Home_info(login_user_id, "period", displayfrom, displayto, None, None, None, GOOGLE_MAP_API_KEY)
+    profile_info = Home_info(login_user_id, "period", displayfrom, displayto, None, None, None, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
@@ -1048,6 +1048,8 @@ def homePeriod(displayfrom, displayto):
 # ホームで感情指定
 @app.route('/home/emotion/<emotion>', methods = ['GET'])
 def homeEmotion(emotion):
+    if emotion == "":
+        return redirect("/")
     session['token_info'], authorized = get_token()
     session.modified = True
     # していなかったらリダイレクト。
@@ -1057,7 +1059,7 @@ def homeEmotion(emotion):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Home_info(login_user_id, "emotion", None, None, emotion, None, None, GOOGLE_MAP_API_KEY)
+    profile_info = Home_info(login_user_id, "emotion", None, None, emotion, None, None, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
@@ -1065,8 +1067,35 @@ def homeEmotion(emotion):
     print(latestsongdata)
 
     status= "emotion"
-
+    print(songdata[0])
     return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata, status=status, emotion=emotion)
+
+# ホームでジャンル指定
+@app.route('/home/about/<about>', methods = ['GET'])
+def homeAbout(about):
+    if about == "":
+        return redirect("/")
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    # していなかったらリダイレクト。
+    if not authorized:
+        return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+    # ユーザの情報
+    login_user_id = session["user_id"]
+
+    profile_info = Home_info(login_user_id, "about", None, None, None, about, None, None, GOOGLE_MAP_API_KEY)
+    user_info = profile_info["user_info"]
+    googlemapURL = profile_info["googlemapURL"]
+    songdata = profile_info["songdata"]
+    latestsongdata = profile_info["latestsongdata"]
+    print(latestsongdata)
+
+    status= "about"
+
+    print(songdata)
+
+    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata, status=status, about=about)
 # ホームで感情指定
 
 # ホームでアーティスト指定
@@ -1081,7 +1110,7 @@ def homeArtist(artist):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Home_info(login_user_id, "artist", None, None, None, artist, None, GOOGLE_MAP_API_KEY)
+    profile_info = Home_info(login_user_id, "artist", None, None, None, None, artist, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
@@ -1104,7 +1133,7 @@ def homeSong(song_name):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Home_info(login_user_id, "song_name", None, None, None, None, song_name, GOOGLE_MAP_API_KEY)
+    profile_info = Home_info(login_user_id, "song_name", None, None, None, None, None, song_name, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]

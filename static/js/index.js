@@ -17,8 +17,22 @@ function period(){
 function emotion(){
   var url = "/home/emotion/";
   let emotion = document.getElementById('emotion').value;
-  url += emotion;
-  location.href = url;
+  if (emotion == "none"){
+    location.href = "/";
+  }else{
+    url += emotion;
+    location.href = url;
+  }
+}
+function about(){
+  var url = "/home/about/";
+  let about = document.getElementById('about').value;
+  if (about == "none"){
+    location.href = "/";
+  }else{
+    url += about;
+    location.href = url;
+  }
 }
 
 function artist(){

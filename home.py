@@ -1,7 +1,7 @@
 from models import users, song_locations, songs, follow, made_playlists, db
 from sqlalchemy import or_, desc
 
-def Home_info(login_user_id, status, displayfrom, displayto, emotion, artist, song_name, GOOGLE_MAP_API_KEY):
+def Home_info(login_user_id, status, displayfrom, displayto, emotion, about, artist, song_name, GOOGLE_MAP_API_KEY):
     # フォローフォロワー数
     follow_user = db.session.query(follow).filter(follow.follow_user_id == login_user_id).all()
     if follow_user:
@@ -36,6 +36,21 @@ def Home_info(login_user_id, status, displayfrom, displayto, emotion, artist, so
         #リスト用 
         for f_user in follow_user:
             latestpins.extend(db.session.query(song_locations).filter(song_locations.user_id == f_user.followed_user_id).filter(song_locations.emotion == emotion).order_by(desc(song_locations.id)).limit(3).all())
+        # for follow_pin in latestfollow_pins:
+        #     latestpins.append(follow_pin)
+            # latestfollow_pins = db.session.query(song_locations).filter(song_locations.user_id == f_user.followed_user_id).filter(song_locations.emotion == emotion).order_by(desc(song_locations.id)).limit(3).all()
+        # for follow_pin in latestfollow_pins:
+        #     latestpins.append(follow_pin)
+    
+    if status == "about":
+        # 地図用
+        pins.extend(db.session.query(song_locations).filter(song_locations.user_id == login_user_id).filter(song_locations.about == about).all())
+        for user in follow_user:
+            pins.extend(db.session.query(song_locations).filter(song_locations.user_id == user.followed_user_id).filter(song_locations.about == about).filter(song_locations.is_private == "False").all())
+
+        #リスト用 
+        for f_user in follow_user:
+            latestpins.extend(db.session.query(song_locations).filter(song_locations.user_id == f_user.followed_user_id).filter(song_locations.about == about).order_by(desc(song_locations.id)).limit(3).all())
         # for follow_pin in latestfollow_pins:
         #     latestpins.append(follow_pin)
             # latestfollow_pins = db.session.query(song_locations).filter(song_locations.user_id == f_user.followed_user_id).filter(song_locations.emotion == emotion).order_by(desc(song_locations.id)).limit(3).all()
