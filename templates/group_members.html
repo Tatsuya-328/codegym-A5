@@ -9,7 +9,7 @@
 {% block js %}
 <script type="text/javascript">
   var group_info = {{ group_info | safe }};
-  var groub_members_info = {{groub_members_info |safe }};
+  var group_members_info = {{group_members_info |safe }};
 </script>
 
 <script type="text/javascript" src="/static/js/createGroup.js"></script>
@@ -41,13 +41,15 @@
 
 {% endblock %}
 
+
+
 {% block main %}
-<h1>group</h1>
-<p>{{ group_info }}</p>
-<div>
-  <p id="name">{{group_info["name"]}} </p>
-  <p id="group-id">{{group_info["id"]}}</p>
-</div>
+<div class="col-xs-10" style="padding: 40px 0 40px 0;">
+
+<h1 style="font-size: 25px; text-align: center">{{group_info["name"]}}</h1>
+<p style="font-size: 25px; text-align: center">{{ group_info["introduction"] }}</p>
+
+
 
 <h3>メンバー</h3>
 <table class="table table-hover">
@@ -55,17 +57,85 @@
     <tr>
       <th></th>
       <th>Nickname</th>
-      <th>User name</th>
+      <!-- <th>User name</th> -->
     </tr>
   </thead>
   <tbody>
-    {% for groub_member_info in groub_members_info %}
-    <tr data-href="{{ url_for('profile', display_user_id = groub_member_info['id'] ) }}">
+    {% for group_member_info in group_members_info %}
+    <tr data-href="{{ url_for('profile', display_user_id = group_member_info['id'] ) }}">
       <td><i class="fas fa-user"></i></td>
-      <td>{{ groub_member_info["nickname"]}}</td>
-      <td>{{ groub_member_info["username"]}}</td>
+      <td>{{ group_member_info["nickname"]}}</td>
+      <!-- <td>{{ group_member_info["username"]}}</td> -->
     </tr>
     {% endfor %}
   </tbody>
 </table>
+
+
+{% if requesting_members_info %}
+<h3>招待中</h3>
+<table class="table table-hover">
+  <!-- <thead>
+    <tr>
+      <th></th>
+      <th>Nickname</th>
+      <th>User name</th>
+    </tr>
+  </thead> -->
+  <tbody>
+    {% for d in requesting_members_info %}
+    <tr data-href="{{ url_for('profile', display_user_id = d['id'] ) }}">
+      <td><i class="fas fa-user"></i></td>
+      <td>{{ d["nickname"]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+{% else %}
+<h3>招待中ユーザーがいません。</h3>
+
+{% endif %}
+
+
+
+{% if following_user_info %}
+
+<h3>ユーザーの追加</h3>
+  <form action="/add_group_user" method="post">
+    <div class = "flex flex-row mx-auto">
+
+      <table class="table table-bordered">
+        <!-- <thead>
+        <tr>
+          <th></th>
+          <th>Nickname</th>
+          <th>User name</th>
+          <th></th>
+        </tr>
+      </thead> -->
+      {% for following in following_user_info %}
+      <tbody>
+            {% if not following %}
+            {% else %}
+              <td><i class="fas fa-user"></i></td>
+              <td>{{ following["nickname"]}}</td>
+              <!-- <td>{{ following["username"]}}</td> -->
+              <td>
+                <input type="checkbox" name="add_users" value="{{following['id'] }}" checked>
+              </td>
+              {% endif %}
+      </tbody>
+      {% endfor %}
+      </table>
+    </div>
+    <input type="hidden" name="group_id" value="{{group_info['id']}}">
+    <input type="hidden" name="owner_id" value="{{group_info['owner_id']}}">
+    <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">追加する</button>
+  </form>
+</div>
+{% else %}
+<p>フォローユーザーは全て追加、招待済みです。新しく招待するにはフォローしてください。</p>
+{% endif %}
 {% endblock %}
