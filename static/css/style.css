@@ -258,6 +258,7 @@ a:link, a:visited, a:hover, a:active {
 /* search */
 .artist-table{
   padding-bottom: 40px;
+  color: white;
 }
 
 /* makeplaylist */

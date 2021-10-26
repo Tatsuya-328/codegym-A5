@@ -18,7 +18,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
 import config
 from models import users, song_locations, songs, follow, made_playlists, Group, UserGroup, requests, likes, db
-from sqlalchemy import or_, desc, and_
+from sqlalchemy import or_, desc, and_, distinct
 from sqlalchemy.sql import func
 
 from profile import Profile_info
@@ -373,18 +373,29 @@ def search():
     # #ユーザ検索
 	# まずはログインユーザのもってるアーティストリストを出す。
     artistslist = []
-    artistsdata = db.session.query(songs.artist_name, songs.track_image, songs.track_name).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()   
+    artistsdata = db.session.query(songs.artist_name).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()
+    #artists = db.session.query(songs.artist_name, songs.track_image, songs.track_name).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()
+    artist_name = set([])
+    for artist in artistsdata:
+        artist_name.add(artist[0])
 
-    for artistdata in artistsdata:
-        print(artistdata[0]) 
-        # print(artistdata.track_name)
-        print(artistdata[2])
-        # print (artistname.replace("(","").replace(")","").replace("'",""))
-        artistslist.append(artistdata[0])
+    for artist in artist_name:
+        print(artist)
+        artistslist.append(artist)
+    
+    print(artistslist)
+    for artist in artistslist:
+        print(artist)
+    # for artistdata in artistsdata:
+    #     print(artistdata[0]) 
+    #     # print(artistdata.track_name)
+    #     print(artistdata[2])
+    #     # print (artistname.replace("(","").replace(")","").replace("'",""))
+    #     artistslist.append(artistdata[0])
 
-    artist_info = []
-    for artistdata in artistsdata:
-        artist_info.append(artistdata)
+    # artist_info = []
+    # for artistdata in artistsdata:
+    #     artist_info.append(artistdata)
 
     # newartistlist =[]
     # # print(artistslist.replace("(","").replace(")","").replace("'",""))
@@ -393,7 +404,8 @@ def search():
     #     print(artist)
     #     newartistlist.append({'artistname':artist})
 
-    return render_template('search.html',user_id=session["user_id"],artistslist=artistslist, artist_info=artist_info)
+    return render_template('search.html',user_id=session["user_id"],artistslist=artistslist)
+    # return render_template('search.html',user_id=session["user_id"],artistslist=artistslist, artist_info=artist_info)
 
 
 @app.route('/search/<selectedartistname>', methods = ['GET'])
