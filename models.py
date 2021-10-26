@@ -126,3 +126,15 @@ class requests(db.Model):
     self.owner_id = owner_id
     self.invited_id = invited_id
 
+class likes(db.Model):
+  __tablename__ = 'likes'
+  id = db.Column(Integer, primary_key=True)
+  user_id = db.Column(Integer)
+  song_location_id = db.Column(Integer)
+  datetime = db.Column(DateTime)
+
+  def __init__(self, group_id=None, user_id = None, song_location_id = None, datetime=None):
+    self.user_id = user_id
+    self.song_location_id = song_location_id
+    self.datetime = datetime
+

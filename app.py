@@ -16,7 +16,7 @@ from helpers import login_required, register_check, login_check
 from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
 import config
-from models import users, song_locations, songs, follow, made_playlists, Group, UserGroup, requests, db
+from models import users, song_locations, songs, follow, made_playlists, Group, UserGroup, requests, likes, db
 from sqlalchemy import or_, desc, and_
 from sqlalchemy.sql import func
 
@@ -1427,6 +1427,79 @@ def group_members(group_id):
         # groub_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
         
     return render_template("group_members.html", group_info=group_info, groub_members_info=groub_members_info,user_id=session['user_id'])
+
+
+@app.route('/notification', methods = ['GET'])
+@login_required
+def notification():
+    login_user_id = session["user_id"]
+    user = db.session.query(users).filter(users.id == login_user_id).first()
+    user_info = dict(id=user.id, nickname=user.nickname, username=user.username)
+
+    # 全てのピン取得
+    pins = db.session.query(song_locations).filter(song_locations.user_id==login_user_id).all()
+    pin_ids = []
+    for pin in pins:
+        pin_ids.apppend(pin.id[0])
+    print(pin_ids)
+    likelist = []
+    for pin_id in pin_ids:
+        likelist.extend(db.session.query(likes).filter(likes.song_location_id == pin_id).all())
+    # sortしたい
+    like_list = []
+    for like in likelist:
+        other_user = db.session.query(users).filter(users.id == like.user_id).first()
+        like_list.append(dict(user_id = like.user_id, nickname=other_user.nickname, song_location_id = like.song_location_id, datetime = like.datetime))
+
+    followings= db.session.query(follow).filter(follow.followed_user_id == login_user_id).all()
+    following_user_info = []
+    for following in followings:
+        other_user = db.session.query(users).filter(users.id == following.follow_user_id).first()
+        other_user_info = dict(id=other_user.id, nickname=other_user.nickname, username=other_user.username)
+        following_user_info.append(other_user_info)
+    
+    print(user_info, following_user_info, like_list)
+    
+    return render_template("notification.html",user_id=session["user_id"], user_info=user_info, following_user_info=following_user_info, like_list = like_list)
+    
+
+@app.route('/like', methods = ["POST"])
+@login_required
+def like():
+    operator = session["user_id"]
+    operated = request.form.get("user_id")
+    like_or_cancell = request.form.get("like_or_cancell")
+    if operator != operated:
+        if like_or_cancell == "like":
+            new_like = likes(user_id=operator, song_location_id=operated, datetime=datetime.datetime.now())
+            db.session.add(new_like)
+            db.session.commit()
+            print("like", end=": ")
+            print(operated)
+            rows = db.session.query(likes).all()
+            for row in rows:
+                print(row.user_id, end="->")
+                print(row.song_location_id)
+        elif like_or_cancell == "cancell":
+            # 指定したデータを削除
+            delete_likes = db.session.query(like).filter_by(user_id=operator, song_location_id=operated).all()
+            print(delete_likes)
+            for delete_like in delete_likes:
+                db.session.delete(delete_like)
+            db.session.commit()
+            print("cancell", end=": ")
+            print(operated)
+            rows = db.session.query(likes).all()
+            for row in rows:
+                print(row.user_id, end="->")
+                print(row.song_location_id)
+        else:
+            print("error")
+            return redirect("/")
+        
+        return redirect("/")
+
+    return redirect("/")
 
 
 # if __name__ == '__main__':

@@ -231,6 +231,11 @@
               {% endif %} -->
               </div>
               <!-- <td></td> -->
+              <form action="/groups" method="post">
+                <input type="hidden" name ="group_id"value='{{ d["id"]}}'>
+                <input type="hidden" name ="owner_id"value='{{ d["owner_id"]}}'>
+                <button type='submit' name='auth' value="yes" >参加</button>
+              </form>
             </div>
           {% endfor %}
       </div>
