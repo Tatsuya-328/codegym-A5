@@ -781,7 +781,7 @@ def profilePeriod(display_user_id, displayfrom, displayto):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Profile_info(login_user_id, display_user_id, "period", displayfrom, displayto, None, None, None, GOOGLE_MAP_API_KEY)
+    profile_info = Profile_info(login_user_id, display_user_id, "period", displayfrom, displayto, None, None, None, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
