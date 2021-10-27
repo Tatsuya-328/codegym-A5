@@ -148,6 +148,7 @@ def register():
 def login():
     """Log user in"""
     # Forget any user_id
+    session['current_id']=None
     session.pop("user_id", None)
     print("login")
 
@@ -1532,7 +1533,7 @@ def like():
                 print(row.song_location_id)
         elif like_or_cancell == "cancell":
             # 指定したデータを削除
-            delete_likes = db.session.query(like).filter_by(user_id=operator, song_location_id=song_location_id).all()
+            delete_likes = db.session.query(likes).filter_by(user_id=operator, song_location_id=song_location_id).all()
             print(delete_likes)
             for delete_like in delete_likes:
                 db.session.delete(delete_like)
