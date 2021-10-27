@@ -6,14 +6,18 @@ function period(){
 
   let to = document.getElementById('to').value;
   let newtill = to.replace(/\//g,"-");
-
-  if( document.getElementById('from').value ){
-    url += newfrom;
+  if (from == "" || to == ""){
+    var rooturl ="/profile/" + UserInfo.id;
+    location.href = rooturl;
+  }else{
+    if( document.getElementById('from').value ){
+      url += newfrom;
+    }
+    if( document.getElementById('to').value ){
+      url += '/' + newtill;
+    }
+    location.href = url;
   }
-  if( document.getElementById('to').value ){
-    url += '/' + newtill;
-  }
-  location.href = url;
 }
 
 function emotion(){
