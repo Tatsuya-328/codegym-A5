@@ -95,11 +95,19 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ja.min.js"></script>
   
+<!-- 絞り込みのボタン -->
     <div class="text-right">
     <button type="button" class="btn" data-toggle="modal" data-target="#modalForm" style="background: white; padding: 0; margin-bottom: 15px;">
       <i class="fas fa-history  fa-2x"></i>
     </button>
     </div>
+
+<!-- 通知のボタン -->
+<div class="text-right">
+  <button type="button" onclick="location.href='/notification'"  class="btn" >通知</button>
+  </div>
+
+
 
 <!-- Modal の中身 -->
 <div class="modal fade" id="modalForm" role="dialog">

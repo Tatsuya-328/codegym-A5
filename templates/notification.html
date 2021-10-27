@@ -13,7 +13,7 @@
   var like_list = {{like_list |safe }}
 </script>
 
-<!-- <script>
+<script>
   jQuery(function($) {
 
   //data-hrefの属性を持つtrを選択しclassにclickableを付加
@@ -30,7 +30,7 @@
         window.location = $(e.target).closest('tr').data('href');}
   });
 });
-</script> -->
+</script>
 
 
 {% endblock %}
@@ -50,7 +50,7 @@
   </thead>
   <tbody>
     {% for like in like_list %}
-    <tr data-href="{{ url_for('edit_map', song_location_id = like['song_location_id'] ) }}">
+    <tr data-href="{{ url_for('show_song_location', songlocation_id = like['song_location_id'] ) }}">
       <td>{{ like["nickname"]}}さんがあなたの投稿にいいね！しました</td>
     </tr>
     {% endfor %}

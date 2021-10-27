@@ -19,7 +19,7 @@ from pprint import pprint
 import config
 from models import users, song_locations, songs, follow, made_playlists, Group, UserGroup, requests, likes, db
 from sqlalchemy import or_, desc, and_
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, exists
 
 from profile import Profile_info
 from home import Home_info
@@ -97,7 +97,6 @@ def index():
             latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
             'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
 
-    print(latestsongdata)
     return render_template('index.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata)
 
 
@@ -1369,16 +1368,25 @@ def group_info(group_id):
         tracks.append(owner_pins[random_num])
         # for pin in owner_pins:
         #     tracks.append(pin)
-
     #try,exept 共通処理 
     for track in tracks:
             # print(pin)
             song = db.session.query(songs).filter(songs.track_id == track.track_id).first()
             user = db.session.query(users).filter(users.id == track.user_id).first()
-            # print(user.nickname)
-            track_lists.append({'id':track.id,'lat':track.latitude, 'lng':track.longitude, 'date':track.date.strftime("%Y-%m-%d"),
-            'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':track.user_id, 'emotion':track.emotion, 'about':track.about, 'comment':track.comment, 'is_private':track.is_private, 'user_nickname':user.nickname})
-    
+            # ログインユーザがいいねしてあるか判定
+            print('pinnnnnn',track.id)
+            # db.session.query(likes.song_location_id).filter(likes.user_id == session['user_id']).filter(likes.song_location_id == track.id).all()[0] == track.id
+            # for i in likelist:
+            #     print("kore",i[0])
+            # print(db.session.query(exists().where(likes.song_location_id == track.id)).scalar())
+            if db.session.query(exists().where(likes.song_location_id == track.id).where(likes.user_id == session['user_id'])).scalar() == True:
+                print("True")
+                track_lists.append({'like':'yes','id':track.id,'lat':track.latitude, 'lng':track.longitude, 'date':track.date.strftime("%Y-%m-%d"),
+                'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':track.user_id, 'emotion':track.emotion, 'about':track.about, 'comment':track.comment, 'is_private':track.is_private, 'user_nickname':user.nickname})
+            else:
+                track_lists.append({'like':'no','id':track.id,'lat':track.latitude, 'lng':track.longitude, 'date':track.date.strftime("%Y-%m-%d"),
+                'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':track.user_id, 'emotion':track.emotion, 'about':track.about, 'comment':track.comment, 'is_private':track.is_private, 'user_nickname':user.nickname})
+
     return render_template("group_info.html",user_id=session['user_id'], group_info=group_info, track_lists=track_lists)
 
 
@@ -1489,6 +1497,8 @@ def notification():
     for like in likelist:
         other_user = db.session.query(users).filter(users.id == like.user_id).first()
         like_list.append(dict(user_id = like.user_id, nickname=other_user.nickname, song_location_id = like.song_location_id, datetime = like.datetime))
+        # print("songsssss")
+        # print(like.song_location_id)
 
     followings= db.session.query(follow).filter(follow.followed_user_id == login_user_id).all()
     following_user_info = []
@@ -1507,10 +1517,11 @@ def notification():
 def like():
     operator = session["user_id"]
     operated = request.form.get("user_id")
+    song_location_id = request.form.get("song_location_id")
     like_or_cancell = request.form.get("like_or_cancell")
     if operator != operated:
         if like_or_cancell == "like":
-            new_like = likes(user_id=operator, song_location_id=operated, datetime=datetime.datetime.now())
+            new_like = likes(user_id=operator, song_location_id=song_location_id, datetime=datetime.datetime.now())
             db.session.add(new_like)
             db.session.commit()
             print("like", end=": ")
@@ -1521,7 +1532,7 @@ def like():
                 print(row.song_location_id)
         elif like_or_cancell == "cancell":
             # 指定したデータを削除
-            delete_likes = db.session.query(like).filter_by(user_id=operator, song_location_id=operated).all()
+            delete_likes = db.session.query(like).filter_by(user_id=operator, song_location_id=song_location_id).all()
             print(delete_likes)
             for delete_like in delete_likes:
                 db.session.delete(delete_like)

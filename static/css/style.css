@@ -270,7 +270,7 @@ a:link, a:visited, a:hover, a:active {
   padding: 15px;
   border-radius: 20px;
   margin: 10px;
-  background-color: rgb(183, 182, 182);
+  /* background-color: rgb(183, 182, 182); */
   /* background-color: rgb(63, 212, 152); */
   /* color: white; */
   display: flex;
@@ -281,7 +281,7 @@ a:link, a:visited, a:hover, a:active {
 }
 .index-latest-track-table{
   padding-bottom: 45px;
-  background-color: rgb(42, 42, 42);
+  /* background-color: rgb(42, 42, 42); */
 }
 .index-display-emotion{
   /* display: inline-block; */
@@ -331,6 +331,12 @@ a:link, a:visited, a:hover, a:active {
   overflow: hidden;
   margin-right: 5px;
   font-size: 12px;
+}
+
+.like {
+  border: none;
+  outline: none;
+  background: transparent;
 }
 
 /* profile */
