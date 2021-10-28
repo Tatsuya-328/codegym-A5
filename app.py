@@ -245,8 +245,9 @@ def profile(display_user_id):
         print("error")
     for pin in latestpins:
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        user = db.session.query(users).filter(users.id == pin.user_id).first()
         latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name,'track_id': pin.track_id, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private})
+        'artist':song.artist_name, 'track':song.track_name,'track_id': pin.track_id, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
         # print("latest",latestsongdata)
 
     following_status = ""

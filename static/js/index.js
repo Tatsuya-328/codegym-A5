@@ -454,12 +454,13 @@ function initMap() {
 //     buttonDiv.style.color = "rgb(183, 182, 182)";
 //     buttonDiv.appendChild(buttonUI);
   
-//     google.maps.event.addDomListener(buttonUI, "click", function() {
-//       // optionで開く設定。
-//       var options ={"show":true}
-//       $('#modalForm').modal(options);
-//     });
-//   }
+    google.maps.event.addDomListener(buttonUI, "click", function() {
+      // optionで開く設定。
+      var options ={"show":true}
+      $('#modalForm').modal(options);
+    });
+  }
+  
 
 
   // 複数ピンを立てる
