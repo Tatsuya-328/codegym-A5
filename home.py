@@ -1,5 +1,6 @@
-from models import users, song_locations, songs, follow, made_playlists, db
+from models import users, song_locations, songs, follow, made_playlists, likes, db
 from sqlalchemy import or_, desc
+from sqlalchemy.sql import exists
 
 def Home_info(login_user_id, status, displayfrom, displayto, emotion, about, artist, song_name, GOOGLE_MAP_API_KEY):
     # フォローフォロワー数
@@ -128,8 +129,17 @@ def Home_info(login_user_id, status, displayfrom, displayto, emotion, about, art
     for pin in latestpins:
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
         user = db.session.query(users).filter(users.id == pin.user_id).first()
-        latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname ,'track_id':pin.track_id, 'about':pin.about })
+
+        if db.session.query(exists().where(likes.song_location_id == pin.id).where(likes.user_id == login_user_id)).scalar() == True:
+            print("True")
+            latestsongdata.append({'like':'yes','id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+            'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
+        else:
+            latestsongdata.append({'like':'no','id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+            'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
+
+        # latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+        # 'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname ,'track_id':pin.track_id, 'about':pin.about })
 
     # profile_infomation = dict(songdata=songdata, googlemapURL=googlemapURL, user_info=user_info)
     # return profile_infomation
