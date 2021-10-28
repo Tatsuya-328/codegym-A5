@@ -57,14 +57,14 @@
     </div>
 
 <!-- 他のユーザーのプロフィールならフォローボタン表示 -->
+  <div>
     {% if user_info["following"] != "myself" %}
-    <div>
       {% if user_info["following"] == "True" %}
-        <button class="btn btn-danger" type="button" value="button" id = "cancell" style="float: left;  margin-left: 20px; margin-right: 10px;" >フォローを外す</button>
+        <button class="btn btn-danger" type="button" value="button" id = "cancell" style=" margin-left: 170px; margin-right: 10px; margin-bottom: 10px;" >フォローを外す</button>
       {% elif user_info["following"] == "False" %}
-        <button class="btn btn-success" type="button" value="button" id = "follow"  style="float: left; margin-left: 20px; margin-right: 10px;" >フォローする</button>
+        <button class="btn btn-success" type="button" value="button" id = "follow"  style=" margin-left: 170px; margin-right: 10px; margin-bottom: 10px;" >フォローする</button>
       {% endif %}
-    </div>
+
 
     {% else %}
     <!-- プレイリスト作成 なんの絞り込みになっているかでPOST先を分岐-->
@@ -77,15 +77,28 @@
       {% elif song_name %}
         <form class="profile-form-search" action="/profile/{{user_id}}/song_name/{{song_name}}" method="post">
       {% else %}
-        <form class="profile-form-search" action="/profile/{{user_id}}" method="post" style="float: left;">
+        <form class="profile-form-search" action="/profile/{{user_id}}" method="post" style="float: right;">
       {% endif %}
         <input type="hidden" name="playlistname" id="playlistname" value="プレイリスト名"> 
-        <button class="btn btn-primary" type="submit">プレイリスト作成</button>
+        <button class="btn btn-primary" type="submit" style="float: rgiht; margin-right: 10px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-journal-plus" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 5.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 .5-.5z"/>
+            <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+            <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
+          </svg>
+        </button>
     {% endif %}
-        <!-- プレイリスト表示ボタン -->
-      <button onclick="location.href='{{ url_for('playlist', display_user_id = user_info['id'] ) }}'" class="btn btn-secondary" style="float: left; margin-right: 5px;">プレイリスト一覧</button>
-      </form>
-
+    </form>
+  <!-- プレイリスト表示ボタン -->
+    <button onclick="location.href='{{ url_for('playlist', display_user_id = user_info['id'] ) }}'" class="btn btn-secondary" style="float: right; margin-right: 5px;" >
+      <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-music-note-list" viewBox="0 0 16 16">
+        <path d="M12 13c0 1.105-1.12 2-2.5 2S7 14.105 7 13s1.12-2 2.5-2 2.5.895 2.5 2z"/>
+        <path fill-rule="evenodd" d="M12 3v10h-1V3h1z"/>
+        <path d="M11 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 16 2.22V4l-5 1V2.82z"/>
+        <path fill-rule="evenodd" d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5z"/>
+      </svg>
+    </button>
+    </div>
 
   {% endif %}
   
@@ -95,12 +108,6 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ja.min.js"></script>
-  
-    <div class="text-right">
-    <button type="button" class="btn" data-toggle="modal" data-target="#modalForm" style="background: white; padding: 0; margin-bottom: 15px;">
-      <i class="fas fa-history  fa-2x"></i>
-    </button>
-    </div>
 
 <!-- Modal の中身 -->
 <div class="modal fade" id="modalForm" role="dialog">

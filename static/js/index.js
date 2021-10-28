@@ -383,6 +383,7 @@ function initMap() {
       $('#modalForm').modal(options);
     });
   }
+  
 
 
   // 複数ピンを立てる

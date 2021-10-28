@@ -133,9 +133,6 @@ a:link, a:visited, a:hover, a:active {
   display: block;
 
 }
-.profile-form-search{
-  float: left;
-}
 /*menu*/
 .menu{
   height: 12px;
@@ -406,7 +403,9 @@ a:link, a:visited, a:hover, a:active {
   font-size: 12px;
 }
 .profile-form-search{
-  margin-left: 20px;
+  margin-left: 10px;
+  float: left;
+  margin-bottom: 10px;
 }
 
 /* show_songlocation */
