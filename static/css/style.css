@@ -12,7 +12,7 @@ img {
 	height: auto;
 }
 .main{
-  background-color: antiquewhite;
+  background-color: #fff2ec;
   height: 100vh;
 }
 
@@ -255,7 +255,6 @@ a:link, a:visited, a:hover, a:active {
 /* search */
 .artist-table{
   padding-bottom: 40px;
-  color: white;
 }
 
 /* makeplaylist */
@@ -279,7 +278,7 @@ a:link, a:visited, a:hover, a:active {
 }
 .index-latest-track-table{
   padding-bottom: 45px;
-  background-color: antiquewhite;
+  background-color: #fff2ec;
 }
 .index-display-emotion{
   /* display: inline-block; */
@@ -293,6 +292,7 @@ a:link, a:visited, a:hover, a:active {
   margin-top: 15px; */
 }
 .index-songlocation-info{
+  color: #1a39a6;
   display: inline-block;
   margin-left: 10px;
   width: 70%;
@@ -341,6 +341,7 @@ a:link, a:visited, a:hover, a:active {
 }
 
 .like {
+  color: #ff8270;
   border: none;
   outline: none;
   background: transparent;
@@ -349,20 +350,18 @@ a:link, a:visited, a:hover, a:active {
 
 
 .appname  {
- color: #f5a689; 
+ color: #f0a299; 
 }
 
 /* profile */
 .profile-info{
   margin-left: 20px;
   margin-bottom: 20px;
-  color: rgb(183, 182, 182);
 }
 .profile-track-box{
   padding: 15px;
   border-radius: 20px;
   margin: 10px;
-  background-color: rgb(183, 182, 182);
   /* color: white; */
   height: 100px;
 }
@@ -405,7 +404,7 @@ a:link, a:visited, a:hover, a:active {
 }
 
 .profile-latest-track-table{
-  background-color: antiquewhite;
+  background-color: #fff2ec;
 }
 
 .profile-panel-track-name{
