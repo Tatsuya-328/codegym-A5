@@ -255,7 +255,6 @@ a:link, a:visited, a:hover, a:active {
 /* search */
 .artist-table{
   padding-bottom: 40px;
-  color: white;
 }
 
 /* makeplaylist */
@@ -344,13 +343,11 @@ a:link, a:visited, a:hover, a:active {
 .profile-info{
   margin-left: 20px;
   margin-bottom: 20px;
-  color: rgb(183, 182, 182);
 }
 .profile-track-box{
   padding: 15px;
   border-radius: 20px;
   margin: 10px;
-  background-color: rgb(183, 182, 182);
   /* color: white; */
   height: 100px;
 }
