@@ -386,19 +386,19 @@ a:link, a:visited, a:hover, a:active {
   text-align: center;
   margin: 10px auto;
   padding: 10px;
-  background-color: rgb(253, 198, 97);
   width: 80%;
   border-radius: 10px;
   font-weight: bold;
+  color: #606060;
 }
 .profile-panel-search{
   text-align: center;
   margin: 10px auto 10px auto;
   padding: 10px;
-  background-color: rgb(183, 182, 182);
   width: 80%;
   border-radius: 10px;
   font-weight: bold;
+  color: #606060;
 }
 
 .profile-latest-track-table{

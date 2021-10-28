@@ -71,16 +71,16 @@
       {% if nowdisplayfrom %}
         <form class="profile-form-search" action="/profile/{{user_id}}/period/{{nowdisplayfrom}}/{{nowdisplayto}}" method="post">
       {% elif emotion %}
-        <form class="profile-form-search" action="/profile/{{user_id}}/emotion/{{emotion}}" method="post">
+        <form class="profile-form-search" action="/profile/{{user_id}}/emotion/{{emotion}}" method="post" style="float: right;">
       {% elif artist %}
-        <form class="profile-form-search" action="/profile/{{user_id}}/artist/{{artist}}" method="post">
+        <form class="profile-form-search" action="/profile/{{user_id}}/artist/{{artist}}" method="post" style="float: right;">
       {% elif song_name %}
-        <form class="profile-form-search" action="/profile/{{user_id}}/song_name/{{song_name}}" method="post">
+        <form class="profile-form-search" action="/profile/{{user_id}}/song_name/{{song_name}}" method="post" style="float: right;">
       {% else %}
         <form class="profile-form-search" action="/profile/{{user_id}}" method="post" style="float: right;">
       {% endif %}
         <input type="hidden" name="playlistname" id="playlistname" value="プレイリスト名"> 
-        <button class="btn btn-secondary" type="submit" style="float: rgiht; margin-right: 10px; background-color: #fff2ec; color: black; border-color: #fff2ec;">
+        <button class="btn btn-secondary" type="submit" style="float: right; margin-right: 10px; background-color: #fff2ec; color: black; border-color: #fff2ec;">
           <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-journal-plus" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 5.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 .5-.5z"/>
             <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
@@ -296,6 +296,18 @@ $('.input-daterange').datepicker({
 });
 </script>
     <!--MAP表示  -->
+    
+  <div id="map" class="profile-map"></div>
+  <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
+
+  
+  <!-- 最近追加した曲リスト -->
+  <div class="table-responsive profile-latest-track-table">
+    <!-- <form action="/makeplaylist" method="post"> -->
+    
+    <!-- <div class="profile-panel-latest-track">
+      最近の投稿
+    </div> -->
     {% if status == "period" %}
       <div class="profile-panel-search">
         期間 {{ nowdisplayfrom }} 〜 {{ nowdisplayto }}
@@ -312,18 +324,11 @@ $('.input-daterange').datepicker({
       <div class="profile-panel-search">
         曲名 {{ song_name }}
       </div>
+    {% else %}
+      <div class="profile-panel-latest-track">
+        最近の投稿
+      </div>
     {% endif %}
-  <div id="map" class="profile-map"></div>
-  <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
-
-  
-  <!-- 最近追加した曲リスト -->
-  <div class="table-responsive profile-latest-track-table">
-    <!-- <form action="/makeplaylist" method="post"> -->
-    
-    <div class="profile-panel-latest-track">
-      最近の投稿
-    </div>
       <div class = "flex flex-row mx-auto">
         {% for d in latestsongdata %}
         <div class="index-track-box" >
