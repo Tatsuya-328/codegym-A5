@@ -67,10 +67,9 @@
         </thead>
         <tbody>
           {% for i in artistslist %}
-          <tr data-href="{{ url_for('searchuser', selectedartistname = i ) }}">
-            <!-- <td style="padding: 14px 0 0 0;"><img src="{{  i[1]  }}"></td> -->
-            <td></td>
-            <td>{{ i }}</td>
+          <tr data-href="{{ url_for('searchuser', selectedartistname = i['name'] ) }}">
+            <td style="padding: 14px 0 0 0;"><img src="{{  i['image']  }}"><img?</td>
+            <td>{{ i['name'] }}</td>
             <!-- <td>{{  i  }}</td> -->
           </tr>
           {% endfor %}

@@ -94,8 +94,17 @@ def index():
             song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
             user = db.session.query(users).filter(users.id == pin.user_id).first()
             # print(user.nickname)
-            latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-            'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
+            # latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+            # 'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
+#いいね判定 
+            if db.session.query(exists().where(likes.song_location_id == pin.id).where(likes.user_id == session['user_id'])).scalar() == True:
+                print("True")
+                latestsongdata.append({'like':'yes','id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+                'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
+            else:
+                latestsongdata.append({'like':'no','id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+                'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
+
 
     return render_template('index.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata)
 
@@ -380,28 +389,30 @@ def search():
     # #ユーザ検索
 	# まずはログインユーザのもってるアーティストリストを出す。
     artistslist = []
-    track_id=[]
+    artistimage=[]
     artistsdata = db.session.query(songs.artist_name, songs.track_id).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()
     #artists = db.session.query(songs.artist_name, songs.track_image, songs.track_name).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()
     artist_name = set([])
     for artist in artistsdata:
         print("artist",artist[0])
         artist_name.add(artist[0])
-
+        artistslist.append(dict(image=sp.artist(sp.track(artist[1])["album"]['artists'][0]['id'])['images'][2]['url']))
+        
     for artist in artist_name:
         print("name?",artist)
-        artistslist.append(artist)
-    
-    for artist in artistsdata:
-        print("id",artist[1])
-        print("いっこめ",sp.track(artist[1])["album"]['artists'][0]['id'])
-        # sptrack_id.append(artist[1])
-        print("art",sp.artist(sp.track(artist[1])["album"]['artists'][0]['id'])['images'][2]['url'])
+        artistslist.append(dict(name=artist))
 
-    print(artistslist)
-    for artist in artistslist:
-        print(artist)
-    #ここでアーティストの画像も撮ってくる。
+    
+    # for artist in artistsdata:
+    #     print("id",artist[1])
+    #     print("いっこめ",sp.track(artist[1])["album"]['artists'][0]['id'])
+    #     # sptrack_id.append(artist[1])
+    #     print("art",sp.artist(sp.track(artist[1])["album"]['artists'][0]['id'])['images'][2]['url'])
+
+    # print(artistslist)
+    # for artist in artistslist:
+    #     print(artist)
+
     #  
     # for artistdata in artistsdata:
     #     print(artistdata[0]) 
@@ -1292,7 +1303,8 @@ def groups():
     for invited_group_id in invited_group_ids:
         invited_group = db.session.query(Group).filter(Group.id == invited_group_id[0]).first()
         # print('Iid',invited_group.id)
-        groups.append(dict(id=invited_group.id, name=invited_group.name, owner_id=invited_group.owner_id))
+        if invited_group:
+            groups.append(dict(id=invited_group.id, name=invited_group.name, owner_id=invited_group.owner_id))
         # groups.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname, track_id=track_id))
 
 # グループ一覧（自分が作ってまだ参加してない人いてrequestテーブルにあるやつ）
