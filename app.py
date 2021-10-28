@@ -370,19 +370,33 @@ def following():
 @app.route('/search', methods = ['GET'])
 @login_required
 def search():
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    # していなかったらリダイレクト。
+    if not authorized:
+        return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     # #ユーザ検索
 	# まずはログインユーザのもってるアーティストリストを出す。
     artistslist = []
-    artistsdata = db.session.query(songs.artist_name).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()
+    track_id=[]
+    artistsdata = db.session.query(songs.artist_name, songs.track_id).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()
     #artists = db.session.query(songs.artist_name, songs.track_image, songs.track_name).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()
     artist_name = set([])
     for artist in artistsdata:
+        print("artist",artist[0])
         artist_name.add(artist[0])
 
     for artist in artist_name:
-        print(artist)
+        print("name?",artist)
         artistslist.append(artist)
     
+    for artist in artistsdata:
+        print("id",artist[1])
+        print("いっこめ",sp.track(artist[1])["album"]['artists'][0]['id'])
+        # sptrack_id.append(artist[1])
+        print("art",sp.artist(sp.track(artist[1])["album"]['artists'][0]['id'])['images'][2]['url'])
+
     print(artistslist)
     for artist in artistslist:
         print(artist)
