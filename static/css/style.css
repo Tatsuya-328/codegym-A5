@@ -437,3 +437,46 @@ a:link, a:visited, a:hover, a:active {
 footer{
   background-color: rgb(44, 44, 44);
 }
+
+/* group */
+.group-box{
+  padding: 15px;
+  border-radius: 20px;
+  margin: 10px;
+  background-color: pink;
+  height: 100px;
+}
+.group-table{
+  padding-bottom: 45px;
+}
+
+.group-table-title{
+  text-align: center;
+  margin: 10px auto;
+  padding: 10px;
+  background-color: rgb(253, 198, 97);
+  width: 80%;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.group-user-icon{
+  /* display: inline-block; */
+  float: left;
+}
+
+.group-user-name{
+  float: left;
+  width: 55%;
+  height: 20px;
+  overflow: hidden;
+  margin-right: 5px;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.group-user-info{
+  display: inline-block;
+  margin-left: 10px;
+  width: 73%;
+}
