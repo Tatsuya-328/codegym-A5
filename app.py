@@ -1277,7 +1277,8 @@ def groups():
     for invited_group_id in invited_group_ids:
         invited_group = db.session.query(Group).filter(Group.id == invited_group_id[0]).first()
         # print('Iid',invited_group.id)
-        groups.append(dict(id=invited_group.id, name=invited_group.name, owner_id=invited_group.owner_id))
+        if invited_group:
+            groups.append(dict(id=invited_group.id, name=invited_group.name, owner_id=invited_group.owner_id))
         # groups.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname, track_id=track_id))
 
 # グループ一覧（自分が作ってまだ参加してない人いてrequestテーブルにあるやつ）
