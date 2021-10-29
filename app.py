@@ -64,8 +64,9 @@ def index():
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
     pins = []
     songdata = []
-    # print(session["user_id"])
-    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+    
+    # 自分のピン表示
+    # pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
     follow_users = db.session.query(follow.followed_user_id).filter(follow.follow_user_id == session["user_id"]).all()
     for follow_user in follow_users:
         # print(follow_user)
@@ -395,9 +396,13 @@ def search():
     artist_name = set([])
     for artist in artistsdata:
         print("artist",artist[0])
+        len1 = len(artist_name)
         artist_name.add(artist[0])
-        artistslist.append(dict(image=sp.artist(sp.track(artist[1])["album"]['artists'][0]['id'])['images'][2]['url'], name=artist[0]))
-    
+        len2 = len(artist_name)
+        len1 += 1
+        if len1 == len2:
+            artistslist.append(dict(image=sp.artist(sp.track(artist[1])["album"]['artists'][0]['id'])['images'][2]['url'], name=artist[0]))
+
     print(artistslist)
 
     
