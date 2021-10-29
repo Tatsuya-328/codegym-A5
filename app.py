@@ -1458,7 +1458,8 @@ def group_members(group_id):
     for requesting_member in requesting_members:
         print("i",requesting_member.invited_id,"o",requesting_member.owner_id)
         user_info = db.session.query(users).filter(users.id == requesting_member.invited_id).first()
-        requesting_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
+        if user_info:
+            requesting_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
     
 #新たに追加するために、メンバーではなく、招待中でもない、フォロー取り出し 
     login_user_id=session["user_id"]
