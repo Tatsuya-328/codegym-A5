@@ -467,7 +467,8 @@ footer{
   padding: 15px;
   border-radius: 20px;
   margin: 10px;
-  background-color: pink;
+  background-color: #4b5ea2;
+  color: #fff2ec;
   height: 100px;
 }
 .group-table{
@@ -481,6 +482,7 @@ footer{
   /* background-color: rgb(253, 198, 97); */
   border-radius: 10px;
   font-weight: bold;
+  color: #606060;
 }
 
 .group-user-icon{
@@ -491,11 +493,10 @@ footer{
 .group-user-name{
   float: left;
   width: 55%;
-  height: 20px;
   overflow: hidden;
-  margin-right: 5px;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 30px;
+  padding: 0 auto;
 }
 
 .group-user-info{
