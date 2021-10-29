@@ -53,21 +53,21 @@
 <ul class="nav nav-tabs">
   <li class="active">
     <a href="#members" data-toggle="tab">
-      <div class="group-table-title">
+      <div class="member-list-table-title">
         メンバー
       </div>
     </a>
   </li>
   <li>
     <a href="#requesting_members" data-toggle="tab">
-      <div class="group-table-title">
+      <div class="member-list-table-title">
         招待中
       </div>
     </a>
   </li>
   <li>
     <a href="#add_members" data-toggle="tab">
-      <div class="group-table-title">
+      <div class="member-list-table-title">
         メンバー追加
       </div>
     </a>
@@ -75,17 +75,19 @@
 </ul>
 <div class="tab-content">
   <div class="tab-pane fade in active show" id="members">
-    <div class="table-responsive group-table">
+    <div class="table-responsive member-list-table">
       <div class = "flex flex-row mx-auto">
         {% for group_member_info in group_members_info %}
           <a  href="{{ url_for('profile', display_user_id = group_member_info['id'] ) }}">
-            <div class="group-box">
-              <div class="group-user-icon">
-                <i class="fas fa-user"></i>
-              </div>
-              <div class="group-user-info">
-                <div class="group-user-name">
-                  <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ group_member_info["nickname"]}}</p>
+            <div class="member-list-box">
+              <div class="member-list-user-info">
+                <div class="member-list-user-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="member-list-user-text">
+                  <div class="member-list-user-name">
+                    <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ group_member_info["nickname"]}}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -97,17 +99,19 @@
 
   <div class="tab-pane fade" id="requesting_members">
     {% if requesting_members_info %}
-    <div class="table-responsive group-table">
+    <div class="table-responsive member-list-table">
       <div class = "flex flex-row mx-auto">
         {% for d in requesting_members_info %}
           <a  href="{{ url_for('profile', display_user_id = d['id'] ) }}">
-            <div class="group-box">
-              <div class="group-user-icon">
-                <i class="fas fa-user"></i>
-              </div>
-              <div class="group-user-info">
-                <div class="group-user-name">
-                  <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d["nickname"]}}</p>
+            <div class="member-list-box">
+              <div class="member-list-user-info">
+                <div class="member-list-user-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="member-list-user-text">
+                  <div class="member-list-user-name">
+                    <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d["nickname"]}}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -123,19 +127,21 @@
   <div class="tab-pane fade" id="add_members">
     {% if following_user_info %}
     <form action="/add_group_user" method="post">
-      <div class="table-responsive group-table">
+      <div class="table-responsive member-list-table">
         <div class = "flex flex-row mx-auto">
           {% for d in following_user_info %}
             <a  href="{{ url_for('profile', display_user_id = d['id'] ) }}">
-              <div class="group-box">
-                <div class="group-user-icon">
-                  <i class="fas fa-user"></i>
-                </div>
-                <div class="group-user-info">
-                  <div class="group-user-name">
-                    <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d["nickname"]}}</p>
+              <div class="member-list-box">
+                <div class="member-list-user-info">
+                  <div class="member-list-user-icon">
+                    <i class="fas fa-user"></i>
                   </div>
-                  <input type="checkbox" name="add_users" value="{{d['id'] }}" checked>
+                  <div class="member-list-user-text">
+                    <div class="member-list-user-name">
+                      <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d["nickname"]}}</p>
+                    </div>
+                    <input type="checkbox" name="add_users" value="{{d['id'] }}" checked>
+                  </div>
                 </div>
               </div>
             </a>
