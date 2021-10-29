@@ -506,10 +506,10 @@ footer{
 
 /* follow */
 .follow-box{
-  padding: 15px;
+  padding: 15px, 0px;
   border-radius: 20px;
   margin: 10px;
-  background-color: pink;
+  /* background-color: pink; */
   height: 100px;
 }
 .follow-table{
@@ -542,9 +542,15 @@ footer{
 }
 
 
-.follow-user-info{
+.follow-user-text{
   color: #1a39a6;
   display: inline-block;
   margin-left: 10px;
   width: 70%;
+}
+
+.follow-user-info{
+  width: 120px;
+  display: block;
+  /* margin: 0, auto; */
 }
