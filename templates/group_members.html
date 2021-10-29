@@ -60,14 +60,14 @@
   </li>
   <li>
     <a href="#requesting_members" data-toggle="tab">
-      <div class="member-list-table-title">
+      <div class="member-list-table-title-other">
         招待中
       </div>
     </a>
   </li>
   <li>
     <a href="#add_members" data-toggle="tab">
-      <div class="member-list-table-title">
+      <div class="member-list-table-title-other">
         メンバー追加
       </div>
     </a>
@@ -80,13 +80,13 @@
         {% for group_member_info in group_members_info %}
           <a  href="{{ url_for('profile', display_user_id = group_member_info['id'] ) }}">
             <div class="member-list-box">
-              <div class="member-list-user-info">
+              <div class="member-list-user-info" style="margin-left: 120px;">
                 <div class="member-list-user-icon">
                   <i class="fas fa-user"></i>
                 </div>
                 <div class="member-list-user-text">
                   <div class="member-list-user-name">
-                    <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ group_member_info["nickname"]}}</p>
+                    {{ group_member_info["nickname"]}}
                   </div>
                 </div>
               </div>
@@ -104,13 +104,13 @@
         {% for d in requesting_members_info %}
           <a  href="{{ url_for('profile', display_user_id = d['id'] ) }}">
             <div class="member-list-box">
-              <div class="member-list-user-info">
+              <div class="member-list-user-info" style="margin-left: 120px;">
                 <div class="member-list-user-icon">
                   <i class="fas fa-user"></i>
                 </div>
                 <div class="member-list-user-text">
                   <div class="member-list-user-name">
-                    <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d["nickname"]}}</p>
+                    {{ d["nickname"]}}
                   </div>
                 </div>
               </div>
@@ -130,20 +130,22 @@
       <div class="table-responsive member-list-table">
         <div class = "flex flex-row mx-auto">
           {% for d in following_user_info %}
+            {% if d["nickname"] %}
             <a  href="{{ url_for('profile', display_user_id = d['id'] ) }}">
               <div class="member-list-box">
-                <div class="member-list-user-info">
+                <div class="member-list-user-info" style="margin-left: 120px;">
                   <div class="member-list-user-icon">
                     <i class="fas fa-user"></i>
                   </div>
                   <div class="member-list-user-text">
                     <div class="member-list-user-name">
-                      <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d["nickname"]}}</p>
+                      {{ d["nickname"]}}
                     </div>
-                    <input type="checkbox" name="add_users" value="{{d['id'] }}" checked>
+                    <input type="checkbox" name="add_users" value="{{d['id'] }}" >
                   </div>
                 </div>
               </div>
+              {% endif %}
             </a>
           {% endfor %}
         </div>
@@ -158,71 +160,4 @@
   </div>
 </div>
 
-
-<!-- <h3>メンバー</h3>
-<table class="table table-hover">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Nickname</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for group_member_info in group_members_info %}
-    <tr data-href="{{ url_for('profile', display_user_id = group_member_info['id'] ) }}">
-      <td><i class="fas fa-user"></i></td>
-      <td>{{ group_member_info["nickname"]}}</td>
-    {% endfor %}
-  </tbody>
-</table> -->
-
-
-<!-- {% if requesting_members_info %}
-<h3>招待中</h3>
-<table class="table table-hover">
-  <tbody>
-    {% for d in requesting_members_info %}
-    <tr data-href="{{ url_for('profile', display_user_id = d['id'] ) }}">
-      <td><i class="fas fa-user"></i></td>
-      <td>{{ d["nickname"]}}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-
-{% else %}
-<h3>招待中ユーザーがいません。</h3>
-{% endif %} -->
-
-
-
-<!-- {% if following_user_info %}
-<h3>ユーザーの追加</h3>
-  <form action="/add_group_user" method="post">
-    <div class = "flex flex-row mx-auto">
-
-      <table class="table table-bordered">
-      {% for following in following_user_info %}
-      <tbody>
-            {% if not following %}
-            {% else %}
-              <td><i class="fas fa-user"></i></td>
-              <td>{{ following["nickname"]}}</td>
-              <td>
-                <input type="checkbox" name="add_users" value="{{following['id'] }}" checked>
-              </td>
-              {% endif %}
-      </tbody>
-      {% endfor %}
-      </table>
-    </div>
-    <input type="hidden" name="group_id" value="{{group_info['id']}}">
-    <input type="hidden" name="owner_id" value="{{group_info['owner_id']}}">
-    <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">追加する</button>
-  </form>
-</div>
-{% else %}
-<p>フォローユーザーは全て追加、招待済みです。新しく招待するにはフォローしてください。</p>
-{% endif %} -->
 {% endblock %}

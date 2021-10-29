@@ -499,7 +499,6 @@ footer{
   margin: 10px;
   background-color: #4b5ea2;
   color: #fff2ec;
-  height: 100px;
 }
 .group-table{
   padding-bottom: 45px;
@@ -522,11 +521,11 @@ footer{
 
 .group-user-name{
   float: left;
-  width: 55%;
   overflow: hidden;
   font-weight: bold;
-  font-size: 30px;
+  font-size: 20px;
   padding: 0 auto;
+  margin: 5px;
 }
 
 .group-user-info{
@@ -552,8 +551,16 @@ footer{
 .follow-table-title{
   text-align: center;
   margin: 10px auto;
+  margin-left: 100px;
   padding: 10px;
-  /* background-color: rgb(253, 198, 97); */
+  border-radius: 10px;
+  font-weight: bold;
+  color: #1a39a6;
+}
+.follower-table-title{
+  text-align: center;
+  margin: 10px auto;
+  padding: 10px;
   border-radius: 10px;
   font-weight: bold;
   color: #1a39a6;
@@ -604,6 +611,17 @@ footer{
 .member-list-table-title{
   text-align: center;
   margin: 10px auto;
+  margin-left: 60px;
+  padding: 10px;
+  /* background-color: rgb(253, 198, 97); */
+  border-radius: 10px;
+  font-weight: bold;
+  color: #1a39a6;
+}
+
+.member-list-table-title-other{
+  text-align: center;
+  margin: 10px auto;
   padding: 10px;
   /* background-color: rgb(253, 198, 97); */
   border-radius: 10px;
@@ -637,5 +655,6 @@ footer{
 .member-list-user-info{
   width: 120px;
   display: block;
+  text-align: center;
   /* margin: 0, auto; */
 }

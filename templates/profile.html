@@ -65,9 +65,9 @@
   <div>
     {% if user_info["following"] != "myself" %}
       {% if user_info["following"] == "True" %}
-        <button class="btn btn-danger" type="button" value="button" id = "cancell" style=" margin-left: 170px; margin-right: 10px; margin-bottom: 10px;" >フォローを外す</button>
+        <button class="btn btn-danger" type="button" value="button" id = "cancell" style=" margin-left: 130px; margin-bottom: 10px;" >フォローを外す</button>
       {% elif user_info["following"] == "False" %}
-        <button class="btn btn-success" type="button" value="button" id = "follow"  style=" margin-left: 170px; margin-right: 10px; margin-bottom: 10px;" >フォローする</button>
+        <button class="btn btn-success" type="button" value="button" id = "follow"  style=" margin-left: 145px; margin-bottom: 10px;" >フォローする</button>
       {% endif %}
 
 
@@ -85,7 +85,7 @@
         <form class="profile-form-search" action="/profile/{{user_id}}" method="post" style="float: right;">
       {% endif %}
         <input type="hidden" name="playlistname" id="playlistname" value="プレイリスト名"> 
-        <button class="btn btn-secondary" type="submit" style="float: right; margin-right: 10px; background-color: #fff2ec; color: black; border-color: #fff2ec;">
+        <button class="btn btn-secondary" type="submit" style="float: right; margin-right: 10px; background-color: #fff2ec; color: #606060; border-color: #fff2ec;">
           <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-journal-plus" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 5.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 .5-.5z"/>
             <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
@@ -94,8 +94,12 @@
         </button>
     {% endif %}
     </form>
+    <button type="button" onclick="location.href='/notification'"  class="btn"style="background-color: #fff2ec; color: #606060; border-color: #fff2ec; margin-bottom: 10px;" >
+    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+  </svg></button>
   <!-- プレイリスト表示ボタン -->
-    <button onclick="location.href='{{ url_for('playlist', display_user_id = user_info['id'] ) }}'" class="btn btn-secondary" style="float: right; background-color: #fff2ec; color: black;border-color: #fff2ec;" >
+    <button onclick="location.href='{{ url_for('playlist', display_user_id = user_info['id'] ) }}'" class="btn btn-secondary" style="float: right; background-color: #fff2ec; color: #606060;border-color: #fff2ec;" >
       <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-music-note-list" viewBox="0 0 16 16">
         <path d="M12 13c0 1.105-1.12 2-2.5 2S7 14.105 7 13s1.12-2 2.5-2 2.5.895 2.5 2z"/>
         <path fill-rule="evenodd" d="M12 3v10h-1V3h1z"/>
@@ -121,9 +125,9 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.ja.min.js"></script>
 
 <!-- 通知のボタン -->
-<!-- <div class="text-right">
-  <button type="button" onclick="location.href='/notification'"  class="btn" >通知</button>
-  </div> -->
+<div class="text-right">
+  
+  </div>
 
 
 <!-- Modal の中身 -->
