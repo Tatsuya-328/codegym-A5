@@ -64,8 +64,9 @@ def index():
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
     pins = []
     songdata = []
-    # print(session["user_id"])
-    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+    
+    # 自分のピン表示
+    # pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
     follow_users = db.session.query(follow.followed_user_id).filter(follow.follow_user_id == session["user_id"]).all()
     for follow_user in follow_users:
         # print(follow_user)
