@@ -20,9 +20,9 @@
   {% if user_info %}
     {% if user_info["following"] == "myself" %}
       <div class="nav_area">
-        <a class="menu">
-            <span class="menu__line menu__line--top"></span>
-            <span class="menu__line menu__line--bottom"></span>
+        <a class="menu" style="color: #606060;">
+            <span style="color: #606060;" class="menu__line menu__line--top"></span>
+            <span style="color:#606060" class="menu__line menu__line--bottom"></span>
         </a>
         <nav class="gnav" style="background-color: #fff2ec;">
           <div class="gnav__wrap">
@@ -36,24 +36,29 @@
         <div class="hero"></div>
       </div>
     {% endif %}
-    <div class="profile-info">
+  <div class="profile-info">
       <div class="profile-nickname">
         <h1 style="float: left;">{{  user_info["nickname"]  }}</h1>
         <p id = "display_user_id" style="visibility: hidden; height: 0px; margin: 0px;">{{  user_info["id"]  }}</p>
       </div>
-      <div class="profile-follower">
-        <p style="margin-bottom: 0px;">
-          <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}">
-            <span>{{ user_info["follow_number"] }}</span>フォロー
+      <div class="profile-following">
+      <div class="profile-follow">
+        <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}">
+          <h6 style="color: #606060;" class="follownumber">{{ user_info["follow_number"] }}</h6>
           </a>
+          
+        <h6 style="color: #606060;">フォロー</h6>
+        </div>
+<div class="profile-follower">
           <a href="{{ url_for('display_follower', display_user_id = user_info['id'] ) }}">
-            <span>{{ user_info["followed_number"] }}</span>フォロワー
-          </a>
-        </p>
+            <h6 style="color: #606060;" class="followernumber">{{ user_info["followed_number"] }}</h6></a>
+          <h6 style="color: #606060;">フォロワー</h6>
       </div>
-      <div class="profile-intro">
-        {{Introduce}}
-      </div>
+    </div>
+    </div>
+ 
+    <div class="profile-intro">
+      <h6>{{Introduce}}</h6>
     </div>
 
 <!-- 他のユーザーのプロフィールならフォローボタン表示 -->
@@ -98,11 +103,12 @@
         <path fill-rule="evenodd" d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5z"/>
       </svg>
     </button>
-    <button type="button" onclick="location.href='/notification'"  class="btn btn-secondary" style="float: right; background-color: #fff2ec; color: black; border-color: #fff2ec;">
+<!-- 鈴マーク ビデオ見せないから いったん消す-->
+    <!-- <button type="button" onclick="location.href='/notification'"  class="btn btn-secondary" style="float: right; background-color: #fff2ec; color: black; border-color: #fff2ec;">
       <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
         <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
       </svg>
-    </button>
+    </button> -->
     </div>
 
   {% endif %}
@@ -291,9 +297,9 @@ $('.input-daterange').datepicker({
         曲名 {{ song_name }}
       </div>
     {% else %}
-      <div class="profile-panel-latest-track">
+      <!-- <div class="profile-panel-latest-track">
         最近の投稿
-      </div>
+      </div> -->
     {% endif %}
       <div class = "flex flex-row mx-auto">
         {% for d in latestsongdata %}

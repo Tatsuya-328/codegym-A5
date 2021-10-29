@@ -121,25 +121,46 @@ a:link, a:visited, a:hover, a:active {
 /* profile */
 .profile-map{
   width: 100%;
-  height: 30vh;
+  height: 50vh;
 }
 .profile-nickname{
+  color: #606060;
+  display: block;
+}
+.profile-follow{
+  margin-left: 24px;
+  float: left;
   display: block;
 }
 .profile-follower{
+  /* float: left; */
+color: #606060;
   display: block;
-  margin-top: 60px;
 }
-.profile-intro{
-  display: block;
+.profile-following{
+margin-top: 6px;
+}
+.follownumber{
+  color: #606060;
+  padding-left: 13px;
+  font-size: 23px;
+  margin-bottom: 0px;
+  /* padding-left: 165px; */
+}
+.followernumber{
+  /* padding-left: 13px; */
+  font-size: 23px;
+  margin-bottom: 0px;
+  padding-left: 234px;
+}
 
-}
 /*menu*/
 .menu{
+  color: #606060;
   height: 12px;
   position: absolute;
   right: 20px;
-  top: 20px;
+  top: 31px;
   width: 24px;
   z-index: 99;
 }
@@ -353,9 +374,18 @@ a:link, a:visited, a:hover, a:active {
 }
 
 /* profile */
+.profile-intro{
+  margin-left: 15px;
+  /* margin-bottom: 20px; */
+  margin-top: 20px;
+  color:#606060;
+}
 .profile-info{
-  margin-left: 20px;
-  margin-bottom: 20px;
+  background-color: #fff2ec;
+  margin-left: 15px;
+  /* margin-bottom: 20px; */
+  padding-top: 15px;
+
 }
 .profile-track-box{
   padding: 15px;
