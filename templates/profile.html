@@ -74,7 +74,7 @@
     {% else %}
     <!-- プレイリスト作成 なんの絞り込みになっているかでPOST先を分岐-->
       {% if nowdisplayfrom %}
-        <form class="profile-form-search" action="/profile/{{user_id}}/period/{{nowdisplayfrom}}/{{nowdisplayto}}" method="post">
+        <form class="profile-form-search" action="/profile/{{user_id}}/period/{{nowdisplayfrom}}/{{nowdisplayto}}" method="post" style="float: right;">
       {% elif emotion %}
         <form class="profile-form-search" action="/profile/{{user_id}}/emotion/{{emotion}}" method="post" style="float: right;">
       {% elif artist %}

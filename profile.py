@@ -114,7 +114,7 @@ def Profile_info(login_user_id, display_user_id, status, displayfrom, displayto,
     
     for pin in pins:
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-        songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private})
+        songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private, 'about':pin.about})
 
     for pin in latestpins:
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
