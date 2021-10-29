@@ -8,9 +8,7 @@ function initMap() {
     zoom: 9.5,
     center: {lat: Lat, lng: Lng},
     //   既存のマーカーがあるとごちゃごちゃするから消す
-    styles: [{
-      featureType: 'poi',
-      stylers: [
+    styles:  [
         {
             "featureType": "all",
             "elementType": "all",
