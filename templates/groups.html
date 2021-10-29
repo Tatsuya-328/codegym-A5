@@ -1,4 +1,3 @@
-
 {% extends "layout.html" %}
 
 {% block title %}
@@ -36,65 +35,136 @@
 {% endblock %}
 
 {% block main %}
+<div class="col-xs-10" style="padding: 40px 0 40px 0;">
+<h1 style="font-size: 25px; text-align: center">グループ一覧</h1>
 
+<!-- <p>{{ groups['name'] }}</p> -->
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th></th>
+      <!-- <th>グループid</th> -->
+      <th>グループ名</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in groups %}
+    <tr data-href="{{ url_for('group_info', group_id = d['id'] ) }}">
+      <td><i class="fas fa-user"></i></td>
+      <!-- <td>{{ d["id"]}}</td> -->
+      <td>{{ d["name"]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if requests_groups %}
+<h3 style="font-size: 25px; text-align: center">招待一覧</h3>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th></th>
+      <!-- <th>グループid</th> -->
+      <th>グループ名</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in requests_groups %}
+    <tr data-href="{{ url_for('group_info', group_id = d['id'] ) }}">
+      <td><i class="fas fa-user"></i></td>
+      <!-- <td>{{ d["id"]}}</td> -->
+      <td>{{ d["name"]}}</td>
+      <td>オーナ{{ d["owner_id"]}}</td>
+
+      <td>
+        <form action="/groups" method="post">
+          <input type="hidden" name ="group_id"value='{{ d["id"]}}'>
+          <input type="hidden" name ="owner_id"value='{{ d["owner_id"]}}'>
+          <button class="btn btn-primary" type='submit' name='auth' value="yes" >参加</button>
+        </form>
+      </td>
+      <td>
+        <form action="/groups" method="post">
+          <input type="hidden" name ="group_id"value='{{ d["id"]}}'>
+          <input type="hidden" name ="owner_id"value='{{ d["owner_id"]}}'>
+          <button class="btn btn-primary" type='submit' name='auth' value="no" >拒否</button>
+        </form>
+      </td>
+
+    </tr>
+  </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
 
 <!-- けんじの参考に修正（まー） -->
-<div class="table-responsive group-table">
+<div class="table-responsive profile-latest-track-table">
   <!-- <form action="/makeplaylist" method="post"> -->
   
-  <div class="group-table-title">
+  <div class="profile-panel-latest-track">
     グループ一覧
   </div>
   <div class = "flex flex-row mx-auto">
     {% for d in groups %}
-      <a  href="{{ url_for('group_info', group_id = d['id'] ) }}">
-        <div class="group-box">
-          <div class="group-user-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
-              <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-              <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
-              <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
-            </svg>
-            <div class="group-user-info">
-              <div class="group-user-name">
-                <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d["name"] }}</p>
-              </div>
+        <div class="profile-track-box" >
+          <!-- <div class="profile-spotify-track">
+            <iframe src="https://open.spotify.com/embed/track/{{ d['track_id'] }}" width="75" height="75" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+          </div> -->
+
+          <div class="profile-songlocation-info">
+            <!-- <div class="profile-panel-track-name">
+              <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d["track"] }}</p>
             </div>
+            <div class="profile-panel-artist-name">
+              <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d["artist"] }}</p>
+            </div>
+            <p style="margin: 0;">{{ d["user_nickname"] }}</p> -->
+          <!-- <div class="profile-display-about">
+            {{ d["about"] }}
+            <a href="{{ url_for('show_song_location', songlocation_id = d['id'] ) }}" style="margin-left: 10px;">詳細</a>
+          </div> -->
           </div>
         </div>
-      </a>
-    {% endfor %}
+      {% endfor %}
   </div>
 </div>
 
-<div class="table-responsive group-table">
+<div class="table-responsive profile-latest-track-table">
   <!-- <form action="/makeplaylist" method="post"> -->
   
-  <div class="group-table-title">
+  <div class="profile-panel-latest-track">
     招待一覧
   </div>
   <div class = "flex flex-row mx-auto">
     {% for d in requests_groups %}
-      <a  href="{{ url_for('group_info', group_id = d['id'] ) }}">
-        <div class="group-box" >
-          <div class="group-user-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" class="bi bi-person-plus-fill" viewBox="0 0 16 16">
-              <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-              <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
-            </svg>
-            <div class="group-user-info">
-              <div class="group-user-name">
-                <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d["name"] }}</p>
-              </div>
+        <div class="profile-track-box" >
+          <!-- <div class="profile-spotify-track">
+            <iframe src="https://open.spotify.com/embed/track/{{ d['track_id'] }}" width="75" height="75" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+          </div> -->
+
+          <div class="profile-songlocation-info">
+            <!-- <div class="profile-panel-track-name">
+              <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d["track"] }}</p>
             </div>
+            <div class="profile-panel-artist-name">
+              <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d["artist"] }}</p>
+            </div>
+            <p style="margin: 0;">{{ d["user_nickname"] }}</p> -->
+          <!-- <div class="profile-display-about">
+            {{ d["about"] }}
+            <a href="{{ url_for('show_song_location', songlocation_id = d['id'] ) }}" style="margin-left: 10px;">詳細</a>
+          </div> -->
           </div>
         </div>
-      </a>
-    {% endfor %}
+      {% endfor %}
   </div>
 </div>
 
+
+
 <div style="text-align: center">
     <button onclick="location.href='create_group'" type="button" class="btn btn-primary">新規作成</button>
+</div>
 </div>
 {% endblock %}

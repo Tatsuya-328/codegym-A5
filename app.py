@@ -741,7 +741,7 @@ def create_memory_complete():
     new_song_location = song_locations(user_id=session["user_id"], track_id=track_id, longitude=lng, latitude=lat, date=date, emotion=emotion, comment=comment,about=about, is_private=is_private)
     db.session.add(new_song_location)
     db.session.commit()
-    return redirect("/")
+    return redirect("/create_memory")
 
 
 @app.route('/map/<song_location_id>/edit', methods=['GET','POST'])
@@ -1591,6 +1591,16 @@ def like():
 
     return redirect("/")
 
+## グループ名編集用、URL打ち込んで実行
+# @app.route('/python_edit', methods = ['GET'])
+# def python_edit():
+## 編集したいグループID
+#     group_id = 3 
+#     group = db.session.query(Group).filter(Group.id == group_id).first()
+##新しいグループ名
+#     group.name="カナダ留学"
+#     db.session.commit()
+#     return redirect("/")
 
 # if __name__ == '__main__':
 #     app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
