@@ -229,7 +229,7 @@ a:link, a:visited, a:hover, a:active {
 .panel{
   padding: 15px;
   text-align: center;
-  color: rgb(183, 182, 182);
+  color: #606060;
 }
 
 /* create_memory_emotion */
@@ -261,6 +261,7 @@ a:link, a:visited, a:hover, a:active {
 /* makeplaylist */
 .playlist-form{
   padding-bottom: 60px;
+  color: #606060;
 }
 
 /* index */
@@ -386,19 +387,19 @@ a:link, a:visited, a:hover, a:active {
   text-align: center;
   margin: 10px auto;
   padding: 10px;
-  background-color: rgb(253, 198, 97);
   width: 80%;
   border-radius: 10px;
   font-weight: bold;
+  color: #606060;
 }
 .profile-panel-search{
   text-align: center;
   margin: 10px auto 10px auto;
   padding: 10px;
-  background-color: rgb(183, 182, 182);
   width: 80%;
   border-radius: 10px;
   font-weight: bold;
+  color: #606060;
 }
 
 .profile-latest-track-table{
@@ -478,7 +479,6 @@ footer{
   margin: 10px auto;
   padding: 10px;
   /* background-color: rgb(253, 198, 97); */
-  width: 80%;
   border-radius: 10px;
   font-weight: bold;
 }
