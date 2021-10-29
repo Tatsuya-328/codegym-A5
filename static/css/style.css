@@ -477,7 +477,7 @@ footer{
   text-align: center;
   margin: 10px auto;
   padding: 10px;
-  background-color: rgb(253, 198, 97);
+  /* background-color: rgb(253, 198, 97); */
   width: 80%;
   border-radius: 10px;
   font-weight: bold;
