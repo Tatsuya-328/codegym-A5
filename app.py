@@ -395,9 +395,13 @@ def search():
     artist_name = set([])
     for artist in artistsdata:
         print("artist",artist[0])
+        len1 = len(artist_name)
         artist_name.add(artist[0])
-        artistslist.append(dict(image=sp.artist(sp.track(artist[1])["album"]['artists'][0]['id'])['images'][2]['url'], name=artist[0]))
-    
+        len2 = len(artist_name)
+        len1 += 1
+        if len1 == len2:
+            artistslist.append(dict(image=sp.artist(sp.track(artist[1])["album"]['artists'][0]['id'])['images'][2]['url'], name=artist[0]))
+
     print(artistslist)
 
     
