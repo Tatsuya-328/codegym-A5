@@ -44,14 +44,14 @@
 <ul class="nav nav-tabs">
   <li class="active">
     <a href="#following" data-toggle="tab">
-      <div class="group-table-title">
+      <div class="follow-table-title">
         フォロー
       </div>
     </a>
   </li>
   <li>
     <a href="#followed" data-toggle="tab">
-      <div class="group-table-title">
+      <div class="follow-table-title">
         フォロワー
       </div>
     </a>
@@ -59,16 +59,16 @@
 </ul>
 <div class="tab-content">
   <div class="tab-pane fade in active show" id="following">
-    <div class="table-responsive group-table">
+    <div class="table-responsive follow-table">
       <div class = "flex flex-row mx-auto">
         {% for following in following_user_info %}
           <a  href="{{ url_for('profile', display_user_id = following['id'] ) }}">
-            <div class="group-box">
-              <div class="group-user-icon">
+            <div class="follow-box">
+              <div class="follow-user-icon">
                 <i class="fas fa-user"></i>
               </div>
-              <div class="group-user-info">
-                <div class="group-user-name">
+              <div class="follow-user-info">
+                <div class="follow-user-name">
                   <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ following["nickname"]}}</p>
                 </div>
                 <!-- <div class="group-user-name">
@@ -82,15 +82,15 @@
     </div>
   </div>
   <div class="tab-pane fade" id="followed">
-    <div class="table-responsive group-table">
+    <div class="table-responsive follow-table">
       <div class = "flex flex-row mx-auto">
         {% for followed in followed_user_info %}
           <a  href="{{ url_for('profile', display_user_id = followed['id'] ) }}">
-            <div class="group-box">
-              <div class="group-user-icon">
+            <div class="follow-box">
+              <div class="follow-user-icon">
                 <i class="fas fa-user"></i>
               </div>
-              <div class="group-user-info">
+              <div class="follow-user-info">
                 <div class="group-user-name">
                   <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ followed["nickname"]}}</p>
                 </div>
