@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  likes
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+  // var SongData = {{ Songdatas | safe }};
+  // var display_user_id = {{ user_id | safe }};
+  var user_info = {{ user_info | safe }};
+  var following_user_info = {{following_user_info |safe }}
+  var like_list = {{like_list |safe }}
+</script>
+
+<script>
+  jQuery(function($) {
+
+  //data-hrefの属性を持つtrを選択しclassにclickableを付加
+  $('tr[data-href]').addClass('clickable')
+
+    //クリックイベント
+    .click(function(e) {
+
+      //e.targetはクリックした要素自体、それがa要素以外であれば
+      if(!$(e.target).is('a')){
+      
+        //その要素の先祖要素で一番近いtrの
+        //data-href属性の値に書かれているURLに遷移する
+        window.location = $(e.target).closest('tr').data('href');}
+  });
+});
+</script>
+
+
+{% endblock %}
+
+{% block main %}
+<div class="user-follow">
+  <p id="nickname">{{user_info["nickname"]}} </p>
+  <p id="user-id">(user_id is {{user_info["id"]}})</p>
+</div>
+
+<h3>いいねされた投稿</h3>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>like</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for like in like_list %}
+    <tr data-href="{{ url_for('show_song_location', songlocation_id = like['song_location_id'] ) }}">
+      <td>{{ like["nickname"]}}さんがあなたの投稿にいいね！しました</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
+
+<!-- <h3>フォロー中</h3>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Nickname</th>
+      <th>User name</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for following in following_user_info %}
+    <tr data-href="{{ url_for('profile', display_user_id = following['id'] ) }}">
+      <td><i class="fas fa-user"></i></td>
+      <td>{{ following["nickname"]}}</td>
+      <td>{{ following["username"]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table> -->
+

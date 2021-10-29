@@ -87,3 +87,54 @@ class made_playlists(db.Model):
     self.playlist_uri = playlist_uri
     self.playlist_image = playlist_image
     self.playlist_name = playlist_name
+
+
+class Group(db.Model):
+  __tablename__ = 'Group'
+  id = db.Column(Integer, primary_key=True)
+  owner_id = db.Column(Integer)
+  name = db.Column(TEXT, unique=False)
+  introduction = db.Column(TEXT, unique=False)
+
+  def __init__(self, owner_id=None, name=None, introduction=None):
+    self.owner_id = owner_id
+    self.name = name
+    self.introduction = introduction
+    
+class UserGroup(db.Model):
+  __tablename__ = 'UserGroup'
+  id = db.Column(Integer, primary_key=True)
+  group_id = db.Column(Integer)
+  owner_id = db.Column(Integer)
+  invited_id = db.Column(Integer)
+
+  def __init__(self, group_id=None, owner_id = None, invited_id = None):
+    self.group_id = group_id
+    self.owner_id = owner_id
+    self.invited_id = invited_id
+
+
+class requests(db.Model):
+  __tablename__ = 'requests'
+  id = db.Column(Integer, primary_key=True)
+  group_id = db.Column(Integer)
+  owner_id = db.Column(Integer)
+  invited_id = db.Column(Integer)
+
+  def __init__(self, group_id=None, owner_id = None, invited_id = None):
+    self.group_id = group_id
+    self.owner_id = owner_id
+    self.invited_id = invited_id
+
+class likes(db.Model):
+  __tablename__ = 'likes'
+  id = db.Column(Integer, primary_key=True)
+  user_id = db.Column(Integer)
+  song_location_id = db.Column(Integer)
+  datetime = db.Column(DateTime)
+
+  def __init__(self, group_id=None, user_id = None, song_location_id = None, datetime=None):
+    self.user_id = user_id
+    self.song_location_id = song_location_id
+    self.datetime = datetime
+

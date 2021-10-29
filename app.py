@@ -1,4 +1,5 @@
 import os
+from re import S
 import sqlite3
 
 from flask.wrappers import Request
@@ -16,11 +17,14 @@ from helpers import login_required, register_check, login_check
 from spotipy.oauth2 import SpotifyOAuth
 from pprint import pprint
 import config
-from models import users, song_locations, songs, follow, made_playlists, db
-from sqlalchemy import or_, desc
+from models import users, song_locations, songs, follow, made_playlists, Group, UserGroup, requests, likes, db
+from sqlalchemy import or_, desc, and_, distinct
+from sqlalchemy.sql import func, exists
 
 from profile import Profile_info
 from home import Home_info
+import random
+
 
 GOOGLE_MAP_API_KEY = config.GOOGLE_MAP_API_KEY
 SPOTIFY_CLIENT_SECRET =config.SPOTIFY_CLIENT_SECRET
@@ -60,8 +64,9 @@ def index():
     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
     pins = []
     songdata = []
-    # print(session["user_id"])
-    pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
+    
+    # 自分のピン表示
+    # pins = db.session.query(song_locations).filter(song_locations.user_id == session["user_id"]).all()
     follow_users = db.session.query(follow.followed_user_id).filter(follow.follow_user_id == session["user_id"]).all()
     for follow_user in follow_users:
         # print(follow_user)
@@ -74,8 +79,7 @@ def index():
         user = db.session.query(users).filter(users.id == pin.user_id).first()
         # print(user.nickname)
         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
-        # print(pin.date)
+        'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname, 'track_id':pin.track_id})
 
     #最新3件の投稿をリスト表示させる
     latestpins = []
@@ -91,8 +95,16 @@ def index():
             song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
             user = db.session.query(users).filter(users.id == pin.user_id).first()
             # print(user.nickname)
-            latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-            'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
+            # latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+            # 'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
+#いいね判定 
+            if db.session.query(exists().where(likes.song_location_id == pin.id).where(likes.user_id == session['user_id'])).scalar() == True:
+                print("True")
+                latestsongdata.append({'like':'yes','id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+                'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
+            else:
+                latestsongdata.append({'like':'no','id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
+                'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
 
 
     return render_template('index.html',user_id=session["user_id"] , GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata)
@@ -146,6 +158,7 @@ def register():
 def login():
     """Log user in"""
     # Forget any user_id
+    session['current_id']=None
     session.pop("user_id", None)
     print("login")
 
@@ -176,6 +189,7 @@ def login():
     # User reached route via GET (as by clicking a link or via redirect)
     else :
         return render_template("login.html")
+
 
 @app.route("/logout")
 def logout():
@@ -241,8 +255,9 @@ def profile(display_user_id):
         print("error")
     for pin in latestpins:
         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
+        user = db.session.query(users).filter(users.id == pin.user_id).first()
         latestsongdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-        'artist':song.artist_name, 'track':song.track_name,'track_id': pin.track_id, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private})
+        'artist':song.artist_name, 'track':song.track_name,'track_id': pin.track_id, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'about':pin.about, 'comment':pin.comment, 'is_private':pin.is_private, 'user_nickname':user.nickname})
         # print("latest",latestsongdata)
 
     following_status = ""
@@ -277,8 +292,8 @@ def profile(display_user_id):
     user_info = dict(id=display_user_id, username=username[0], following=following_status, follow_number=follow_number, followed_number=followed_number, songlists=songlists, nickname=nickname[0])
     
     # 自己紹介文取得
-    if db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0] != None:
-        Introduce = db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0]
+    if db.session.query(users.introduce).filter(users.id == display_user_id).all()[0][0] != None:
+        Introduce = db.session.query(users.introduce).filter(users.id == display_user_id).all()[0][0]
     else:
         Introduce ="Settingで自己紹介入力してください"
     
@@ -366,21 +381,52 @@ def following():
 @app.route('/search', methods = ['GET'])
 @login_required
 def search():
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    # していなかったらリダイレクト。
+    if not authorized:
+        return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
     # #ユーザ検索
 	# まずはログインユーザのもってるアーティストリストを出す。
     artistslist = []
-    artistsdata = db.session.query(songs.artist_name, songs.track_image, songs.track_name).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()   
+    artistimage=[]
+    artistsdata = db.session.query(songs.artist_name, songs.track_id).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()
+    #artists = db.session.query(songs.artist_name, songs.track_image, songs.track_name).filter(songs.track_id == song_locations.track_id).filter(song_locations.user_id == session["user_id"]).all()
+    artist_name = set([])
+    for artist in artistsdata:
+        print("artist",artist[0])
+        len1 = len(artist_name)
+        artist_name.add(artist[0])
+        len2 = len(artist_name)
+        len1 += 1
+        if len1 == len2:
+            artistslist.append(dict(image=sp.artist(sp.track(artist[1])["album"]['artists'][0]['id'])['images'][2]['url'], name=artist[0]))
 
-    for artistdata in artistsdata:
-        print(artistdata[0]) 
-        # print(artistdata.track_name)
-        print(artistdata[2])
-        # print (artistname.replace("(","").replace(")","").replace("'",""))
-        artistslist.append(artistdata[0])
+    print(artistslist)
 
-    artist_info = []
-    for artistdata in artistsdata:
-        artist_info.append(artistdata)
+    
+    # for artist in artistsdata:
+    #     print("id",artist[1])
+    #     print("いっこめ",sp.track(artist[1])["album"]['artists'][0]['id'])
+    #     # sptrack_id.append(artist[1])
+    #     print("art",sp.artist(sp.track(artist[1])["album"]['artists'][0]['id'])['images'][2]['url'])
+
+    # print(artistslist)
+    # for artist in artistslist:
+    #     print(artist)
+
+    #  
+    # for artistdata in artistsdata:
+    #     print(artistdata[0]) 
+    #     # print(artistdata.track_name)
+    #     print(artistdata[2])
+    #     # print (artistname.replace("(","").replace(")","").replace("'",""))
+    #     artistslist.append(artistdata[0])
+
+    # artist_info = []
+    # for artistdata in artistsdata:
+    #     artist_info.append(artistdata)
 
     # newartistlist =[]
     # # print(artistslist.replace("(","").replace(")","").replace("'",""))
@@ -389,7 +435,8 @@ def search():
     #     print(artist)
     #     newartistlist.append({'artistname':artist})
 
-    return render_template('search.html',user_id=session["user_id"],artistslist=artistslist, artist_info=artist_info)
+    return render_template('search.html',user_id=session["user_id"],artistslist=artistslist)
+    # return render_template('search.html',user_id=session["user_id"],artistslist=artistslist, artist_info=artist_info)
 
 
 @app.route('/search/<selectedartistname>', methods = ['GET'])
@@ -752,77 +799,6 @@ def deletePin(song_location_id):
     print("delete pin")
     return redirect(url_for('profile', display_user_id=session['user_id']))
 
-# @app.route('/profile/<display_user_id>/period/<displayfrom>/<displayto>', methods = ['GET','POST'])
-# def profilePeriod(display_user_id,displayfrom, displayto):
-#     session['token_info'], authorized = get_token()
-#     session.modified = True
-#     # していなかったらリダイレクト。
-#     if not authorized:
-#         return redirect('/spotify-login')    
-#     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
-#     # ユーザの情報
-#     # user_id = session["user_id"]
-#     following_status = ""
-#     login_user_id = session["user_id"]
-
-#     # 表示しているユーザーのフォロー情報
-#     display_user_id = int(display_user_id) # int型に統一
-#     if display_user_id == login_user_id:
-#         following_status = "myself"
-#     else:
-#         following = db.session.query(follow).filter(follow.follow_user_id == login_user_id, follow.followed_user_id == display_user_id).first()
-#         if following:
-#             following_status = "True"
-#         else:
-#             following_status = "False"
-    
-#     # print("following: ", end="")
-#     # print(following)
-
-#     # フォローフォロワー数
-#     follow_user = db.session.query(follow).filter(follow.follow_user_id == display_user_id).all()
-#     if follow_user:
-#         follow_number = len(follow_user)
-#     else: 
-#         follow_number = 0
-
-#     followed_user = db.session.query(follow).filter(follow.followed_user_id == display_user_id).all()
-#     if followed_user:
-#         followed_number = len(followed_user)
-#     else:
-#         followed_number = 0
-#     nickname = db.session.query(users.nickname).filter(users.id == display_user_id).first()
-#     username = db.session.query(users.username).filter(users.id == display_user_id).first()
-#     user_info = dict(id=display_user_id, username=username[0], following=following_status, follow_number=follow_number, followed_number=followed_number, nickname=nickname[0])
-#     print(user_info)
-#     print(nickname)
-
-#     pins = []
-#     songdata = []
-#     googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
-
-#     if login_user_id != display_user_id:
-#         pins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).filter(song_locations.is_private == "False").all()
-#     else:
-#         pins = db.session.query(song_locations).filter(song_locations.user_id == display_user_id).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).all()
-    
-#     for pin in pins:
-#         # print(pin)
-#         song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-#         songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private})
-
-#     if request.method == "GET":
-#         # playlistlink = db.session.query(made_playlists.playlist_uri).filter(made_playlists.user_id == user_id).all()
-#         # playlistimage = db.session.query(made_playlists.playlist_image).filter(made_playlists.user_id == user_id).all()
-
-#         # print("playlink",playlistlink)
-#         # print("image",playlistimage)
-#         return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto, display_user_id=display_user_id )
-    
-#     if request.method == "POST":
-#         #makeplaylistにデータ渡す
-#         playlist_name = request.form['playlistname']
-#         return render_template('makeplaylist.html', data = songdata, name = playlist_name, user_id=session["user_id"])
 
 # プロフィールで期間指定
 @app.route('/profile/<display_user_id>/period/<displayfrom>/<displayto>', methods = ['GET','POST'])
@@ -836,13 +812,22 @@ def profilePeriod(display_user_id, displayfrom, displayto):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Profile_info(login_user_id, display_user_id, "period", displayfrom, displayto, None, None, None, GOOGLE_MAP_API_KEY)
+    profile_info = Profile_info(login_user_id, display_user_id, "period", displayfrom, displayto, None, None, None, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
+    latestsongdata = profile_info["latestsongdata"]
+
+    # 自己紹介文取得
+    if db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0] != None:
+        Introduce = db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0]
+    else:
+        Introduce ="Settingで自己紹介入力してください"
+    
+    status = "period"
 
     if request.method == "GET":
-        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,  nowdisplayfrom=displayfrom, nowdisplayto=displayto, display_user_id=display_user_id )
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,  nowdisplayfrom=displayfrom, nowdisplayto=displayto, display_user_id=display_user_id, latestsongdata = latestsongdata, Introduce=Introduce, status = status)
     
     if request.method == "POST":
         #makeplaylistにデータ渡す
@@ -862,20 +847,60 @@ def profileEmotion(display_user_id,emotion):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Profile_info(login_user_id, display_user_id, "emotion", None, None, emotion, None, None, GOOGLE_MAP_API_KEY)
+    profile_info = Profile_info(login_user_id, display_user_id, "emotion", None, None, emotion, None, None, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
-    print(songdata)
+    latestsongdata = profile_info["latestsongdata"]
+    # 自己紹介文取得
+    if db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0] != None:
+        Introduce = db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0]
+    else:
+        Introduce ="Settingで自己紹介入力してください"
+
+    status = "emotion"
 
     if request.method == "GET":
-        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id, emotion = emotion)
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id, emotion = emotion, latestsongdata = latestsongdata, Introduce = Introduce, status = status)
     
     if request.method == "POST":
         #makeplaylistにデータ渡す
         playlist_name = request.form['playlistname']
         return render_template('makeplaylist.html', data = songdata, name = playlist_name, user_id=session["user_id"])
-# プロフィールで感情指定
+
+# プロフィールでジャンル指定
+@app.route('/profile/<display_user_id>/about/<about>', methods = ['GET','POST'])
+def profileAbout(display_user_id,about):
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    # していなかったらリダイレクト。
+    if not authorized:
+        return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+    # ユーザの情報
+    login_user_id = session["user_id"]
+
+    profile_info = Profile_info(login_user_id, display_user_id, "about", None, None, None, about, None, None, GOOGLE_MAP_API_KEY)
+    user_info = profile_info["user_info"]
+    googlemapURL = profile_info["googlemapURL"]
+    songdata = profile_info["songdata"]
+    latestsongdata = profile_info["latestsongdata"]
+    # 自己紹介文取得
+    if db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0] != None:
+        Introduce = db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0]
+    else:
+        Introduce ="Settingで自己紹介入力してください"
+
+    status = "emotion"
+
+    if request.method == "GET":
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id, about = about, latestsongdata = latestsongdata, Introduce = Introduce, status = status)
+    
+    if request.method == "POST":
+        #makeplaylistにデータ渡す
+        playlist_name = request.form['playlistname']
+        return render_template('makeplaylist.html', data = songdata, name = playlist_name, user_id=session["user_id"])
+
 
 # プロフィールでアーティスト指定
 @app.route('/profile/<display_user_id>/artist/<artist>', methods = ['GET','POST'])
@@ -889,19 +914,26 @@ def profileArtist(display_user_id,artist):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Profile_info(login_user_id, display_user_id, "artist", None, None, None, artist, None, GOOGLE_MAP_API_KEY)
+    profile_info = Profile_info(login_user_id, display_user_id, "artist", None, None, None, None, artist, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
+    latestsongdata = profile_info["latestsongdata"]
+    # 自己紹介文取得
+    if db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0] != None:
+        Introduce = db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0]
+    else:
+        Introduce ="Settingで自己紹介入力してください"
+
+    status = "artist_name"
 
     if request.method == "GET":
-        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id, artist=artist )
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id, artist=artist , latestsongdata = latestsongdata, Introduce = Introduce, status = status)
     
     if request.method == "POST":
         #makeplaylistにデータ渡す
         playlist_name = request.form['playlistname']
-        return render_template('makeplaylist.html', data = songdata, name = playlist_name, user_id=session["user_id"])
-# プロフィールでアーティスト指定
+        return render_template('makeplaylist.html', data = songdata, name = playlist_name, user_id=session["user_id"], status = status)
 
 # プロフィールで曲指定
 @app.route('/profile/<display_user_id>/song_name/<song_name>', methods = ['GET','POST'])
@@ -915,13 +947,22 @@ def profileSong(display_user_id, song_name):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Profile_info(login_user_id, display_user_id, "song_name", None, None, None, None, song_name, GOOGLE_MAP_API_KEY)
+    profile_info = Profile_info(login_user_id, display_user_id, "song_name", None, None, None, None, None, song_name, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
+    latestsongdata = profile_info["latestsongdata"]
+
+    # 自己紹介文取得
+    if db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0] != None:
+        Introduce = db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0]
+    else:
+        Introduce ="Settingで自己紹介入力してください"
+
+    status = "track_name"
 
     if request.method == "GET":
-        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id ,song_name=song_name)
+        return render_template('profile.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, display_user_id=display_user_id ,song_name=song_name, latestsongdata = latestsongdata, Introduce = Introduce, status = status)
     
     if request.method == "POST":
         #makeplaylistにデータ渡す
@@ -1043,6 +1084,17 @@ def addPlaylist():
         
         return redirect(url_for('playlist', display_user_id=session['user_id']))
 
+@app.route('/songlocations/<songlocation_id>', methods=['GET'])
+def show_song_location(songlocation_id):
+    googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
+    songlocation = db.session.query(song_locations).filter(song_locations.id == songlocation_id).first()
+    login_user = db.session.query(users).filter(users.id == session["user_id"]).first()
+    print(songlocation.latitude,songlocation.longitude)
+    song = db.session.query(songs).filter(songs.track_id == songlocation.track_id).first()
+
+    songdata = {'id':songlocation.id,'lat':songlocation.latitude, 'lng':songlocation.longitude, 'date':songlocation.date.strftime("%Y-%m-%d"),'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':songlocation.user_id, 'emotion':songlocation.emotion, 'comment':songlocation.comment, 'is_private':songlocation.is_private, 'track_id':songlocation.track_id, 'about':songlocation.about, 'user_nickname':login_user.nickname, 'image':song.track_image}
+    return render_template("show_songlocation.html", songdata=songdata, lat=songlocation.latitude, lng=songlocation.longitude,GOOGLEMAPURL=googlemapURL, user_id=session["user_id"] )
+
 
 # HOMEで時期指定
 @app.route('/home/period/<displayfrom>/<displayto>', methods = ['GET'])
@@ -1053,39 +1105,21 @@ def homePeriod(displayfrom, displayto):
     if not authorized:
         return redirect('/spotify-login')    
     sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
-    # # ユーザの情報
-    # user_id = session["user_id"]
-    # user_info = []
-    # track_id = db.session.query(song_locations.track_id).filter(song_locations.user_id == user_id).all()
-    # nickname = db.session.query(users.nickname).filter(users.id == user_id).first()
-    # user_info.append(track_id)
-    # user_info.append(nickname[0])
-    # print(user_id)
-    # print(user_info)
-    # print(nickname)
-
-    # pins = []
-    # songdata = []
-    # googlemapURL = "https://maps.googleapis.com/maps/api/js?key="+GOOGLE_MAP_API_KEY
-
-    # pins = db.session.query(song_locations).filter(song_locations.date >= displayfrom).filter(song_locations.date <= displayto).all()
-    
-    # for pin in pins:
-    #     # print(pin)
-    #     song = db.session.query(songs).filter(songs.track_id == pin.track_id).first()
-    #     songdata.append({'id':pin.id,'lat':pin.latitude, 'lng':pin.longitude, 'date':pin.date.strftime("%Y-%m-%d"),
-    #     'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'user_id':pin.user_id, 'emotion':pin.emotion, 'comment':pin.comment, 'is_private':pin.is_private})
 
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Home_info(login_user_id, "period", displayfrom, displayto, None, None, None, GOOGLE_MAP_API_KEY)
+    profile_info = Home_info(login_user_id, "period", displayfrom, displayto, None, None, None, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
-    
+    latestsongdata = profile_info["latestsongdata"]
 
-    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto)
+        #最新3件の投稿をリスト表示させる
+
+    status = "period"
+
+    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata, nowdisplayfrom=displayfrom, nowdisplayto=displayto, latestsongdata=latestsongdata, status = status)
 
 # ホームで感情指定
 @app.route('/home/emotion/<emotion>', methods = ['GET'])
@@ -1099,12 +1133,44 @@ def homeEmotion(emotion):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Home_info(login_user_id, "emotion", None, None, emotion, None, None, GOOGLE_MAP_API_KEY)
+    profile_info = Home_info(login_user_id, "emotion", None, None, emotion, None, None, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
+    latestsongdata = profile_info["latestsongdata"]
+    print(latestsongdata)
 
-    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,)
+    status= "emotion"
+
+    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata, status=status, emotion=emotion)
+# ホームで感情指定
+
+# ホームでジャンル指定
+@app.route('/home/about/<about>', methods = ['GET'])
+def homeAbout(about):
+    if about == "":
+        return redirect("/")
+    session['token_info'], authorized = get_token()
+    session.modified = True
+    # していなかったらリダイレクト。
+    if not authorized:
+        return redirect('/spotify-login')    
+    sp = spotipy.Spotify(auth=session.get('token_info').get('access_token'))
+    # ユーザの情報
+    login_user_id = session["user_id"]
+
+    profile_info = Home_info(login_user_id, "about", None, None, None, about, None, None, GOOGLE_MAP_API_KEY)
+    user_info = profile_info["user_info"]
+    googlemapURL = profile_info["googlemapURL"]
+    songdata = profile_info["songdata"]
+    latestsongdata = profile_info["latestsongdata"]
+    print(latestsongdata)
+
+    status= "about"
+
+    print(songdata)
+
+    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata, status=status, about=about)
 # ホームで感情指定
 
 # ホームでアーティスト指定
@@ -1119,13 +1185,15 @@ def homeArtist(artist):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Home_info(login_user_id, "artist", None, None, None, artist, None, GOOGLE_MAP_API_KEY)
+    profile_info = Home_info(login_user_id, "artist", None, None, None, None, artist, None, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
-    print(songdata)
+    latestsongdata = profile_info["latestsongdata"]
 
-    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,)
+    status="artist_name"
+
+    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata, status=status, artist=artist)
 # ホームでアーティスト指定
 
 # ホームで曲指定
@@ -1140,13 +1208,15 @@ def homeSong(song_name):
     # ユーザの情報
     login_user_id = session["user_id"]
 
-    profile_info = Home_info(login_user_id, "song_name", None, None, None, None, song_name, GOOGLE_MAP_API_KEY)
+    profile_info = Home_info(login_user_id, "song_name", None, None, None, None, None, song_name, GOOGLE_MAP_API_KEY)
     user_info = profile_info["user_info"]
     googlemapURL = profile_info["googlemapURL"]
     songdata = profile_info["songdata"]
-    
+    latestsongdata = profile_info["latestsongdata"]
 
-    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,)
+    status="song_name"
+
+    return render_template('index.html',user_id=session["user_id"] ,user_info=user_info, GOOGLEMAPURL=googlemapURL ,Songdatas=songdata,latestsongdata=latestsongdata, status = status, song_name=song_name)
 # ホームでアーティスト曲指定
 
 @app.route('/select_location', methods = ['GET'])
@@ -1190,6 +1260,352 @@ def display_follower(display_user_id):
         followed_user_info.append(other_user_info)
     
     return render_template("follower.html",user_id=session["user_id"], user_info=user_info, following_user_info=following_user_info, followed_user_info=followed_user_info)
+
+
+@app.route('/groups', methods = ['GET', 'POST'])
+@login_required
+def groups():
+    login_user_id=session["user_id"]
+    if request.method == "POST":
+        # 許可するかどうか、owner_id, group_idを受け取る。
+        auth = request.form.get("auth")
+        owner_id = request.form.get("owner_id")
+        group_id = request.form.get("group_id")
+        print("auth",auth, "owner", owner_id, "group", group_id)
+# ここのowneridがタプルになる
+
+        # auth = "yes"
+        if auth == "yes":
+            new_user_group = UserGroup(group_id = group_id, owner_id = owner_id, invited_id = login_user_id)
+            db.session.add(new_user_group)
+            db.session.commit()
+# リクエストを消す
+        # delete_request = db.session.query(requests).filter(requests.group_id == group_id).filter(requests.owner_id == owner_id,).filter(requests.invited_id == login_user_id).first()
+        delete_request = db.session.query(requests).filter(requests.group_id == group_id).first()
+        print("delete",delete_request)
+        db.session.delete(delete_request)
+        db.session.commit()
+        
+    user = db.session.query(users).filter(users.id == login_user_id).first()
+    user_info = dict(id=user.id, nickname=user.nickname, username=user.username)
+
+    # owner_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.owner_id == login_user_id).all()
+    owner_group_ids = db.session.query(Group.id).filter(Group.owner_id == login_user_id).all()
+    invited_group_ids = db.session.query(UserGroup.group_id).filter(UserGroup.invited_id == login_user_id).all()
+    requests_group_ids = db.session.query(requests.group_id).filter(requests.invited_id == login_user_id).all()
+    requests_owner_group_ids = db.session.query(requests.group_id).filter(requests.owner_id == login_user_id).all()
+    print("owner", owner_group_ids)
+    groups = []
+    requests_groups = []
+#グループ一覧（自分が作ったやつ） 
+    for owner_group_id in owner_group_ids:
+        owner_group = db.session.query(Group).filter(Group.id == owner_group_id[0]).first()
+        # print('Oid',owner_group.id,'Oname',owner_group.name)
+        groups.append(dict(id=owner_group.id, name=owner_group.name, owner_id=owner_group.owner_id))
+#グループ一覧（自分が招待されて参加済みのやつ） 
+    for invited_group_id in invited_group_ids:
+        invited_group = db.session.query(Group).filter(Group.id == invited_group_id[0]).first()
+        # print('Iid',invited_group.id)
+        if invited_group:
+            groups.append(dict(id=invited_group.id, name=invited_group.name, owner_id=invited_group.owner_id))
+        # groups.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname, track_id=track_id))
+
+# グループ一覧（自分が作ってまだ参加してない人いてrequestテーブルにあるやつ）
+    # for requests_group_id in requests_owner_group_ids:
+    #     requests_group = db.session.query(Group).filter(Group.id == requests_group_id[0]).first()
+    #     # requests_group_owner = db.session.query(UserGroup.owner_id).filter(UserGroup.group_id == requests_group_id[0]).first()
+    #     # print('Rid',requests_group.id)
+    #     groups.append(dict(id=requests_group.id, name=requests_group.name))
+# 招待一覧
+    for requests_group_id in requests_group_ids:
+        requests_group = db.session.query(Group).filter(Group.id == requests_group_id[0]).first()
+        # requests_group_owner = db.session.query(Group.owner_id).filter(UserGroup.id == requests_group_id[0]).first()
+        print('一覧ownerid',requests_group.owner_id)
+
+        requests_groups.append(dict(id=requests_group.id, name=requests_group.name, owner_id=requests_group.owner_id))
+
+    return render_template("groups.html", user_id=session["user_id"], user_info=user_info, groups=groups, requests_groups=requests_groups)
+
+
+@app.route('/create_group', methods = ['GET'])
+@login_required
+def create_group():
+    login_user_id=session["user_id"]
+    user = db.session.query(users).filter(users.id == login_user_id).first()
+    user_info = dict(id=user.id, nickname=user.nickname, username=user.username)
+    followings = db.session.query(follow).filter(follow.follow_user_id == login_user_id).all()
+
+    following_user_info = []
+    for following in followings:
+        other_user = db.session.query(users).filter(users.id == following.followed_user_id).first()
+        other_user_info = dict(id=other_user.id, nickname=other_user.nickname, username=other_user.username)
+        following_user_info.append(other_user_info)
+    
+    return render_template("create_group.html", user_id=session["user_id"], user_info=user_info, following_user_info=following_user_info)
+
+@app.route('/create_group_table', methods = ['POST'])
+@login_required
+# profile->follow->home
+def create_group_table():
+    login_user_id = session["user_id"]
+    group_name = request.form.get("group_name")
+    add_user_ids = request.form.getlist("add_users")
+    print("add_user_id", add_user_ids)
+
+    new_group = Group(owner_id=login_user_id, name = group_name, introduction = "")
+    db.session.add(new_group)
+    db.session.commit()
+
+    new_group_id = db.session.query(func.max(Group.id).label('max'))
+    print("newgroup")
+    print(new_group_id[0]['max'])
+
+    for add_user_id in add_user_ids:
+        new_user_group = requests(group_id = new_group_id[0]['max'], owner_id = login_user_id, invited_id = add_user_id)
+        db.session.add(new_user_group)
+        db.session.commit()
+        print("group_id = ", new_group_id[0]['max'], "owner_id = ", login_user_id, "invited_id = ", add_user_id)
+    
+    # 作ったグループ確認
+    rows = db.session.query(requests).all()
+    for row in rows:
+        print("Groupid",row.group_id)
+        print("Groupuser",row.owner_id, end="->")
+        print("Groupinvited",row.invited_id)
+    
+    return redirect("/groups")
+
+@app.route('/groups/<group_id>', methods = ['GET'])
+@login_required
+def group_info(group_id):
+    # グループの情報
+    group = db.session.query(Group).filter(Group.id == group_id).first()
+    group_info = dict(id=group.id, name=group.name, introduction=group.introduction )
+
+    tracks =[]
+    track_lists=[]
+
+    try: #招待メンバー一人でも参加済みのとき
+        group_members = db.session.query(UserGroup.invited_id).filter(UserGroup.group_id == group_id).all()
+        group_owner = db.session.query(Group.owner_id).filter(Group.id == group_id).all()[0][0]
+        owner_pins = db.session.query(song_locations).filter(song_locations.user_id == group_owner).all()
+        random_num = random.randint(0,len(owner_pins)-1)
+        # print("rando",random_num,"len",len(owner_pins)-1)
+        tracks.append(owner_pins[random_num])
+        # for pin in owner_pins:
+        #     tracks.append(pin)
+            
+        for group_member in group_members:
+            print("member",group_member.invited_id)
+            user_pins = db.session.query(song_locations).filter(song_locations.user_id == group_member.invited_id).all()
+            random_num = random.randint(0,len(user_pins)-1)
+            print("rando",random_num,"len",len(user_pins)-1)
+            tracks.append(user_pins[random_num])
+            # for pin in user_pins:
+            #     tracks.append(pin)
+                
+    except:#まだ招待メンバー一人も参加していないとき
+        group_owner = db.session.query(Group.owner_id).filter(Group.id == group_id).all()[0][0]
+    
+        owner_pins = db.session.query(song_locations).filter(song_locations.user_id == group_owner).all()
+        random_num = random.randint(0,len(owner_pins)-1)
+        # print("rando",random_num,"len",len(owner_pins)-1)
+        tracks.append(owner_pins[random_num])
+        # for pin in owner_pins:
+        #     tracks.append(pin)
+    #try,exept 共通処理 
+    for track in tracks:
+            # print(pin)
+            song = db.session.query(songs).filter(songs.track_id == track.track_id).first()
+            user = db.session.query(users).filter(users.id == track.user_id).first()
+            # ログインユーザがいいねしてあるか判定
+            print('pinnnnnn',track.id)
+            # db.session.query(likes.song_location_id).filter(likes.user_id == session['user_id']).filter(likes.song_location_id == track.id).all()[0] == track.id
+            # for i in likelist:
+            #     print("kore",i[0])
+            # print(db.session.query(exists().where(likes.song_location_id == track.id)).scalar())
+            if db.session.query(exists().where(likes.song_location_id == track.id).where(likes.user_id == session['user_id'])).scalar() == True:
+                print("True")
+                track_lists.append({'like':'yes','id':track.id,'lat':track.latitude, 'lng':track.longitude, 'date':track.date.strftime("%Y-%m-%d"),
+                'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':track.user_id, 'emotion':track.emotion, 'about':track.about, 'comment':track.comment, 'is_private':track.is_private, 'user_nickname':user.nickname})
+            else:
+                track_lists.append({'like':'no','id':track.id,'lat':track.latitude, 'lng':track.longitude, 'date':track.date.strftime("%Y-%m-%d"),
+                'artist':song.artist_name, 'track':song.track_name, 'image':song.track_image ,'link':song.spotify_url, 'track_id':song.track_id, 'user_id':track.user_id, 'emotion':track.emotion, 'about':track.about, 'comment':track.comment, 'is_private':track.is_private, 'user_nickname':user.nickname})
+
+    return render_template("group_info.html",user_id=session['user_id'], group_info=group_info, track_lists=track_lists)
+
+
+@app.route('/groups/<group_id>/members', methods = ['GET'])
+@login_required
+def group_members(group_id):
+    group = db.session.query(Group).filter(Group.id == group_id).first()
+    group_info = dict(owner_id = group.owner_id,id=group.id, name=group.name, introduction=group.introduction)
+
+    group_members = db.session.query(UserGroup).filter(UserGroup.group_id == group_id).all()
+    group_members_info = []
+
+#オーナ情報取り出し 
+    owner_user_info = db.session.query(users).filter(users.id == group.owner_id).first()
+    group_members_info.append(dict(id=owner_user_info.id, username=owner_user_info.username, nickname=owner_user_info.nickname))
+# メンバー情報取り出し
+    for group_member in group_members:
+        print("i",group_member.invited_id,"o",group_member.owner_id)
+        user_info = db.session.query(users).filter(users.id == group_member.invited_id).first()
+        if user_info:
+            group_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
+# 招待中メンバー取り出し
+    requesting_members  = db.session.query(requests).filter(requests.group_id == group_id).all()
+    requesting_members_info = []
+    for requesting_member in requesting_members:
+        print("i",requesting_member.invited_id,"o",requesting_member.owner_id)
+        user_info = db.session.query(users).filter(users.id == requesting_member.invited_id).first()
+        if user_info:
+            requesting_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
+    
+#新たに追加するために、メンバーではなく、招待中でもない、フォロー取り出し 
+    login_user_id=session["user_id"]
+    user = db.session.query(users).filter(users.id == login_user_id).first()
+    user_info = dict(id=user.id, nickname=user.nickname, username=user.username)
+    followings = db.session.query(follow).filter(follow.follow_user_id == login_user_id).all()
+    following_user_info = []
+    #全てのフォロー取得 
+    for following in followings:
+        other_user = db.session.query(users).filter(users.id == following.followed_user_id).first()
+        print('user',other_user.id)
+        other_user_info = dict(id=other_user.id, nickname=other_user.nickname, username=other_user.username)
+        following_user_info.append(other_user_info)
+    # メンバーと一致するもの削除
+    for k in following_user_info:
+        if k:
+            for group_member in group_members_info:
+                if k:
+                    print("member",group_member['id'] ,"k",k['id'])
+                    if k['id'] == group_member['id']:
+                        k.clear()  #空で返すことになるからjinjaでif文つけてる
+        
+    # 招待と一致するもの削除 
+    for k in following_user_info:
+        if k: #上で空にした行の時にエラーになる
+            print('followid',k['id'])
+            for requesting_member in requesting_members_info:
+                if requesting_member:
+                    try:
+                        if k:
+                            print("request",requesting_member['id'] ,"k",k['id'])
+                            if k['id'] == requesting_member['id']:
+                                try:  
+                                    k.clear() #空で返すことになるからjinjaでif文つけてる
+                                except TypeError as e:
+                                    print(e)
+                    except TypeError as e:
+                        print(e)
+    for k in following_user_info:
+        # 追加できるユーザーが一人でも残っていたらrenderに入れて渡す
+        if k:
+            print('finaluser',k["id"])
+            return render_template("group_members.html", group_info=group_info, group_members_info=group_members_info,user_id=session['user_id'], requesting_members_info=requesting_members_info,following_user_info=following_user_info)
+        else:
+            print('残り無し')
+    return render_template("group_members.html", group_info=group_info, group_members_info=group_members_info,user_id=session['user_id'], requesting_members_info=requesting_members_info)
+
+@app.route('/add_group_user', methods = ['POST'])
+@login_required
+def add_member_table():
+    add_user_ids = request.form.getlist("add_users")
+    group_id = request.form.get("group_id")
+    owner_id = request.form.get("owner_id")
+
+    for add_user_id in add_user_ids:
+        new_user_group = requests(group_id = group_id, owner_id = owner_id, invited_id = add_user_id)
+        db.session.add(new_user_group)
+        db.session.commit()
+
+    return redirect(url_for('group_members', group_id=group_id))
+
+@app.route('/notification', methods = ['GET'])
+@login_required
+def notification():
+    login_user_id = session["user_id"]
+    user = db.session.query(users).filter(users.id == login_user_id).first()
+    user_info = dict(id=user.id, nickname=user.nickname, username=user.username)
+
+    # 全てのピン取得
+    pins = db.session.query(song_locations).filter(song_locations.user_id==login_user_id).all()
+    pin_ids = []
+    for pin in pins:
+        # print(pin.id)
+        pin_ids.append(pin.id)
+    print(pin_ids)
+    likelist = []
+    for pin_id in pin_ids:
+        likelist.extend(db.session.query(likes).filter(likes.song_location_id == pin_id).all())
+    # sortしたい
+    like_list = []
+    for like in likelist:
+        other_user = db.session.query(users).filter(users.id == like.user_id).first()
+        like_list.append(dict(user_id = like.user_id, nickname=other_user.nickname, song_location_id = like.song_location_id, datetime = like.datetime))
+        # print("songsssss")
+        # print(like.song_location_id)
+
+    followings= db.session.query(follow).filter(follow.followed_user_id == login_user_id).all()
+    following_user_info = []
+    for following in followings:
+        other_user = db.session.query(users).filter(users.id == following.follow_user_id).first()
+        other_user_info = dict(id=other_user.id, nickname=other_user.nickname, username=other_user.username)
+        following_user_info.append(other_user_info)
+    
+    print(user_info, following_user_info, like_list)
+    
+    return render_template("notification.html",user_id=session["user_id"], user_info=user_info, following_user_info=following_user_info, like_list = like_list)
+    
+
+@app.route('/like', methods = ["POST"])
+@login_required
+def like():
+    operator = session["user_id"]
+    operated = request.form.get("user_id")
+    song_location_id = request.form.get("song_location_id")
+    like_or_cancell = request.form.get("like_or_cancell")
+    if operator != operated:
+        if like_or_cancell == "like":
+            new_like = likes(user_id=operator, song_location_id=song_location_id, datetime=datetime.datetime.now())
+            db.session.add(new_like)
+            db.session.commit()
+            print("like", end=": ")
+            print(operated)
+            rows = db.session.query(likes).all()
+            for row in rows:
+                print(row.user_id, end="->")
+                print(row.song_location_id)
+        elif like_or_cancell == "cancell":
+            # 指定したデータを削除
+            delete_likes = db.session.query(likes).filter_by(user_id=operator, song_location_id=song_location_id).all()
+            print(delete_likes)
+            for delete_like in delete_likes:
+                db.session.delete(delete_like)
+            db.session.commit()
+            print("cancell", end=": ")
+            print(operated)
+            rows = db.session.query(likes).all()
+            for row in rows:
+                print(row.user_id, end="->")
+                print(row.song_location_id)
+        else:
+            print("like error")
+            return redirect("/")
+        
+        return redirect("/")
+
+    return redirect("/")
+
+
+@app.route('/python_edit', methods = ['GET'])
+def python_edit():
+    group_id = 4
+    group = db.session.query(Group).filter(Group.id == group_id).first()
+    group.name="4番目のグループ名"
+    db.session.commit()
+    return redirect("/")
 
 # if __name__ == '__main__':
 #     app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)

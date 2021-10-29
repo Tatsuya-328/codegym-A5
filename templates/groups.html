@@ -1,0 +1,112 @@
+
+{% extends "layout.html" %}
+
+{% block title %}
+  groups
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+  // var user_info = {{ user_info | safe }};
+  // var following_user_info = {{following_user_info |safe }}
+  // var followed_user_info = {{followed_user_info |safe }}
+  var groups = {{ groups | safe }}
+  var requests_groups = {{ requests_groups | safe }}
+</script>
+
+<script>
+  jQuery(function($) {
+
+  //data-hrefの属性を持つtrを選択しclassにclickableを付加
+  $('tr[data-href]').addClass('clickable')
+
+    //クリックイベント
+    .click(function(e) {
+
+      //e.targetはクリックした要素自体、それがa要素以外であれば
+      if(!$(e.target).is('a')){
+      
+        //その要素の先祖要素で一番近いtrの
+        //data-href属性の値に書かれているURLに遷移する
+        window.location = $(e.target).closest('tr').data('href');}
+  });
+});
+</script>
+
+{% endblock %}
+
+{% block main %}
+
+
+<!-- けんじの参考に修正（まー） -->
+<ul class="nav nav-tabs" style="color: #606060;">
+  <li class="active">
+    <a href="#groups" data-toggle="tab">
+      <div class="group-table-title">
+        グループ一覧
+      </div>
+    </a>
+  </li>
+  <li>
+    <a href="#requests_groups" data-toggle="tab">
+      <div class="group-table-title">
+        招待一覧
+      </div>
+    </a>
+  </li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane fade in active show" id="groups">
+    <div class="table-responsive group-table">
+      <div class = "flex flex-row mx-auto">
+        {% for d in groups %}
+          <a  href="{{ url_for('group_info', group_id = d['id'] ) }}">
+            <div class="group-box">
+              <div class="group-user-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                  <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                  <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                  <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                </svg>
+              </div>
+              <div class="group-user-info">
+                <div class="group-user-name">
+                  {{ d["name"] }}
+                </div>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="tab-pane fade" id="requests_groups">
+    <div class="table-responsive group-table">
+      <div class = "flex flex-row mx-auto">
+        {% for d in requests_groups %}
+          <a  href="{{ url_for('group_info', group_id = d['id'] ) }}">
+            <div class="group-box" >
+              <div class="group-user-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-person-plus-fill" viewBox="0 0 16 16">
+                  <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                  <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+              </div>
+              <div class="group-user-info">
+                <div class="group-user-name">
+                  {{ d["name"] }}
+                </div>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<div style="text-align: center">
+    <button onclick="location.href='create_group'" type="button" class="btn btn-secondary">新規作成</button>
+</div>
+{% endblock %}

@@ -43,7 +43,7 @@
         </table>
       </div>
       {% if display_user_id == user_id  %}
-      <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">削除する</button>
+      <button class="btn btn-secondary" type="submit" style="display: block; margin: 0 auto;">削除する</button>
       {% else %}
       <!-- 現在は他のユーザーでもSpotifyアカウントは自分だから動作しないけれど、見栄え上作ってみた -->
       <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">自分のリストに追加する</button>
@@ -51,6 +51,4 @@
     </form>
     </div>
   {% endif %}
-
-
 {% endblock %}

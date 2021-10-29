@@ -7,12 +7,14 @@ ul {
   list-style: none;
 }
 
-
 img {
 	max-width: 100%;
 	height: auto;
 }
-
+.main{
+  background-color: #fff2ec;
+  height: 100vh;
+}
 
 /* @media (max-width: 544px) */
 /* .col-xs-10 {
@@ -108,7 +110,8 @@ a:link, a:visited, a:hover, a:active {
 
 .index-map{
   width: 100%;
-  height: 45vh;
+  height: 65vh;
+  position: fixed;
 }
 
 .input-period{
@@ -118,15 +121,46 @@ a:link, a:visited, a:hover, a:active {
 /* profile */
 .profile-map{
   width: 100%;
-  height: 30vh;
+  height: 50vh;
+}
+.profile-nickname{
+  color: #606060;
+  display: block;
+}
+.profile-follow{
+  margin-left: 24px;
+  float: left;
+  display: block;
+}
+.profile-follower{
+  /* float: left; */
+color: #606060;
+  display: block;
+}
+.profile-following{
+margin-top: 6px;
+}
+.follownumber{
+  color: #606060;
+  padding-left: 13px;
+  font-size: 23px;
+  margin-bottom: 0px;
+  /* padding-left: 165px; */
+}
+.followernumber{
+  /* padding-left: 13px; */
+  font-size: 23px;
+  margin-bottom: 0px;
+  padding-left: 234px;
 }
 
 /*menu*/
 .menu{
+  color: #606060;
   height: 12px;
   position: absolute;
   right: 20px;
-  top: 20px;
+  top: 31px;
   width: 24px;
   z-index: 99;
 }
@@ -216,6 +250,7 @@ a:link, a:visited, a:hover, a:active {
 .panel{
   padding: 15px;
   text-align: center;
+  color: #606060;
 }
 
 /* create_memory_emotion */
@@ -224,16 +259,19 @@ a:link, a:visited, a:hover, a:active {
   width: 100px;
   float: left;
   margin: 15px;
+  color: #606060;
 }
 
 /* create_memory_confirm */
 .panel-memory-data{
   text-align: center;
   margin: 15px;
+  color: #606060;
 }
 .private-form{
   text-align: center;
-  margin: 10px
+  margin: 10px;
+  color: #606060;
 }
 
 /* search */
@@ -244,6 +282,7 @@ a:link, a:visited, a:hover, a:active {
 /* makeplaylist */
 .playlist-form{
   padding-bottom: 60px;
+  color: #606060;
 }
 
 /* index */
@@ -251,8 +290,9 @@ a:link, a:visited, a:hover, a:active {
   padding: 15px;
   border-radius: 20px;
   margin: 10px;
-  background-color: rgb(183, 182, 182);
-  color: white;
+  /* background-color: rgb(183, 182, 182); */
+  /* background-color: rgb(63, 212, 152); */
+  /* color: white; */
   display: flex;
 }
 .index-spotify-track{
@@ -261,57 +301,97 @@ a:link, a:visited, a:hover, a:active {
 }
 .index-latest-track-table{
   padding-bottom: 45px;
+  background-color: #fff2ec;
 }
 .index-display-emotion{
-  display: inline-block;
+  /* display: inline-block; */
+  float: right;
+  width: 20%;
+  text-align: center;
 }
 .index-display-about{
   display: inline-block;
-  margin-left: 10px;
+  /* margin-left: 10px;
+  margin-top: 15px; */
 }
 .index-songlocation-info{
+  color: #1a39a6;
   display: inline-block;
   margin-left: 10px;
+  width: 70%;
 }
 .index-panel-latest-track{
   text-align: center;
-  margin: 10px;
+  margin: 10px auto;
+  padding: 10px;
+  background-color: rgb(253, 198, 97);
+  width: 80%;
+  border-radius: 10px;
+  font-weight: bold;
 }
-.index-map{
-  position: fixed;
+
+.panel-artist-name.panel-track-name.panel-user-name.display-about{
+  color: #606060;
 }
+
+
 .panel-user-name{
   float: left;
-  width: 22%;
+  width: 60%;
   overflow: hidden;
   height: 20px;
   margin-right: 5px;
 }
 .panel-track-name{
   float: left;
-  width: 50%;
-  height: 30px;
+  width: 100%;
+  height: 20px;
   overflow: hidden;
   margin-right: 5px;
-  font-weight: 600;
+  font-weight: bold;
   font-size: 15px;
 }
 .panel-artist-name{
   float: left;
-  width: 20%;
+  width: 100%;
   height: 20px;
   overflow: hidden;
   margin-right: 5px;
   font-size: 12px;
 }
 
+.like {
+  color: #ff8270;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+
+
+.appname  {
+ color: #f0a299; 
+}
+
 /* profile */
+.profile-intro{
+  margin-left: 15px;
+  /* margin-bottom: 20px; */
+  margin-top: 20px;
+  color:#606060;
+}
+.profile-info{
+  background-color: #fff2ec;
+  margin-left: 15px;
+  /* margin-bottom: 20px; */
+  padding-top: 15px;
+
+}
 .profile-track-box{
   padding: 15px;
   border-radius: 20px;
   margin: 10px;
-  background-color: rgb(183, 182, 182);
-  color: white;
+  /* color: white; */
   height: 100px;
 }
 .profile-spotify-track{
@@ -331,18 +411,38 @@ a:link, a:visited, a:hover, a:active {
 .profile-songlocation-info{
   display: inline-block;
   margin-left: 10px;
+  width: 73%;
 }
 .profile-panel-latest-track{
   text-align: center;
-  margin: 10px;
+  margin: 10px auto;
+  padding: 10px;
+  width: 80%;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #606060;
 }
+.profile-panel-search{
+  text-align: center;
+  margin: 10px auto 10px auto;
+  padding: 10px;
+  width: 80%;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #606060;
+}
+
+.profile-latest-track-table{
+  background-color: #fff2ec;
+}
+
 .profile-panel-track-name{
   float: left;
   width: 55%;
-  height: 30px;
+  height: 20px;
   overflow: hidden;
   margin-right: 5px;
-  font-weight: 600;
+  font-weight: bold;
   font-size: 15px;
 }
 .profile-panel-artist-name{
@@ -352,4 +452,190 @@ a:link, a:visited, a:hover, a:active {
   overflow: hidden;
   margin-right: 5px;
   font-size: 12px;
+}
+.profile-form-search{
+  /* margin-left: 10px; */
+  float: left;
+  /* margin-bottom: 10px; */
+}
+
+/* show_songlocation */
+.show-songlocation-info{
+  /* margin: 10px; */
+  padding: 20px;
+  border-radius: 15px;
+  padding-bottom: 60px;
+  background-color: #fff2ec;
+  color: #606060;
+}
+.show-songlocation-display-emotion{
+  text-align: center;
+}
+.emotion-name{
+  font-weight: bold;
+}
+.show-songlocation-comment{
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #fff2ec;
+  
+}
+.show-map{
+  width: 100%;
+  height: 50vh;
+  position: fixed;
+}
+
+/* layout */
+footer{
+  background-color: rgb(44, 44, 44);
+}
+
+/* group */
+.group-box{
+  padding: 15px;
+  border-radius: 20px;
+  margin: 10px;
+  background-color: #4b5ea2;
+  color: #fff2ec;
+  height: 100px;
+}
+.group-table{
+  padding-bottom: 45px;
+}
+
+.group-table-title{
+  text-align: center;
+  margin: 10px auto;
+  padding: 10px;
+  /* background-color: rgb(253, 198, 97); */
+  border-radius: 10px;
+  font-weight: bold;
+  color: #606060;
+}
+
+.group-user-icon{
+  /* display: inline-block; */
+  float: left;
+}
+
+.group-user-name{
+  float: left;
+  width: 55%;
+  overflow: hidden;
+  font-weight: bold;
+  font-size: 30px;
+  padding: 0 auto;
+}
+
+.group-user-info{
+  color: #fff2ec;
+  /* color: white; */
+  display: inline-block;
+  margin-left: 10px;
+  width: 73%;
+}
+
+/* follow */
+.follow-box{
+  padding: 15px, 0px;
+  border-radius: 20px;
+  margin: 10px;
+  /* background-color: pink; */
+  /* height: 100px; */
+}
+.follow-table{
+  padding-bottom: 45px;
+}
+
+.follow-table-title{
+  text-align: center;
+  margin: 10px auto;
+  padding: 10px;
+  /* background-color: rgb(253, 198, 97); */
+  border-radius: 10px;
+  font-weight: bold;
+  color: #1a39a6;
+}
+
+.follow-user-icon{
+  /* display: inline-block; */
+  float: left;
+}
+
+.follow-user-name{
+  float: left;
+  width: 55%;
+  height: 20px;
+  overflow: hidden;
+  margin-right: 5px;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+
+.follow-user-text{
+  color: #1a39a6;
+  display: inline-block;
+  margin-left: 10px;
+  width: 70%;
+}
+
+.follow-user-info{
+  width: 120px;
+  display: block;
+  /* margin: 0, auto; */
+}
+
+/* member-list */
+.member-list-box{
+  padding: 15px, 0px;
+  border-radius: 20px;
+  margin: 10px;
+  
+  /* background-color: pink; */
+  /* height: 100px; */
+}
+.member-list-table{
+  padding-bottom: 45px;
+}
+
+.member-list-table-title{
+  text-align: center;
+  margin: 10px auto;
+  padding: 10px;
+  /* background-color: rgb(253, 198, 97); */
+  border-radius: 10px;
+  font-weight: bold;
+  color: #1a39a6;
+}
+
+.member-list-user-icon{
+  /* display: inline-block; */
+  float: left;
+}
+
+.member-list-user-name{
+  float: left;
+  width: 55%;
+  height: 20px;
+  overflow: hidden;
+  margin-right: 5px;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+
+.member-list-user-text{
+  color: #1a39a6;
+  display: inline-block;
+  margin-left: 10px;
+  width: 70%;
+}
+
+.member-list-user-info{
+  width: 120px;
+  display: block;
+  /* margin: 0, auto; */
 }
