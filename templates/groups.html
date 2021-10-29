@@ -1,4 +1,3 @@
-
 {% extends "layout.html" %}
 
 {% block title %}
@@ -36,9 +35,71 @@
 {% endblock %}
 
 {% block main %}
+<div class="col-xs-10" style="padding: 40px 0 40px 0;">
+<h1 style="font-size: 25px; text-align: center">グループ一覧</h1>
 
+<!-- <p>{{ groups['name'] }}</p> -->
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th></th>
+      <!-- <th>グループid</th> -->
+      <th>グループ名</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in groups %}
+    <tr data-href="{{ url_for('group_info', group_id = d['id'] ) }}">
+      <td><i class="fas fa-user"></i></td>
+      <!-- <td>{{ d["id"]}}</td> -->
+      <td>{{ d["name"]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if requests_groups %}
+<h3 style="font-size: 25px; text-align: center">招待一覧</h3>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th></th>
+      <!-- <th>グループid</th> -->
+      <th>グループ名</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in requests_groups %}
+    <tr data-href="{{ url_for('group_info', group_id = d['id'] ) }}">
+      <td><i class="fas fa-user"></i></td>
+      <!-- <td>{{ d["id"]}}</td> -->
+      <td>{{ d["name"]}}</td>
+      <td>オーナ{{ d["owner_id"]}}</td>
+
+      <td>
+        <form action="/groups" method="post">
+          <input type="hidden" name ="group_id"value='{{ d["id"]}}'>
+          <input type="hidden" name ="owner_id"value='{{ d["owner_id"]}}'>
+          <button class="btn btn-primary" type='submit' name='auth' value="yes" >参加</button>
+        </form>
+      </td>
+      <td>
+        <form action="/groups" method="post">
+          <input type="hidden" name ="group_id"value='{{ d["id"]}}'>
+          <input type="hidden" name ="owner_id"value='{{ d["owner_id"]}}'>
+          <button class="btn btn-primary" type='submit' name='auth' value="no" >拒否</button>
+        </form>
+      </td>
+
+    </tr>
+  </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
 
 <!-- けんじの参考に修正（まー） -->
+
 <ul class="nav nav-tabs" style="color: #606060;">
   <li class="active">
     <a href="#groups" data-toggle="tab">
@@ -103,10 +164,14 @@
       </div>
     </div>
     
+
   </div>
 </div>
 
+
+
 <div style="text-align: center">
     <button onclick="location.href='create_group'" type="button" class="btn btn-secondary">新規作成</button>
+</div>
 </div>
 {% endblock %}

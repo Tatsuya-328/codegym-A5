@@ -7,7 +7,7 @@ let infoWindow = [];
 function initMap() {
   console.log(Lat)
   var map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 10,
+    zoom: 5,
     center: {lat: Lat, lng: Lng},
     //   既存のマーカーがあるとごちゃごちゃするから消す
     styles: [{
