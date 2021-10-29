@@ -467,7 +467,7 @@ footer{
   padding: 15px;
   border-radius: 20px;
   margin: 10px;
-  background-color: pink;
+  background-color:#1a39a6;
   height: 100px;
 }
 .group-table{
@@ -499,6 +499,8 @@ footer{
 }
 
 .group-user-info{
+  color: #fff2ec;
+  /* color: white; */
   display: inline-block;
   margin-left: 10px;
   width: 73%;
