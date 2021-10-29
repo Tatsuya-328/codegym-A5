@@ -548,3 +548,8 @@ footer{
   margin-left: 10px;
   width: 70%;
 }
+
+.fa-user::before {
+  width: 25px;
+  height: 25px;
+}
