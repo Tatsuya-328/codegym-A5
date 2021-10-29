@@ -238,19 +238,19 @@ a:link, a:visited, a:hover, a:active {
   width: 100px;
   float: left;
   margin: 15px;
-  color: rgb(183, 182, 182);
+  color: #606060;
 }
 
 /* create_memory_confirm */
 .panel-memory-data{
   text-align: center;
   margin: 15px;
-  color: rgb(182,182,182);
+  color: #606060;
 }
 .private-form{
   text-align: center;
   margin: 10px;
-  color: rgb(182,182,182);
+  color: #606060;
 }
 
 /* search */
