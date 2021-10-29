@@ -229,7 +229,7 @@ a:link, a:visited, a:hover, a:active {
 .panel{
   padding: 15px;
   text-align: center;
-  color: rgb(183, 182, 182);
+  color: #606060;
 }
 
 /* create_memory_emotion */
@@ -261,6 +261,7 @@ a:link, a:visited, a:hover, a:active {
 /* makeplaylist */
 .playlist-form{
   padding-bottom: 60px;
+  color: #606060;
 }
 
 /* index */
