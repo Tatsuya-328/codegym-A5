@@ -533,3 +533,53 @@ footer{
   margin-left: 10px;
   width: 73%;
 }
+
+/* follow */
+.follow-box{
+  padding: 15px;
+  border-radius: 20px;
+  margin: 10px;
+  background-color: pink;
+  height: 100px;
+}
+.follow-table{
+  padding-bottom: 45px;
+}
+
+.follow-table-title{
+  text-align: center;
+  margin: 10px auto;
+  padding: 10px;
+  /* background-color: rgb(253, 198, 97); */
+  border-radius: 10px;
+  font-weight: bold;
+  color: #1a39a6;
+}
+
+.follow-user-icon{
+  /* display: inline-block; */
+  float: left;
+}
+
+.follow-user-name{
+  float: left;
+  width: 55%;
+  height: 20px;
+  overflow: hidden;
+  margin-right: 5px;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+
+.follow-user-info{
+  color: #1a39a6;
+  display: inline-block;
+  margin-left: 10px;
+  width: 70%;
+}
+
+.fa-user::before {
+  width: 25px;
+  height: 25px;
+}

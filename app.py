@@ -292,8 +292,8 @@ def profile(display_user_id):
     user_info = dict(id=display_user_id, username=username[0], following=following_status, follow_number=follow_number, followed_number=followed_number, songlists=songlists, nickname=nickname[0])
     
     # 自己紹介文取得
-    if db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0] != None:
-        Introduce = db.session.query(users.introduce).filter(users.id == session['user_id']).all()[0][0]
+    if db.session.query(users.introduce).filter(users.id == display_user_id).all()[0][0] != None:
+        Introduce = db.session.query(users.introduce).filter(users.id == display_user_id).all()[0][0]
     else:
         Introduce ="Settingで自己紹介入力してください"
     
@@ -1451,7 +1451,8 @@ def group_members(group_id):
     for group_member in group_members:
         print("i",group_member.invited_id,"o",group_member.owner_id)
         user_info = db.session.query(users).filter(users.id == group_member.invited_id).first()
-        group_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
+        if user_info:
+            group_members_info.append(dict(id=user_info.id, username=user_info.username, nickname=user_info.nickname))
 # 招待中メンバー取り出し
     requesting_members  = db.session.query(requests).filter(requests.group_id == group_id).all()
     requesting_members_info = []
@@ -1597,6 +1598,14 @@ def like():
 
     return redirect("/")
 
+
+@app.route('/python_edit', methods = ['GET'])
+def python_edit():
+    group_id = 4
+    group = db.session.query(Group).filter(Group.id == group_id).first()
+    group.name="4番目のグループ名"
+    db.session.commit()
+    return redirect("/")
 
 # if __name__ == '__main__':
 #     app.run(host=os.getenv('APP_ADDRESS', 'localhost'), port=5000)
