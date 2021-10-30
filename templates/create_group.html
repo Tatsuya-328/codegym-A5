@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  create_groups
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+  var user_info = {{ user_info | safe }};
+  var following_user_info = {{following_user_info |safe }};
+</script>
+
+<script type="text/javascript" src="/static/js/createGroup.js"></script>
+
+<!-- <script>
+  jQuery(function($) {
+
+  //data-hrefの属性を持つtrを選択しclassにclickableを付加
+  $('tr[data-href]').addClass('clickable')
+
+    //クリックイベント
+    .click(function(e) {
+
+      //e.targetはクリックした要素自体、それがa要素以外であれば
+      if(!$(e.target).is('a')){
+      
+        //その要素の先祖要素で一番近いtrの
+        //data-href属性の値に書かれているURLに遷移する
+        window.location = $(e.target).closest('tr').data('href');}
+  });
+});
+</script> -->
+
+{% endblock %}
+
+{% block main %}
+
+<!-- <div class="user-follow">
+  <p id="nickname">{{user_info["nickname"]}} </p>
+  <p id="user-id">(user_id is {{user_info["id"]}})</p>
+</div> -->
+
+<div class="col-xs-10" style="padding: 40px 0 40px 0;">
+  <h1 style="font-size: 25px; text-align: center">グループ作成</h1>
+
+<!-- <h3>追加ユーザー</h3> -->
+<div class="table-responsive playlist-form">
+  <form action="/create_group_table" method="post">
+    <div class = "flex flex-row mx-auto">
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+          <th></th>
+          <th>Nickname</th>
+          <!-- <th>User name</th> -->
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+
+            {% for following in following_user_info %}
+            <tr data-href="{{ url_for('profile', display_user_id = following['id'] ) }}">
+              <td><i class="fas fa-user"></i></td>
+              <td>{{ following["nickname"]}}</td>
+              <!-- <td>{{ following["username"]}}</td> -->
+              <td>
+                <input type="checkbox" name="add_users" value="{{following['id'] }}" checked>
+              </td>
+            </tr>
+            {% endfor %}
+      </tbody>
+      </table>
+    </div>
+    <input type = "text"style="float: left;margin: 24px;" class="" name="group_name" autocomplete="off" placeholder="グループ名入力" required >
+    <button class="btn btn-primary" type="submit" style=" margin: 21px auto;">作成する</button>
+  </form>
+</div>
+
+
+{% endblock %}

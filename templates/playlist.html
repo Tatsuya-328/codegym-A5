@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Playlist
+{% endblock %}
+
+{% block main %}
+  {% if not playlists %}
+
+  {% else %}
+  <div class="table-responsive" style="margin-bottom: 50px;">
+    <div class="col-xs-10 panel">
+      <h3>{{ display_user[0] }}のプレイリスト</h3>
+    </div>
+    {% if display_user_id == user_id  %}
+    <form action="/delete_playlist" method="post">
+    {% else %}
+    <form action="/add_playlist" method="post">
+    {% endif %}
+      <div class = "flex flex-row mx-auto">
+        <table class="table table-hover">
+        <tbody>
+          {% for i in playlists %}
+          <!-- <a href="https://open.spotify.com/playlist/{{i['playlist_uri']}}" target="_blank"> -->
+          <!-- </a> -->
+            <tr>
+              <!-- <td><img src="{{ i['playlist_image'] }}" alt="" width="130" height="130"></td> -->
+              <!-- <td>{{ i["playlist_name"] }}</td> -->
+              <td>     
+                <iframe src="https://open.spotify.com/embed/playlist/{{ i['playlist_uri'] }}" 
+                  width="100%" height="151" frameBorder="0" 
+                  allowtransparency="true" allow="encrypted-media">
+                </iframe>
+              </td>
+              
+              <td>
+                <input type="checkbox" name="deletelists" value="{{ i['playlist_id'] }}" >
+              </td>
+              
+          </tr>
+          {% endfor %}
+        </tbody>
+        </table>
+      </div>
+      {% if display_user_id == user_id  %}
+      <button class="btn btn-secondary" type="submit" style="display: block; margin: 0 auto;">削除する</button>
+      {% else %}
+      <!-- 現在は他のユーザーでもSpotifyアカウントは自分だから動作しないけれど、見栄え上作ってみた -->
+      <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">自分のリストに追加する</button>
+      {% endif %}
+    </form>
+    </div>
+  {% endif %}
+{% endblock %}

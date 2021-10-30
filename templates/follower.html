@@ -1,0 +1,153 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  followerlist
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+  // var SongData = {{ Songdatas | safe }};
+  // var display_user_id = {{ user_id | safe }};
+  var user_info = {{ user_info | safe }};
+  var following_user_info = {{following_user_info |safe }}
+  var followed_user_info = {{followed_user_info |safe }}
+</script>
+
+<script>
+  jQuery(function($) {
+
+  //data-hrefの属性を持つtrを選択しclassにclickableを付加
+  $('tr[data-href]').addClass('clickable')
+
+    //クリックイベント
+    .click(function(e) {
+
+      //e.targetはクリックした要素自体、それがa要素以外であれば
+      if(!$(e.target).is('a')){
+      
+        //その要素の先祖要素で一番近いtrの
+        //data-href属性の値に書かれているURLに遷移する
+        window.location = $(e.target).closest('tr').data('href');}
+  });
+});
+</script>
+
+<!-- <script type="text/javascript" src="/static/js/index.js"></script> -->
+{% endblock %}
+
+{% block main %}
+<div class="user-follow">
+  <p id="nickname">{{user_info["nickname"]}} </p>
+  <!-- <p id="user-id">(user_id is {{user_info["id"]}})</p> -->
+</div>
+
+<ul class="nav nav-tabs">
+  <li class="active">
+    <a href="#following" data-toggle="tab">
+      <div class="follow-table-title">
+        フォロー
+      </div>
+    </a>
+  </li>
+  <li>
+    <a href="#followed" data-toggle="tab">
+      <div class="follower-table-title">
+        フォロワー
+      </div>
+    </a>
+  </li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane fade in active show" id="following">
+    <div class="table-responsive follow-table">
+      <div class = "flex flex-row mx-auto">
+        {% for following in following_user_info %}
+          <a  href="{{ url_for('profile', display_user_id = following['id'] ) }}">
+            <div class="follow-box">
+              <div class="follow_user_info" style="margin-left: 80px;">
+                <div class="follow-user-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="follow-user-text">
+                  <div class="follow-user-name">
+                    <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ following["nickname"]}}</p>
+                  </div>
+                  <!-- <div class="group-user-name">
+                    <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ following["username"]}}</p>
+                  </div> -->
+                </div>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="tab-pane fade" id="followed">
+    <div class="table-responsive follow-table">
+      <div class = "flex flex-row mx-auto">
+        {% for followed in followed_user_info %}
+          <a  href="{{ url_for('profile', display_user_id = followed['id'] ) }}">
+            <div class="follow-box">
+              <div class="follow-info" style="margin-left: 80px;">
+                <div class="follow-user-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="follow-user-text">
+                  <div class="follow-user-name">
+                    <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ followed["nickname"]}}</p>
+                  </div>
+                  <!-- <div class="group-user-name">
+                    <p style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ followed["username"]}}</p>
+                  </div> -->
+                </div>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <h3>フォロー中</h3>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Nickname</th>
+      <th>User name</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for following in following_user_info %}
+    <tr data-href="{{ url_for('profile', display_user_id = following['id'] ) }}">
+      <td><i class="fas fa-user"></i></td>
+      <td>{{ following["nickname"]}}</td>
+      <td>{{ following["username"]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table> -->
+
+<!-- <h3>フォロワー</h3> -->
+<!-- <table class="table table-hover">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Nickname</th>
+      <th>User name</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for followed in followed_user_info %}
+    <tr data-href="{{ url_for('profile', display_user_id = followed['id'] ) }}">
+      <td><i class="fas fa-user"></i></td>
+      <td>{{ followed["nickname"]}}</td>
+      <td>{{ followed["username"]}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table> -->
+
+{% endblock %}

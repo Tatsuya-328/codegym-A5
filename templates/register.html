@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block main %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <h1 style="text-align:center; color: pink; margin-top: 10px; margin-bottom: 10px">Music Diary</h1>
+            <form action="/register" method="post">
+                <div class="form-group">
+                    <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" name="password" placeholder="Password" type="password">
+                </div>
+                <div class="form-group">
+                    <input class="form-control" name="confirmation" placeholder="Password (again)" type="password">
+                </div>
+                <div class="form-group">
+                    <input autofocus class="form-control" name="nickname" placeholder="Nickname" type="text">
+                </div>
+                <div class="form-group" style="text-align: center;">
+                    <button class="btn btn-secondary" type="submit">Sign Up</button>
+                </div>
+                <div class="form-group" style="text-align: center;">
+                    <a href="/login"><small>アカウントを持っている方はこちら</small></a>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-3"></div>
+    </div>
+</div>
+{% endblock %}

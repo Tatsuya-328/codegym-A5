@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  create memory
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+    // var SongData = {{ Songdatas | safe }};
+    // var UserId = {{ user_id | safe }};
+    var Lat = {{ lat | safe }};
+    var Lng = {{ lng | safe }};
+  </script>
+
+  <script type="text/javascript" src="/static/js/createMemoryMap.js"></script>
+{% endblock %}
+
+{% block main %}
+<form method="post" action="/create_memory/emotion">
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6">
+        <div class="panel">場所と日時を選んでください</div>
+        <input type="date" class="select-location-date-form" id="date" name="date" min="2000-01-01" max="2021-12-31" required>
+        <input id="lat" name="lat" value="{{ lat }}" type="hidden">
+        <input id="lng" name="lng" value="{{ lng }}" type="hidden">
+      </div>
+      <div class="col-xl-3"></div>
+    </div>
+  </div>
+    <div id="map" class="current-location-map"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-3"></div>
+        <div class="col-xl-6">
+          <div class="panel">
+            Spotifyで登録したい曲を再生して次へボタンを押してください
+          </div>
+          <button class="location-submit-button btn btn-secondary" type="submit" style="color: white;" id="get_lat_lng">次へ</button>
+          </div>
+        </div>
+        <div class="col-xl-3"></div>
+      </div>
+    </div>
+</form>
+
+
+
+  <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
+{% endblock %}

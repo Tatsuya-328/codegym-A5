@@ -1,0 +1,156 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Edit
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+    var Lat = {{ lat | safe }};
+    var Lng = {{ lng | safe }};
+    var SongData = {{ Songdatas | safe }};
+    var UserId = {{ user_id }};
+  </script>
+
+  <script type="text/javascript" src="/static/js/edit_map.js"></script>
+{% endblock %}
+
+{% block main %}
+  <h1>Edit Pin </h1>
+
+  <div id="map" class="current-location-map"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6">
+        <div class = "edit_form">
+          <input type="date" class="edit-date-form" id="date" name="date" value = {{ Songdatas[0]["date"] }} min="2000-01-01" max="2021-12-31" required>
+            <select class="edit-emotion-form" name="emotion" id = "emotion"  required>
+              {% if Songdatas[0]["emotion"] == "嬉しい" %}
+                <option value="嬉しい" selected>嬉しい</option>
+              {% else %}
+                <option value="嬉しい">嬉しい</option>
+              {% endif %}
+              {% if Songdatas[0]["emotion"] == "楽しい" %}
+                <option value="楽しい" selected>楽しい</option>
+              {% else %}
+                <option value="楽しい">楽しい</option>
+              {% endif %}
+              {% if Songdatas[0]["emotion"] == "安心" %}
+                <option value="安心" selected>安心</option>
+              {% else %}
+                <option value="安心">安心</option>
+              {% endif %}
+              {% if Songdatas[0]["emotion"] == "退屈" %}
+                <option value="退屈" selected>退屈</option>
+              {% else %}
+                <option value="退屈">退屈</option>
+              {% endif %}
+              {% if Songdatas[0]["emotion"] == "不安" %}
+                <option value="不安" selected>不安</option>
+              {% else %}
+                <option value="不安">不安</option>
+              {% endif %}
+              {% if Songdatas[0]["emotion"] == "イライラ" %}
+                <option value="イライラ" selected>イライラ</option>
+              {% else %}
+                <option value="イライラ">イライラ</option>
+              {% endif %}
+              {% if Songdatas[0]["emotion"] == "悲しい" %}
+                <option value="悲しい" selected>悲しい</option>
+              {% else %}
+                <option value="悲しい">悲しい</option>
+              {% endif %}
+              {% if Songdatas[0]["emotion"] == "驚き" %}
+                <option value="驚き" selected>驚き</option>
+              {% else %}
+                <option value="驚き">驚き</option>
+              {% endif %}
+            </select>
+            <select class="edit-about-form" name="about" id = "about"  required>
+              {% if Songdatas[0]["about"] == "勉強" %}
+                <option value="勉強" selected>勉強</option>
+              {% else %}
+                <option value="勉強">勉強</option>
+              {% endif %}
+              {% if Songdatas[0]["about"] == "運動" %}
+                <option value="運動" selected>運動</option>
+              {% else %}
+                <option value="運動">運動</option>
+              {% endif %}
+              {% if Songdatas[0]["about"] == "ご飯" %}
+                <option value="ご飯" selected>ご飯</option>
+              {% else %}
+                <option value="ご飯">ご飯</option>
+              {% endif %}
+              {% if Songdatas[0]["about"] == "ドライブ" %}
+                <option value="ドライブ" selected>ドライブ</option>
+              {% else %}
+                <option value="ドライブ">ドライブ</option>
+              {% endif %}
+              {% if Songdatas[0]["about"] == "旅行" %}
+                <option value="旅行" selected>旅行</option>
+              {% else %}
+                <option value="旅行">旅行</option>
+              {% endif %}
+              {% if Songdatas[0]["about"] == "散歩" %}
+                <option value="散歩" selected>散歩</option>
+              {% else %}
+                <option value="散歩">散歩</option>
+              {% endif %}
+              {% if Songdatas[0]["about"] == "仕事" %}
+                <option value="仕事" selected>仕事</option>
+              {% else %}
+                <option value="仕事">仕事</option>
+              {% endif %}
+              {% if Songdatas[0]["about"] == "学校" %}
+                <option value="学校" selected>学校</option>
+              {% else %}
+                <option value="学校">学校</option>
+              {% endif %}
+              {% if Songdatas[0]["about"] == "恋愛" %}
+                <option value="恋愛" selected>恋愛</option>
+              {% else %}
+                <option value="恋愛">恋愛</option>
+              {% endif %}
+              {% if Songdatas[0]["about"] == "海" %}
+                <option value="海" selected>海</option>
+              {% else %}
+                <option value="海">海</option>
+              {% endif %}
+              {% if Songdatas[0]["about"] == "山" %}
+                <option value="山" selected>山</option>
+              {% else %}
+                <option value="山">山</option>
+              {% endif %}
+              {% if Songdatas[0]["about"] == "その他" %}
+                <option value="その他" selected>その他</option>
+              {% else %}
+                <option value="その他">その他</option>
+              {% endif %}
+            </select>
+          <textarea class="edit-comment-form" id="comment" name="comment" placeholder="今の気持ち、出来事を任意で入力してください！">{{Songdatas[0]["comment"]}}</textarea>
+          <div class="edit-private-form">
+            {% if Songdatas[0]["is_private"] == "False" %}
+              <input type="radio" id="public" name="pin_status" value="public" checked>
+              <label for="public">公開</label>
+              <input type="radio" id="private" name="pin_status" value="private">
+              <label for="private">非公開</label>
+            {% elif Songdatas[0]["is_private"] == "True" %}
+              <input type="radio" id="public" name="pin_status" value="public">
+              <label for="public">公開</label>
+              <input type="radio" id="private" name="pin_status" value="private" checked>
+              <label for="private">非公開</label>
+            {% endif %}
+          </div>
+          <div>
+            <input class="location-submit-button" type="button" value="更新する" id = "update" >
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3"></div>
+    </div>
+  </div>
+
+  <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
+{% endblock %} 

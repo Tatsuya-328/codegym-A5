@@ -102,3 +102,8 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+#flask_session
+flask_session/
+
+# database
+database.db

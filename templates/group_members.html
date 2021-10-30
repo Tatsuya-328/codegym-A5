@@ -1,0 +1,163 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  grouplist
+{% endblock %}
+
+
+
+{% block js %}
+<script type="text/javascript">
+  var group_info = {{ group_info | safe }};
+  var group_members_info = {{group_members_info |safe }};
+</script>
+
+<script type="text/javascript" src="/static/js/createGroup.js"></script>
+<script type="text/javascript">
+  // var user_info = {{ user_info | safe }};
+  // var following_user_info = {{following_user_info |safe }}
+  // var followed_user_info = {{followed_user_info |safe }}
+  var groups = {{ groups | safe }}
+</script>
+
+<script>
+  jQuery(function($) {
+
+  //data-hrefの属性を持つtrを選択しclassにclickableを付加
+  $('tr[data-href]').addClass('clickable')
+
+    //クリックイベント
+    .click(function(e) {
+
+      //e.targetはクリックした要素自体、それがa要素以外であれば
+      if(!$(e.target).is('a')){
+      
+        //その要素の先祖要素で一番近いtrの
+        //data-href属性の値に書かれているURLに遷移する
+        window.location = $(e.target).closest('tr').data('href');}
+  });
+});
+</script>
+
+{% endblock %}
+
+
+
+{% block main %}
+<div class="col-xs-10" style="padding: 40px 0 40px 0;">
+
+<h1 style="font-size: 25px; text-align: center">{{group_info["name"]}}</h1>
+<p style="font-size: 25px; text-align: center">{{ group_info["introduction"] }}</p>
+
+
+<ul class="nav nav-tabs">
+  <li class="active">
+    <a href="#members" data-toggle="tab">
+      <div class="member-list-table-title">
+        メンバー
+      </div>
+    </a>
+  </li>
+  <li>
+    <a href="#requesting_members" data-toggle="tab">
+      <div class="member-list-table-title-other">
+        招待中
+      </div>
+    </a>
+  </li>
+  <li>
+    <a href="#add_members" data-toggle="tab">
+      <div class="member-list-table-title-other">
+        メンバー追加
+      </div>
+    </a>
+  </li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane fade in active show" id="members">
+    <div class="table-responsive member-list-table">
+      <div class = "flex flex-row mx-auto">
+        {% for group_member_info in group_members_info %}
+          <a  href="{{ url_for('profile', display_user_id = group_member_info['id'] ) }}">
+            <div class="member-list-box">
+              <div class="member-list-user-info" style="margin-left: 120px;">
+                <div class="member-list-user-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="member-list-user-text">
+                  <div class="member-list-user-name">
+                    {{ group_member_info["nickname"]}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-pane fade" id="requesting_members">
+    {% if requesting_members_info %}
+    <div class="table-responsive member-list-table">
+      <div class = "flex flex-row mx-auto">
+        {% for d in requesting_members_info %}
+          <a  href="{{ url_for('profile', display_user_id = d['id'] ) }}">
+            <div class="member-list-box">
+              <div class="member-list-user-info" style="margin-left: 120px;">
+                <div class="member-list-user-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="member-list-user-text">
+                  <div class="member-list-user-name">
+                    {{ d["nickname"]}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <h3>招待中ユーザーがいません。</h3>
+    {% endif %}
+  </div>
+
+  <div class="tab-pane fade" id="add_members">
+    {% if following_user_info %}
+    <form action="/add_group_user" method="post">
+      <div class="table-responsive member-list-table">
+        <div class = "flex flex-row mx-auto">
+          {% for d in following_user_info %}
+            {% if d["nickname"] %}
+            <a  href="{{ url_for('profile', display_user_id = d['id'] ) }}">
+              <div class="member-list-box">
+                <div class="member-list-user-info" style="margin-left: 120px;">
+                  <div class="member-list-user-icon">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <div class="member-list-user-text">
+                    <div class="member-list-user-name">
+                      {{ d["nickname"]}}
+                    </div>
+                    <input type="checkbox" name="add_users" value="{{d['id'] }}" >
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+      <input type="hidden" name="group_id" value="{{group_info['id']}}">
+      <input type="hidden" name="owner_id" value="{{group_info['owner_id']}}">
+      <button class="btn btn-primary" type="submit" style="display: block; margin: 0 auto;">追加する</button>
+    </form>
+    {% else %}
+    <p>フォローユーザーは全て追加、招待済みです。新しく招待するにはフォローしてください。</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

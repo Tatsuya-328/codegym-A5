@@ -1,0 +1,660 @@
+* {
+	float: none;
+	position: static;
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}
+.main{
+  background-color: #fff2ec;
+  height: 100vh;
+}
+
+/* @media (max-width: 544px) */
+/* .col-xs-10 {
+  width: 83.333333%;
+} */
+
+@media (max-width: 544px){
+  .container{
+    width: 80%;
+  }
+
+  .search-artist-button{
+    height: 20px;
+  }
+}
+
+a:link, a:visited, a:hover, a:active {
+  color:black;
+}
+
+
+
+a:link, a:visited, a:hover, a:active {
+  color:black;
+}
+/* select_location, current_locationの共通部分 */
+.location-comment-form{
+  width: 100%;
+  height: 10vh;
+  margin-bottom: 15px
+}
+.location-emotion-form{
+  width: 100%;
+  height: 5vh;
+  margin: 15px 0;
+}
+.location-submit-button{
+  width: 100%;
+  height: 5vh;
+}
+
+/* select_location */
+.select-location-map{
+  width: 100%;
+  height: 40vh;
+}
+.select-location-date-form{
+  width: 100%;
+  margin-bottom: 20px;
+}
+.select-location{
+  display: inline-block;
+  float: left;
+  margin: 10px;
+  text-align: center;
+}
+
+/* current_location */
+.current-location-map{
+  width: 100%;
+  height: 45vh;
+}
+.current-location{
+  display: inline-block;
+  float: left;
+  margin: 10px;
+  text-align: center;
+}
+
+/* edit_map */
+.edit-comment-form{
+  width: 100%;
+  height: 10vh;
+  margin-bottom: 15px
+}
+.edit-emotion-form{
+  width: 100%;
+  height: 5vh;
+  margin-bottom: 10px;
+}
+.edit-about-form{
+  width: 100%;
+  height: 5vh;
+  margin-bottom: 10px;
+}
+.edit-date-form{
+  width: 100%;
+  margin: 10px 0;
+}
+.edit-private-form{
+  text-align: center;
+}
+
+.index-map{
+  width: 100%;
+  height: 65vh;
+  position: fixed;
+}
+
+.input-period{
+  width: 118px;
+}
+
+/* profile */
+.profile-map{
+  width: 100%;
+  height: 50vh;
+}
+.profile-nickname{
+  color: #606060;
+  display: block;
+}
+.profile-follow{
+  margin-left: 24px;
+  float: left;
+  display: block;
+}
+.profile-follower{
+  /* float: left; */
+color: #606060;
+  display: block;
+}
+.profile-following{
+margin-top: 6px;
+}
+.follownumber{
+  color: #606060;
+  padding-left: 13px;
+  font-size: 23px;
+  margin-bottom: 0px;
+  /* padding-left: 165px; */
+}
+.followernumber{
+  /* padding-left: 13px; */
+  font-size: 23px;
+  margin-bottom: 0px;
+  padding-left: 234px;
+}
+
+/*menu*/
+.menu{
+  color: #606060;
+  height: 12px;
+  position: absolute;
+  right: 20px;
+  top: 31px;
+  width: 24px;
+  z-index: 99;
+}
+.menu__line{
+  background: #000;
+  display: block;
+  height: 2px;
+  position: absolute;
+  transition:transform .3s;
+  width: 100%;
+}
+.menu__line--bottom{
+  bottom: 0;
+}
+.menu__line--top.active{
+  top: 4px;
+  transform: rotate(45deg);
+}
+.menu__line--bottom.active{
+  bottom: 6px;
+  transform: rotate(135deg);
+}
+/*gnav*/
+.gnav{
+  background: #fafafa;
+  display: none;
+  height: 100%;
+  position: fixed;
+  width: 100%;
+  z-index: 98;
+}
+.gnav__wrap{
+  display: flex;
+  width: 85%;
+  height: 100%;
+  margin: auto;
+  position: absolute;
+}
+.gnav__menu__item{
+  margin: 3rem 0;
+}
+.gnav__menu__item a{
+  color: #000;
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: .1rem;
+  padding: 2.5rem;
+  text-decoration: none;
+  transition: .2s;
+}
+.gnav__menu__item a:hover{
+  color: #337ab7;
+}
+
+.user-infomation {
+  margin :10px;
+}
+
+.nickname{
+  font-size: 28px;
+}
+
+.user-follow{
+  /* margin: 10px; */
+}
+#nickname{
+  font-size: 28px;
+  margin: 3px;
+  text-align: center;
+}
+
+#user-id{
+  font-size: 10px;
+  color: gray;
+  text-align: right;
+}
+
+.cant-search{
+  margin: 10px;
+}
+
+#follower p a span{
+  margin-right: 5px;
+  font-family: boid;
+}
+
+.panel{
+  padding: 15px;
+  text-align: center;
+  color: #606060;
+}
+
+/* create_memory_emotion */
+.form-emotion{
+  text-align: center;
+  width: 100px;
+  float: left;
+  margin: 15px;
+  color: #606060;
+}
+
+/* create_memory_confirm */
+.panel-memory-data{
+  text-align: center;
+  margin: 15px;
+  color: #606060;
+}
+.private-form{
+  text-align: center;
+  margin: 10px;
+  color: #606060;
+}
+
+/* search */
+.artist-table{
+  padding-bottom: 40px;
+}
+
+/* makeplaylist */
+.playlist-form{
+  padding-bottom: 60px;
+  color: #606060;
+}
+
+/* index */
+.index-track-box{
+  padding: 15px;
+  border-radius: 20px;
+  margin: 10px;
+  /* background-color: rgb(183, 182, 182); */
+  /* background-color: rgb(63, 212, 152); */
+  /* color: white; */
+  display: flex;
+}
+.index-spotify-track{
+  /* display: inline-block; */
+  float: left;
+}
+.index-latest-track-table{
+  padding-bottom: 45px;
+  background-color: #fff2ec;
+}
+.index-display-emotion{
+  /* display: inline-block; */
+  float: right;
+  width: 20%;
+  text-align: center;
+}
+.index-display-about{
+  display: inline-block;
+  /* margin-left: 10px;
+  margin-top: 15px; */
+}
+.index-songlocation-info{
+  color: #1a39a6;
+  display: inline-block;
+  margin-left: 10px;
+  width: 70%;
+}
+.index-panel-latest-track{
+  text-align: center;
+  margin: 10px auto;
+  padding: 10px;
+  background-color: rgb(253, 198, 97);
+  width: 80%;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.panel-artist-name.panel-track-name.panel-user-name.display-about{
+  color: #606060;
+}
+
+
+.panel-user-name{
+  float: left;
+  width: 60%;
+  overflow: hidden;
+  height: 20px;
+  margin-right: 5px;
+}
+.panel-track-name{
+  float: left;
+  width: 100%;
+  height: 20px;
+  overflow: hidden;
+  margin-right: 5px;
+  font-weight: bold;
+  font-size: 15px;
+}
+.panel-artist-name{
+  float: left;
+  width: 100%;
+  height: 20px;
+  overflow: hidden;
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.like {
+  color: #ff8270;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+
+
+.appname  {
+ color: #f0a299; 
+}
+
+/* profile */
+.profile-intro{
+  margin-left: 15px;
+  /* margin-bottom: 20px; */
+  margin-top: 20px;
+  color:#606060;
+}
+.profile-info{
+  background-color: #fff2ec;
+  margin-left: 15px;
+  /* margin-bottom: 20px; */
+  padding-top: 15px;
+
+}
+.profile-track-box{
+  padding: 15px;
+  border-radius: 20px;
+  margin: 10px;
+  /* color: white; */
+  height: 100px;
+}
+.profile-spotify-track{
+  /* display: inline-block; */
+  float: left;
+}
+.profile-latest-track-table{
+  padding-bottom: 45px;
+}
+.profile-display-emotion{
+  display: inline-block;
+}
+.profile-display-about{
+  display: inline-block;
+  margin-left: 10px;
+}
+.profile-songlocation-info{
+  display: inline-block;
+  margin-left: 10px;
+  width: 73%;
+}
+.profile-panel-latest-track{
+  text-align: center;
+  margin: 10px auto;
+  padding: 10px;
+  width: 80%;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #606060;
+}
+.profile-panel-search{
+  text-align: center;
+  margin: 10px auto 10px auto;
+  padding: 10px;
+  width: 80%;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #606060;
+}
+
+.profile-latest-track-table{
+  background-color: #fff2ec;
+}
+
+.profile-panel-track-name{
+  float: left;
+  width: 55%;
+  height: 20px;
+  overflow: hidden;
+  margin-right: 5px;
+  font-weight: bold;
+  font-size: 15px;
+}
+.profile-panel-artist-name{
+  float: left;
+  width: 35%;
+  height: 20px;
+  overflow: hidden;
+  margin-right: 5px;
+  font-size: 12px;
+}
+.profile-form-search{
+  /* margin-left: 10px; */
+  float: left;
+  /* margin-bottom: 10px; */
+}
+
+/* show_songlocation */
+.show-songlocation-info{
+  /* margin: 10px; */
+  padding: 20px;
+  border-radius: 15px;
+  padding-bottom: 60px;
+  background-color: #fff2ec;
+  color: #606060;
+}
+.show-songlocation-display-emotion{
+  text-align: center;
+}
+.emotion-name{
+  font-weight: bold;
+}
+.show-songlocation-comment{
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #fff2ec;
+  
+}
+.show-map{
+  width: 100%;
+  height: 50vh;
+  position: fixed;
+}
+
+/* layout */
+footer{
+  background-color: rgb(44, 44, 44);
+}
+
+/* group */
+.group-box{
+  padding: 15px;
+  border-radius: 20px;
+  margin: 10px;
+  background-color: #4b5ea2;
+  color: #fff2ec;
+}
+.group-table{
+  padding-bottom: 45px;
+}
+
+.group-table-title{
+  text-align: center;
+  margin: 10px auto;
+  padding: 10px;
+  /* background-color: rgb(253, 198, 97); */
+  border-radius: 10px;
+  font-weight: bold;
+  color: #606060;
+}
+
+.group-user-icon{
+  /* display: inline-block; */
+  float: left;
+}
+
+.group-user-name{
+  float: left;
+  overflow: hidden;
+  font-weight: bold;
+  font-size: 20px;
+  padding: 0 auto;
+  margin: 5px;
+}
+
+.group-user-info{
+  color: #fff2ec;
+  /* color: white; */
+  display: inline-block;
+  margin-left: 10px;
+  width: 73%;
+}
+
+/* follow */
+.follow-box{
+  padding: 15px, 0px;
+  border-radius: 20px;
+  margin: 10px;
+  /* background-color: pink; */
+  /* height: 100px; */
+}
+.follow-table{
+  padding-bottom: 45px;
+}
+
+.follow-table-title{
+  text-align: center;
+  margin: 10px auto;
+  margin-left: 100px;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #1a39a6;
+}
+.follower-table-title{
+  text-align: center;
+  margin: 10px auto;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #1a39a6;
+}
+
+.follow-user-icon{
+  /* display: inline-block; */
+  float: left;
+}
+
+.follow-user-name{
+  float: left;
+  width: 55%;
+  height: 20px;
+  overflow: hidden;
+  margin-right: 5px;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+
+.follow-user-text{
+  color: #1a39a6;
+  display: inline-block;
+  margin-left: 10px;
+  width: 70%;
+}
+
+.follow-user-info{
+  width: 120px;
+  display: block;
+  /* margin: 0, auto; */
+}
+
+/* member-list */
+.member-list-box{
+  padding: 15px, 0px;
+  border-radius: 20px;
+  margin: 10px;
+  
+  /* background-color: pink; */
+  /* height: 100px; */
+}
+.member-list-table{
+  padding-bottom: 45px;
+}
+
+.member-list-table-title{
+  text-align: center;
+  margin: 10px auto;
+  margin-left: 60px;
+  padding: 10px;
+  /* background-color: rgb(253, 198, 97); */
+  border-radius: 10px;
+  font-weight: bold;
+  color: #1a39a6;
+}
+
+.member-list-table-title-other{
+  text-align: center;
+  margin: 10px auto;
+  padding: 10px;
+  /* background-color: rgb(253, 198, 97); */
+  border-radius: 10px;
+  font-weight: bold;
+  color: #1a39a6;
+}
+
+.member-list-user-icon{
+  /* display: inline-block; */
+  float: left;
+}
+
+.member-list-user-name{
+  float: left;
+  width: 55%;
+  height: 20px;
+  overflow: hidden;
+  margin-right: 5px;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+
+.member-list-user-text{
+  color: #1a39a6;
+  display: inline-block;
+  margin-left: 10px;
+  width: 70%;
+}
+
+.member-list-user-info{
+  width: 120px;
+  display: block;
+  text-align: center;
+  /* margin: 0, auto; */
+}

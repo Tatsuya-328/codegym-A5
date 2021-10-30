@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Create Memory
+{% endblock %}
+
+<!-- {% block js %}
+  <script type="text/javascript">
+    // var SongData = {{ Songdatas | safe }};
+    // var UserId = {{ user_id | safe }};
+    var Lat = {{ lat | safe }};
+    var Lng = {{ lng | safe }};
+  </script>
+
+  <script type="text/javascript" src="/static/js/createMemoryMap.js"></script>
+{% endblock %} -->
+
+{% block main %}
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-3" style="text-align-last: justify;  ">
+        <div class="panel">何をしていたかを選んでください</div>
+        <form action="/create_memory/confirm" method="POST">
+          <input name="lat" value="{{ memory['lat'] }}" type="hidden">
+          <input name="lng" value="{{ memory['lng'] }}" type="hidden">
+          <input name="date" value="{{ memory['date'] }}" type="hidden">
+          <input name="track_id" value="{{ memory['track_id'] }}" type="hidden">
+          <input name="emotion" value="{{ memory['emotion'] }}" type="hidden">
+
+          <div class="col-xl-3">
+            <label style="color: #606060"><input type="radio" name="about" value="勉強"><p style="text-align: center;">勉強</p></label>
+            <label style="color: #606060"><input type="radio" name="about" value="運動"><p>運動</p></label>
+            <label style="color: #606060"><input type="radio" name="about" value="ご飯"><p>ご飯</p></label>
+          </div>
+          <div class="col-xl-3">
+            <label style="color: #606060"><input type="radio" name="about" value="ドライブ"><p>ドライブ</p></label>
+            <label style="color: #606060"><input type="radio" name="about" value="旅行"><p>旅行</p></label>
+            <label style="color: #606060"><input type="radio" name="about" value="散歩"><p>散歩</p></label>
+          </div>
+          <div class="col-xl-3">
+            <label style="color: #606060"><input type="radio" name="about" value="仕事"><p>仕事</p></label>
+            <label style="color: #606060"><input type="radio" name="about" value="学校"><p>学校</p></label>
+            <label style="color: #606060"><input type="radio" name="about" value="恋愛"><p>恋愛</p></label>
+          </div>
+          <div class="col-xl-3">
+            <label style="color: #606060"><input type="radio" name="about" value="海"><p>海</p></label>
+            <label style="color: #606060"><input type="radio" name="about" value="山"><p>山</p></label>
+            <label style="color: #606060"><input type="radio" name="about" value="その他"><p>その他</p></label>
+          </div>
+          <button class="btn btn-secondary" type="submit" style="display: block; margin: 0 auto;">次へ</button>
+        </form>
+      </div>
+
+      <div class="col-xl-6">
+      </div>
+      <div class="col-xl-3"></div>
+    </div>
+
+
+  <script async defer src="{{GOOGLEMAPURL}}&callback=initMap"></script>
+{% endblock %}
